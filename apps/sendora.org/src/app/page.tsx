@@ -1,101 +1,131 @@
-import Image from 'next/image';
+'use client';
+import AppScreenshotSkewed from '@/components/app-screenshot-skewed';
+import Footer from '@/components/footer';
+import Navbar from '@/components/navbar';
+import { Button } from '@heroui/react';
+import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter();
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{' '}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="relative flex h-screen min-h-dvh w-full flex-col overflow bg-background">
+      <Navbar />
+      <main className="container mx-auto mt-[80px] flex max-w-[1024px] flex-col items-start px-8">
+        <section className="z-20 flex flex-col items-start justify-center gap-[18px] sm:gap-6">
+          {/* <Button
+            className="h-9 overflow-hidden border-1 border-default-100 bg-default-50 px-[18px] py-2 text-small font-normal leading-5 text-default-500"
+            endContent={
+              <Icon
+                className="flex-none outline-none [&>path]:stroke-[2]"
+                icon="solar:arrow-right-linear"
+                width={20}
+              />
+            }
+            radius="full"
+            variant="bordered"
+          >
+            New onboarding experience
+          </Button> */}
+          <LazyMotion features={domAnimation}>
+            <m.div
+              animate="kick"
+              className="flex flex-col gap-6"
+              exit="auto"
+              initial="auto"
+              transition={{
+                duration: 0.25,
+                ease: 'easeInOut',
+              }}
+              variants={{
+                auto: { width: 'auto' },
+                kick: { width: 'auto' },
+              }}
+            >
+              {/* mode="wait" */}
+              <AnimatePresence>
+                <m.div
+                  key={1}
+                  animate={{ filter: 'blur(0px)', opacity: 1, x: 0 }}
+                  className="text-start text-[clamp(40px,10vw,44px)] font-bold leading-[1.2] tracking-tighter sm:text-[64px]"
+                  initial={{ filter: 'blur(16px)', opacity: 0, x: 15 + 1 * 2 }}
+                  transition={{
+                    bounce: 0,
+                    delay: 0.01 * 10,
+                    duration: 0.8 + 0.1 * 8,
+                    type: 'spring',
+                  }}
+                >
+                  <div className="bg-hero-section-title bg-clip-text text-transparent dark:from-[#FFFFFF] dark:to-[#FFFFFF66]">
+                    Send tokens to multiple <br />
+                    recipients
+                  </div>
+                </m.div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+                <m.div
+                  key={2}
+                  animate={{ filter: 'blur(0px)', opacity: 1, x: 0 }}
+                  className="text-start font-normal leading-7 text-default-500 sm:w-[466px] sm:text-[18px]"
+                  initial={{ filter: 'blur(16px)', opacity: 0, x: 15 + 1 * 3 }}
+                  transition={{
+                    bounce: 0,
+                    delay: 0.01 * 30,
+                    duration: 0.8 + 0.1 * 9,
+                    type: 'spring',
+                  }}
+                >
+                  {/* Sendora helps you send and track on-chain assets, securely
+                  store digital files forever, create airdrops, and seamlessly
+                  interact with on-chain programs. */}
+                </m.div>
+
+                <m.div
+                  key={3}
+                  animate={{ filter: 'blur(0px)', opacity: 1, x: 0 }}
+                  className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6"
+                  initial={{ filter: 'blur(16px)', opacity: 0, x: 15 + 1 * 4 }}
+                  transition={{
+                    bounce: 0,
+                    delay: 0.01 * 50,
+                    duration: 0.8 + 0.1 * 10,
+                    type: 'spring',
+                  }}
+                >
+                  <Button
+                    onPress={() => {
+                      router.push('/native-coins/1');
+                    }}
+                    className="h-10 w-[163px] bg-default-foreground px-[16px] py-[10px] text-small font-medium leading-5 text-background"
+                    radius="full"
+                  >
+                    Get Started
+                  </Button>
+                </m.div>
+              </AnimatePresence>
+            </m.div>
+          </LazyMotion>
+        </section>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      <LazyMotion features={domAnimation}>
+        <AnimatePresence mode="wait">
+          <m.div
+            animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
+            className="absolute top-[40%] w-full"
+            initial={{ filter: 'blur(16px)', opacity: 0, y: 300 }}
+            transition={{
+              bounce: 0,
+              delay: 0.01 * 10,
+              duration: 0.8 + 0.1 * 8,
+              type: 'spring',
+            }}
+          >
+            <AppScreenshotSkewed className="w-full" />
+          </m.div>
+        </AnimatePresence>
+      </LazyMotion>
+      <div className="mt-[450px] md:mt-[650px]">
+        <Footer />
+      </div>
     </div>
   );
 }

@@ -10,6 +10,12 @@
     "format": "biome format --write"
   },
   "dependencies": {
+    "@heroui/react": "^2.7.5",
+    "@heroui/theme": "^2.4.12",
+    "@iconify/react": "^5.2.0",
+    "@sinclair/typebox": "^0.34.29",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.4.11",
     "next": "15.2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
@@ -18,8 +24,10 @@
     "@biomejs/biome": "^1.9.4",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.3",
     "serve": "^14.2.4",
-    "tailwindcss": "^4",
+    "tailwindcss": "^3.4.17",
     "typescript": "^5"
   }
 }
