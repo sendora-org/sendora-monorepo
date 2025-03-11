@@ -11,3 +11,6 @@ https://nextjs.org/docs/app/getting-started/installation
 ## Packaging a desktop app using Tauri.
 
 https://tauri.app/
+
+## Manage project documents using the Starlight framework based on Astro.
+https://starlight.astro.build/zh-cn/getting-started/
