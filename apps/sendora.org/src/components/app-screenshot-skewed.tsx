@@ -481,7 +481,7 @@ const AppScreenshotSkewed = ({ ...props }: ComponentProps<'svg'>) => (
         height="2500"
         id="image0_3051_12573"
         width="3978"
-        xlinkHref="/ads/ads3.png"
+        xlinkHref="/ads/wrapperads3.png"
       />
     </defs>
   </svg>
