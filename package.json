@@ -3,6 +3,9 @@
   "module": "index.ts",
   "type": "module",
   "license": "MIT",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "dev": "pnpm -r dev",
     "build": "pnpm -r build",
