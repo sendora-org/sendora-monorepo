@@ -3,6 +3,13 @@
   "module": "index.ts",
   "type": "module",
   "license": "MIT",
+  "scripts": {
+    "dev": "pnpm -r dev",
+    "build": "pnpm -r build",
+    "preview": "pnpm -r preview",
+    "format": "pnpm -r format",
+    "lint": "pnpm -r lint"
+  },
   "workspaces": [
     "apps/*",
     "packages/*"

@@ -27,3 +27,6 @@ https://github.com/foundry-rs/foundry
 ## Configuring a monorepo using workspaces with pnpm
 https://pnpm.io/workspaces
 When using bun to manage a monorepo, Next.js build keeps throwing errors.
+
+## Format, lint, Via biomejs
+https://biomejs.dev/

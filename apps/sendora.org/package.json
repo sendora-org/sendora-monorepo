@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "next dev -p 1420 --turbopack",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "preview": "serve out",
+    "lint": "biome check --write",
+    "format": "biome format --write"
   },
   "dependencies": {
     "next": "15.2.1",
@@ -14,9 +15,11 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
+    "@biomejs/biome": "^1.9.4",
     "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4"
+    "@types/node": "^20",
+    "serve": "^14.2.4",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
