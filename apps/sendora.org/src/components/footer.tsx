@@ -49,6 +49,22 @@ const footerNavigation = {
         <Icon {...props} icon="fontisto:github" />
       ),
     },
+
+    {
+      name: 'ENS',
+      href: 'https://app.ens.domains/sendora.eth',
+      icon: (props: SocialIconProps) => (
+        <Icon {...props} icon="flowbite:profile-card-solid" />
+      ),
+    },
+
+    {
+      name: 'Docs',
+      href: 'https://docs.sendora.org/',
+      icon: (props: SocialIconProps) => (
+        <Icon {...props} icon="material-symbols:docs" />
+      ),
+    },
   ],
 };
 
