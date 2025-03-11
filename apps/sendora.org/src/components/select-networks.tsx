@@ -1,16 +1,9 @@
 import { type NetworkInfo, networks } from '@/constants/config';
-import { Avatar, Select, SelectItem, type SelectProps } from '@heroui/react';
+import { Avatar, Select, SelectItem } from '@heroui/react';
 import { clsx } from 'clsx';
-import type {
-  JSXElementConstructor,
-  ReactElement,
-  ReactNode,
-  ReactPortal,
-} from 'react';
-
 export default function SelectNetworks({
   classes = '',
-  defaultSelectedKeys = ['1'],
+  defaultSelectedKeys = [1],
   navigate = (e: string) => {
     console.log(e);
   },
@@ -53,11 +46,7 @@ export default function SelectNetworks({
         );
       }}
     >
-      {(network: {
-        chainId: number;
-        name: string;
-        avatar: string;
-      }) => (
+      {(network) => (
         <SelectItem
           aria-label="@sendora"
           key={network.chainId}

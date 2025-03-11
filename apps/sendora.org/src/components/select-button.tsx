@@ -1,6 +1,6 @@
 import SelectNetworks from './select-networks';
 
-export default ({ chainId }: { chainId: string }) => {
+export default ({ chainId }: { chainId: number }) => {
   return (
     <>
       <div className="w-[150px] sm:w-[180px]">
