@@ -4,7 +4,10 @@
 
 https://bun.sh/guides/install/workspaces
 
-
 ## Managing a React app with Next.js.
 
 https://nextjs.org/docs/app/getting-started/installation
+
+## Packaging a desktop app using Tauri.
+
+https://tauri.app/
