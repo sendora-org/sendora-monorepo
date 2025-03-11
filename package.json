@@ -1,0 +1,16 @@
+{
+  "name": "sendora-monorepo",
+  "module": "index.ts",
+  "type": "module",
+  "license": "MIT",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
