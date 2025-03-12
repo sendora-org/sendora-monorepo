@@ -21,7 +21,7 @@ export default {
     license: 'MIT',
   },
   args: {
-    from: '0x4e59b44847b379578588920ca78fbf26c0b4956c',
+    from: '0x4e59b44847b379578588920ca78fbf26c0b4956c', // Deterministic Deployer
     salt: '0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470', // const salt = keccak256(toHex(""));
     constructorArgs: '',
   },
