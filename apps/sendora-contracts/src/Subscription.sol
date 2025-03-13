@@ -153,7 +153,7 @@ contract Subscription is ETHPriceFinder {
         uint256 amount1 = balance / 2;
         uint256 amount2 = balance - amount1;
 
-        // Airdrop to Uniswap V2 LP holders.
+        // Airdrop to Uniswap V3 LP holders.
         airdropSNDRA(random, amount1, UniswapV3PositionsNFT_V1);
         // Airdrop to Base builder NFT holders.
         airdropSNDRA(random, amount2, BASEBUILDERNFT);
