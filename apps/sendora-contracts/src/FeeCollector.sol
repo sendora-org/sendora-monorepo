@@ -17,7 +17,23 @@ contract FeeCollector {
 
     event Withdrawal(uint256 amount, address indexed token);
 
+    modifier onlyOwner() {
+        require(
+            msg.sender == feeRecipient,
+            "Only owner can perform this action"
+        );
+        _;
+    }
+
     constructor(address _feeRecipient) payable {
+        _updateFeeRecipient(_feeRecipient);
+    }
+
+    function updateFeeRecipient(address _feeRecipient) public onlyOwner {
+        _updateFeeRecipient(_feeRecipient);
+    }
+
+    function _updateFeeRecipient(address _feeRecipient) private {
         require(_feeRecipient != address(0), "Invalid fee recipient");
         feeRecipient = _feeRecipient;
     }
