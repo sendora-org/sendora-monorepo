@@ -6,6 +6,7 @@ import { getVisitorId } from '@/libs/common';
 import { getConfig } from '@/libs/wagmi';
 import type React from 'react';
 import { base } from 'wagmi/chains';
+import { SIWEProvider } from './swie-provider';
 
 export default function LayoutDefault({
   children,
@@ -14,16 +15,16 @@ export default function LayoutDefault({
 }) {
   getVisitorId();
   return (
-    <Web3Provider config={getConfig(base)}>
-      <div className="relative flex h-screen min-h-dvh w-full flex-col overflow bg-background">
+    <div className="relative flex h-screen min-h-dvh w-full flex-col overflow bg-background">
+      <SIWEProvider>
         <Navbar />
-        <main className="container mx-auto mt-[80px] flex max-w-[1024px] flex-col items-start px-8">
-          {children}
-        </main>
-        <div className="mt-[450px] md:mt-[650px]">
-          <Footer />
-        </div>
+      </SIWEProvider>
+      <main className="container mx-auto mt-[80px] flex max-w-[1024px] flex-col items-start px-8">
+        <Web3Provider config={getConfig(base)}>{children}</Web3Provider>
+      </main>
+      <div className="mt-[450px] md:mt-[650px]">
+        <Footer />
       </div>
-    </Web3Provider>
+    </div>
   );
 }

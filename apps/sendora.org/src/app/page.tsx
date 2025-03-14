@@ -2,6 +2,7 @@
 import AppScreenshotSkewed from '@/components/app-screenshot-skewed';
 import Footer from '@/components/footer';
 import Navbar from '@/components/navbar';
+import { SIWEProvider } from '@/components/swie-provider';
 import { Button } from '@heroui/react';
 import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion';
 import { useRouter } from 'next/navigation';
@@ -10,7 +11,9 @@ export default function Home() {
   const router = useRouter();
   return (
     <div className="relative flex h-screen min-h-dvh w-full flex-col overflow bg-background">
-      <Navbar />
+      <SIWEProvider>
+        <Navbar />
+      </SIWEProvider>
       <main className="container mx-auto mt-[80px] flex max-w-[1024px] flex-col items-start px-8">
         <section className="z-20 flex flex-col items-start justify-center gap-[18px] sm:gap-6">
           {/* <Button

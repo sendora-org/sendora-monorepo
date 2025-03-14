@@ -10,8 +10,11 @@ import {
   NavbarItem,
   cn,
 } from '@heroui/react';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import React from 'react';
+import LoginProfile from './login-profile';
 import SelectButton from './select-button';
+import { SignIn } from './sign-in';
 import { SendoraICon } from './social';
 
 // const randomUrl = () => {
@@ -78,6 +81,8 @@ const Navbar = React.forwardRef<
           <NavbarContent className="flex md:flex" justify="end">
             <NavbarItem className="ml-2 !flex gap-2">
               {!isHomePage && <SelectButton chainId={chainId} />}
+
+              <SignIn />
             </NavbarItem>
           </NavbarContent>
         </HeroUINavbar>

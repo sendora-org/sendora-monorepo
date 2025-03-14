@@ -2,13 +2,18 @@ import useAuthStore from '@/hooks/useAuth';
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { createAuthenticationAdapter } from '@rainbow-me/rainbowkit';
 import { createSiweMessage } from 'viem/siwe';
+import { createStorage } from 'wagmi';
 import type { Chain } from 'wagmi/chains';
 
 import type { Hex } from 'viem';
 import { getVisitorId } from './common';
 
-export const getConfig = (chain: Chain) => {
+export const getConfig = (chain: Chain, key = 'wagmi') => {
   const config = getDefaultConfig({
+    storage: createStorage({
+      key: key,
+      storage: localStorage,
+    }),
     appName: 'sendora.org',
     projectId: '82de9b28b665d7e644540021561bc212',
     chains: [chain],

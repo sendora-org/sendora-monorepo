@@ -26,15 +26,7 @@ const getInitialAuthState = (): AuthStatus => {
       if (nonce && address && message && signature) {
         return 'authenticated';
       }
-
-      // if (Secp256k1.recoverAddress({
-      //     payload: hashMessage(message),
-      //     signature: Signature.fromHex(signature),
-      // }).toLocaleLowerCase() == (address as string).toLocaleLowerCase()) {
-      //     return "authenticated"
-      // }
     } catch (e) {
-      localStorage.setItem('authStatus', '');
       console.log('getInitialAuthState =>', e);
     }
   }
@@ -65,7 +57,6 @@ const useAuthStore = create<AuthState>((set) => ({
 
   logout: () => {
     set({ status: 'unauthenticated' });
-    localStorage.setItem('authStatus', '');
   },
 
   guard: () => {
@@ -98,7 +89,7 @@ const useAuthStore = create<AuthState>((set) => ({
         console.error('❌ guard error:', error);
         set({ status: 'unauthenticated' });
       }
-    }, 3 * 1000);
+    }, 30 * 1000);
   },
 }));
 
