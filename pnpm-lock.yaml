@@ -70,6 +70,9 @@ importers:
 
   apps/sendora.org:
     dependencies:
+      '@fingerprintjs/fingerprintjs':
+        specifier: ^4.6.1
+        version: 4.6.1
       '@heroui/react':
         specifier: ^2.7.5
         version: 2.7.5(@types/react@19.0.0)(framer-motion@12.4.11)(react-dom@19.0.0)(react@19.0.0)(tailwindcss@3.4.17)
@@ -100,6 +103,9 @@ importers:
       next:
         specifier: 15.2.1
         version: 15.2.1(react-dom@19.0.0)(react@19.0.0)
+      ox:
+        specifier: ^0.6.10
+        version: 0.6.10(typescript@5.6.2)
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -1338,6 +1344,12 @@ packages:
     resolution: {integrity: sha512-/XoLjD67K9nfM4TgDlXAExzMJp6ewFKxNpfUw4F7q5Ecy+IU3/9zQQG/O70Zy+RxYTwKGw2MA9kd7yelsxnSmw==}
     dependencies:
       '@expressive-code/core': 0.40.2
+    dev: false
+
+  /@fingerprintjs/fingerprintjs@4.6.1:
+    resolution: {integrity: sha512-62TPnX6fXXMlxS7SOR3DJWEOKab7rCALwSWkuKWYMRrnsZ/jD9Ju4CUyy9VWDUYuhQ2ZW1RGLwOZJXTXR6K1pg==}
+    dependencies:
+      tslib: 2.8.1
     dev: false
 
   /@formatjs/ecma402-abstract@2.3.3:
@@ -9652,6 +9664,26 @@ packages:
       emoji-regex-xs: 1.0.0
       regex: 5.1.1
       regex-recursion: 5.1.1
+    dev: false
+
+  /ox@0.6.10(typescript@5.6.2):
+    resolution: {integrity: sha512-B3rYmtaDF5smwQcVKSar+1wuYX8VlQ82Nxp5i6q/FaXskXY9tbJNTnwZ2f7uMfqTZIPx1lPzDUdjrCTPeC5LXQ==}
+    peerDependencies:
+      typescript: '>=5.4.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      '@adraffy/ens-normalize': 1.11.0
+      '@noble/curves': 1.8.1
+      '@noble/hashes': 1.7.1
+      '@scure/bip32': 1.6.2
+      '@scure/bip39': 1.5.4
+      abitype: 1.0.8(typescript@5.6.2)
+      eventemitter3: 5.0.1
+      typescript: 5.6.2
+    transitivePeerDependencies:
+      - zod
     dev: false
 
   /ox@0.6.7(typescript@5.6.2):

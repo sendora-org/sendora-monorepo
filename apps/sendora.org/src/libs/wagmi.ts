@@ -1,5 +1,11 @@
+import useAuthStore from '@/hooks/useAuth';
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
+import { createAuthenticationAdapter } from '@rainbow-me/rainbowkit';
+import { createSiweMessage } from 'viem/siwe';
 import type { Chain } from 'wagmi/chains';
+
+import type { Hex } from 'viem';
+import { getVisitorId } from './common';
 
 export const getConfig = (chain: Chain) => {
   const config = getDefaultConfig({
@@ -10,4 +16,38 @@ export const getConfig = (chain: Chain) => {
   });
   console.log('correct chain => ', chain);
   return config;
+};
+
+export const getAuthAdapter = () => {
+  const authenticationAdapter = createAuthenticationAdapter({
+    getNonce: async () => {
+      return await getVisitorId();
+    },
+    createMessage: ({ nonce, address, chainId }) => {
+      return createSiweMessage({
+        domain: window.location.host,
+        address,
+        statement: 'Sign in with Ethereum to sendora.org.',
+        uri: window.location.origin,
+        version: '1',
+        chainId,
+        nonce,
+      });
+    },
+    verify: async ({ message, signature }) => {
+      console.log('verify', { message, signature });
+
+      const { login } = useAuthStore.getState();
+      login(message, signature as Hex);
+
+      return true;
+    },
+    signOut: async () => {
+      console.log('signOut');
+      const { logout } = useAuthStore.getState();
+      logout();
+    },
+  });
+
+  return authenticationAdapter;
 };

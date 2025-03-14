@@ -2,6 +2,7 @@ import { TestStep } from '@/components/test-step';
 import { TestStep2 } from '@/components/test-step2';
 
 import LayoutDefault from '@/components/layout-default';
+import { getVisitorId } from '@/libs/common';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 export async function generateStaticParams() {
@@ -16,6 +17,7 @@ export default async function Page({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+
   return (
     <LayoutDefault>
       <>

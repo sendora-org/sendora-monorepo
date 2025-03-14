@@ -2,6 +2,7 @@
 import Footer from '@/components/footer';
 import Navbar from '@/components/navbar';
 import { Web3Provider } from '@/components/web3-provider';
+import { getVisitorId } from '@/libs/common';
 import { getConfig } from '@/libs/wagmi';
 import type React from 'react';
 import { base } from 'wagmi/chains';
@@ -11,6 +12,7 @@ export default function LayoutDefault({
 }: {
   children: React.ReactNode;
 }) {
+  getVisitorId();
   return (
     <Web3Provider config={getConfig(base)}>
       <div className="relative flex h-screen min-h-dvh w-full flex-col overflow bg-background">
