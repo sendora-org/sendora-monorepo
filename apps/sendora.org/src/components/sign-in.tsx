@@ -52,6 +52,14 @@ export const SignIn = () => {
               })}
             >
               {(() => {
+                if (authenticationStatus === 'authenticated') {
+                  return (
+                    <LoginProfile
+                      address={loginAddress}
+                      displayName={shortAddress(loginAddress)}
+                    />
+                  );
+                }
                 if (!connected) {
                   return (
                     <Button onPress={openConnectModal} type="button">
@@ -66,12 +74,6 @@ export const SignIn = () => {
                     </Button>
                   );
                 }
-                return (
-                  <LoginProfile
-                    address={loginAddress}
-                    displayName={shortAddress(loginAddress)}
-                  />
-                );
               })()}
             </div>
           );
