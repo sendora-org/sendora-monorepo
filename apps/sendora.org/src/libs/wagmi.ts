@@ -13,6 +13,9 @@ export const getConfig = (chain: Chain) => {
     projectId: '82de9b28b665d7e644540021561bc212',
     chains: [chain],
     ssr: false,
+    appDescription: '$SNDRA rises! 🚀 Building the best tool for Web3!',
+    appUrl: 'https://sendora.org',
+    appIcon: 'https://sendora.org/logo.png',
   });
   console.log('correct chain => ', chain);
   return config;
