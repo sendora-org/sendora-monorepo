@@ -18,15 +18,7 @@ import { base } from 'wagmi/chains';
 const queryClient = new QueryClient();
 
 export const SIWEProvider = ({ children }: { children: React.ReactNode }) => {
-  const { status, guard } = useAuthStore();
-
-  useEffect(() => {
-    const id = guard();
-    return () => {
-      clearInterval(id);
-    };
-  }, [guard]);
-
+  const { status } = useAuthStore();
   return (
     <WagmiProvider config={getConfig(base, 'SIWE')}>
       <QueryClientProvider client={queryClient}>

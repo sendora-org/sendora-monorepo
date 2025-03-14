@@ -1,4 +1,5 @@
 import useAuthStore from '@/hooks/useAuth';
+import { emojiAvatarForAddress } from '@/libs/emojiAvatarFOrAddress';
 import {
   Avatar,
   Button,
@@ -9,8 +10,9 @@ import {
   DropdownTrigger,
   User,
 } from '@heroui/react';
-
-import { emojiAvatarForAddress } from '@/libs/emojiAvatarFOrAddress';
+import type { Hex } from 'viem';
+import { base } from 'wagmi/chains';
+import ETHBalance from './eth-balance';
 // export const PlusIcon = (props) => {
 //   return (
 //     <svg
@@ -52,8 +54,7 @@ export const EmojiIcon = ({ address }: { address: string }) => {
 export default function LoginProfile({
   address,
   displayName,
-  displayBalance,
-}: { address: string; displayName: string; displayBalance?: string }) {
+}: { address: string; displayName: string }) {
   const { logout } = useAuthStore.getState();
   return (
     <Dropdown
@@ -113,7 +114,7 @@ export default function LoginProfile({
                 name: 'text-default-600',
                 description: 'text-default-500',
               }}
-              description={displayBalance}
+              description={<ETHBalance address={address as Hex} chain={base} />}
               name={displayName}
             />
           </DropdownItem>

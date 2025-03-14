@@ -1,8 +1,5 @@
 import { getVisitorId } from '@/libs/common';
-import { Secp256k1 } from 'ox';
-import { Signature, Siwe } from 'ox';
-import { recoverAddress } from 'viem';
-import { hashMessage } from 'viem';
+import { Siwe } from 'ox';
 import type { Hex } from 'viem';
 import { http, createPublicClient, createWalletClient, custom } from 'viem';
 import { base } from 'viem/chains';
@@ -12,6 +9,8 @@ type AuthStatus = 'unauthenticated' | 'loading' | 'authenticated';
 
 interface AuthState {
   status: AuthStatus;
+  loginAddress: Hex;
+
   login: (message: string, signature: Hex) => Promise<void>;
   logout: () => void;
   guard: () => NodeJS.Timeout | number;
@@ -34,9 +33,26 @@ const getInitialAuthState = (): AuthStatus => {
   return 'unauthenticated';
 };
 
+const getInitialAuthAddress = (): Hex => {
+  if (typeof localStorage !== 'undefined') {
+    try {
+      const result = localStorage.getItem('authStatus');
+      const { address, message, signature } = JSON.parse(result ?? '');
+      const { nonce } = Siwe.parseMessage(message);
+      if (nonce && address && message && signature) {
+        return address as Hex;
+      }
+    } catch (e) {
+      console.log('getInitialAuthAddress =>', e);
+    }
+  }
+
+  return '0x';
+};
+
 const useAuthStore = create<AuthState>((set) => ({
   status: getInitialAuthState(),
-
+  loginAddress: getInitialAuthAddress(),
   login: async (message: string, signature: Hex) => {
     try {
       const { address } = Siwe.parseMessage(message);
@@ -48,7 +64,7 @@ const useAuthStore = create<AuthState>((set) => ({
           signature: signature,
         }),
       );
-      set({ status: 'authenticated' });
+      set({ status: 'authenticated', loginAddress: address });
     } catch (e) {
       console.log('login error=>', e);
       set({ status: 'unauthenticated' });
@@ -86,7 +102,7 @@ const useAuthStore = create<AuthState>((set) => ({
         console.log({ valid, nonce, visitId });
 
         if (nonce === visitId && valid) {
-          set({ status: 'authenticated' });
+          set({ status: 'authenticated', loginAddress: address });
         } else {
           set({ status: 'unauthenticated' });
         }
