@@ -57,7 +57,7 @@ const useAuthStore = create<AuthState>((set) => ({
 
   logout: () => {
     set({ status: 'unauthenticated' });
-    localStorage.setItem("authStatus", "")
+    localStorage.setItem('authStatus', '');
   },
 
   guard: () => {
