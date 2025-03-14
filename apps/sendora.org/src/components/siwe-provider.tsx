@@ -23,6 +23,7 @@ export const SIWEProvider = ({ children }: { children: React.ReactNode }) => {
     <WagmiProvider config={getConfig(base, 'SIWE')}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitAuthenticationProvider
+          enabled={true}
           adapter={getAuthAdapter()}
           status={status}
         >
