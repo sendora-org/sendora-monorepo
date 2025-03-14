@@ -10,7 +10,7 @@ import type { Chain } from 'wagmi/chains';
 import type { Hex } from 'viem';
 import { getVisitorId } from './common';
 
-export const getConfig = (chain: Chain, key = 'wagmi') => {
+export const getConfig = (chain: Chain, key = 'CONN') => {
   const config = getDefaultConfig({
     storage: getStorage(key),
     appName: 'sendora.org',
@@ -59,7 +59,7 @@ export const getAuthAdapter = () => {
   return authenticationAdapter;
 };
 
-export const getStorage = (key = 'wagmi') => {
+export const getStorage = (key = 'CONN') => {
   const storage = createStorage({
     key,
     storage: {
