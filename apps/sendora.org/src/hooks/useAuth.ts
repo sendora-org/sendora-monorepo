@@ -79,6 +79,10 @@ const useAuthStore = create<AuthState>((set) => ({
           signature,
         });
 
+        console.log({ nonce });
+
+        console.log({ visitId });
+
         console.log({ valid, nonce, visitId });
 
         if (nonce === visitId && valid) {

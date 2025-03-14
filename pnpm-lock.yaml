@@ -97,6 +97,9 @@ importers:
       framer-motion:
         specifier: ^12.4.11
         version: 12.4.11(react-dom@19.0.0)(react@19.0.0)
+      idb-keyval:
+        specifier: ^6.2.1
+        version: 6.2.1
       immer:
         specifier: ^10.1.1
         version: 10.1.1

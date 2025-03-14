@@ -21,7 +21,6 @@ export const SIWEProvider = ({ children }: { children: React.ReactNode }) => {
   const { status, guard } = useAuthStore();
 
   useEffect(() => {
-    console.log(555, getConfig(base, 'SIWE'));
     const id = guard();
     return () => {
       clearInterval(id);

@@ -1,6 +1,8 @@
 import useAuthStore from '@/hooks/useAuth';
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { createAuthenticationAdapter } from '@rainbow-me/rainbowkit';
+// Using IndexedDB via https://github.com/jakearchibald/idb-keyval
+import { del, get, set } from 'idb-keyval';
 import { createSiweMessage } from 'viem/siwe';
 import { createStorage } from 'wagmi';
 import type { Chain } from 'wagmi/chains';
@@ -10,9 +12,7 @@ import { getVisitorId } from './common';
 
 export const getConfig = (chain: Chain, key = 'wagmi') => {
   const config = getDefaultConfig({
-    storage: createStorage({
-      key: key,
-    }),
+    storage: getStorage(key),
     appName: 'sendora.org',
     projectId: '82de9b28b665d7e644540021561bc212',
     chains: [chain],
@@ -57,4 +57,23 @@ export const getAuthAdapter = () => {
   });
 
   return authenticationAdapter;
+};
+
+export const getStorage = (key = 'wagmi') => {
+  const storage = createStorage({
+    key,
+    storage: {
+      async getItem(name) {
+        return get(name);
+      },
+      async setItem(name, value) {
+        await set(name, value);
+      },
+      async removeItem(name) {
+        await del(name);
+      },
+    },
+  });
+
+  return storage;
 };
