@@ -57,6 +57,7 @@ const useAuthStore = create<AuthState>((set) => ({
 
   logout: () => {
     set({ status: 'unauthenticated' });
+    localStorage.setItem("authStatus", "")
   },
 
   guard: () => {
@@ -78,7 +79,7 @@ const useAuthStore = create<AuthState>((set) => ({
           signature,
         });
 
-        console.log({ valid });
+        console.log({ valid, nonce, visitId });
 
         if (nonce === visitId && valid) {
           set({ status: 'authenticated' });
