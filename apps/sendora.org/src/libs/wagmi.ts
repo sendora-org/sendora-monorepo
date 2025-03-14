@@ -12,7 +12,6 @@ export const getConfig = (chain: Chain, key = 'wagmi') => {
   const config = getDefaultConfig({
     storage: createStorage({
       key: key,
-      storage: localStorage,
     }),
     appName: 'sendora.org',
     projectId: '82de9b28b665d7e644540021561bc212',

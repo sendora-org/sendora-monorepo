@@ -1,5 +1,4 @@
-import Footer from '@/components/footer';
-import Navbar from '@/components/navbar';
+import LayoutDefault from '@/components/layout-default';
 
 export async function generateStaticParams() {
   return [1, 56].map((chainId) => ({
@@ -14,14 +13,8 @@ export default async function Page({
 }) {
   const { slug } = await params;
   return (
-    <div className="relative flex h-screen min-h-dvh w-full flex-col overflow bg-background">
-      <Navbar />
-      <main className="container mx-auto mt-[80px] flex max-w-[1024px] flex-col items-start px-8">
-        <div>My Post: {slug}</div>
-      </main>
-      <div className="mt-[450px] md:mt-[650px]">
-        <Footer />
-      </div>
-    </div>
+    <LayoutDefault>
+      <div>My Post: {slug}</div>
+    </LayoutDefault>
   );
 }
