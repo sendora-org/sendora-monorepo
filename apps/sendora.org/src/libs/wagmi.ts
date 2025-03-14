@@ -51,8 +51,8 @@ export const getAuthAdapter = () => {
     },
     signOut: async () => {
       console.log('signOut');
-      const { logout } = useAuthStore.getState();
-      logout();
+      // const { logout } = useAuthStore.getState();
+      // logout();
     },
   });
 
