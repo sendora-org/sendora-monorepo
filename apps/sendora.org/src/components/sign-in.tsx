@@ -13,71 +13,70 @@ export const SignIn = () => {
       clearInterval(id);
     };
   }, [guard]);
+
+  // if (status === 'authenticated') {
+  //   return <LoginProfile
+  //     address={loginAddress}
+  //     displayName={shortAddress(loginAddress)}
+  //   />
+  // }
   return (
     <>
-      {status === 'authenticated' ? (
-        <LoginProfile
-          address={loginAddress}
-          displayName={shortAddress(loginAddress)}
-        />
-      ) : (
-        <ConnectButton.Custom>
-          {({
-            account,
-            chain,
-            openAccountModal,
-            openChainModal,
-            openConnectModal,
-            authenticationStatus,
-            mounted,
-          }) => {
-            // Note: If your app doesn't use authentication, you
-            // can remove all 'authenticationStatus' checks
-            const ready = mounted && authenticationStatus !== 'loading';
-            const connected =
-              ready &&
-              account &&
-              chain &&
-              (!authenticationStatus ||
-                authenticationStatus === 'authenticated');
-            return (
-              <div
-                {...(!ready && {
-                  'aria-hidden': true,
-                  style: {
-                    opacity: 0,
-                    pointerEvents: 'none',
-                    userSelect: 'none',
-                  },
-                })}
-              >
-                {(() => {
-                  if (!connected) {
-                    return (
-                      <Button onPress={openConnectModal} type="button">
-                        Sign In
-                      </Button>
-                    );
-                  }
-                  if (chain.unsupported) {
-                    return (
-                      <Button onPress={openChainModal} type="button">
-                        Wrong network
-                      </Button>
-                    );
-                  }
+      <ConnectButton.Custom>
+        {({
+          account,
+          chain,
+          openAccountModal,
+          openChainModal,
+          openConnectModal,
+          authenticationStatus,
+          mounted,
+        }) => {
+          // Note: If your app doesn't use authentication, you
+          // can remove all 'authenticationStatus' checks
+          const ready = mounted && authenticationStatus !== 'loading';
+          const connected =
+            ready &&
+            account &&
+            chain &&
+            (!authenticationStatus || authenticationStatus === 'authenticated');
+          return (
+            <div
+              {...(!ready && {
+                'aria-hidden': true,
+                style: {
+                  opacity: 0,
+                  pointerEvents: 'none',
+                  userSelect: 'none',
+                },
+              })}
+            >
+              {(() => {
+                if (!connected) {
                   return (
-                    <LoginProfile
-                      address={account.address}
-                      displayName={account.displayName}
-                    />
+                    <Button onPress={openConnectModal} type="button">
+                      Sign In
+                    </Button>
                   );
-                })()}
-              </div>
-            );
-          }}
-        </ConnectButton.Custom>
-      )}
+                }
+                if (chain.unsupported) {
+                  return (
+                    <Button onPress={openChainModal} type="button">
+                      Wrong network
+                    </Button>
+                  );
+                }
+                return (
+                  <LoginProfile
+                    address={loginAddress}
+                    displayName={shortAddress(loginAddress)}
+                  />
+                );
+              })()}
+            </div>
+          );
+        }}
+      </ConnectButton.Custom>
     </>
   );
 };
