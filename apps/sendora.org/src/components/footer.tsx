@@ -18,10 +18,11 @@ const footerNavigation = {
   }),
   aboutUs: [
     { name: 'Tutorials', href: 'https://docs.sendora.org' },
-    { name: 'X', href: 'https://x.com/sendora_org' },
-    { name: 'Telegram', href: 'https://t.me/+gfEJK481L3FiMjg1' },
-    { name: 'Discord', href: 'https://discord.gg/YQp7fzv2G5' },
+    { name: 'ENS', href: 'https://app.ens.domains/sendora.eth' },
+    { name: 'Twitter', href: 'https://x.com/sendora_org' },
     { name: 'Github', href: 'https://github.com/sendora-org' },
+    { name: 'Discord', href: 'https://discord.gg/YQp7fzv2G5' },
+    { name: 'Telegram', href: 'https://t.me/+gfEJK481L3FiMjg1' },
   ],
   legal: [
     { name: 'Claim', href: '#' },
@@ -46,18 +47,18 @@ const footerNavigation = {
     },
 
     {
-      name: 'ENS',
-      href: 'https://app.ens.domains/sendora.eth',
+      name: 'Discord',
+      href: 'https://discord.gg/YQp7fzv2G5',
       icon: (props: SocialIconProps) => (
-        <Icon {...props} icon="flowbite:profile-card-solid" />
+        <Icon {...props} icon="fontisto:discord" />
       ),
     },
 
     {
-      name: 'Docs',
-      href: 'https://docs.sendora.org/',
+      name: 'Telegram',
+      href: 'https://t.me/+gfEJK481L3FiMjg1',
       icon: (props: SocialIconProps) => (
-        <Icon {...props} icon="material-symbols:docs" />
+        <Icon {...props} icon="fontisto:telegram" />
       ),
     },
   ],
@@ -114,7 +115,7 @@ export default function Component() {
                   href={item.href}
                 >
                   <span className="sr-only">{item.name}</span>
-                  <item.icon aria-hidden="true" className="w-6" />
+                  <item.icon fontSize={48} aria-hidden="true" className="w-8" />
                 </Link>
               ))}
             </div>
