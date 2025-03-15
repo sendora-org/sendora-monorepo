@@ -1,19 +1,17 @@
 'use client';
 import AppScreenshotSkewed from '@/components/app-screenshot-skewed';
 import Footer from '@/components/footer';
+import LayoutDefault from '@/components/layout-default';
 import Navbar from '@/components/navbar';
 import { SIWEProvider } from '@/components/siwe-provider';
 import { Button } from '@heroui/react';
 import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-
 export default function Home() {
   const router = useRouter();
   return (
-    <div className="relative flex h-screen min-h-dvh w-full flex-col overflow bg-background">
-      <Navbar />
-
-      <main className="container mx-auto mt-[80px] flex max-w-[1024px] flex-col items-start px-8">
+    <LayoutDefault>
+      <>
         <section className="z-20 flex flex-col items-start justify-center gap-[18px] sm:gap-6">
           {/* <Button
             className="h-9 overflow-hidden border-1 border-default-100 bg-default-50 px-[18px] py-2 text-small font-normal leading-5 text-default-500"
@@ -107,27 +105,31 @@ export default function Home() {
             </m.div>
           </LazyMotion>
         </section>
-      </main>
-      <LazyMotion features={domAnimation}>
-        <AnimatePresence mode="wait">
-          <m.div
-            animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
-            className="absolute top-[40%] w-full"
-            initial={{ filter: 'blur(16px)', opacity: 0, y: 300 }}
-            transition={{
-              bounce: 0,
-              delay: 0.01 * 10,
-              duration: 0.8 + 0.1 * 8,
-              type: 'spring',
-            }}
-          >
-            <AppScreenshotSkewed className="w-full" />
-          </m.div>
-        </AnimatePresence>
-      </LazyMotion>
-      <div className="mt-[450px] md:mt-[650px]">
-        <Footer />
-      </div>
-    </div>
+        <LazyMotion features={domAnimation}>
+          <AnimatePresence mode="wait">
+            <m.div
+              animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
+              className="absolute top-[40%]"
+              initial={{ filter: 'blur(16px)', opacity: 0, y: 300 }}
+              transition={{
+                bounce: 0,
+                delay: 0.01 * 10,
+                duration: 0.8 + 0.1 * 8,
+                type: 'spring',
+              }}
+            >
+              <AppScreenshotSkewed className="w-full" />
+            </m.div>
+          </AnimatePresence>
+        </LazyMotion>
+      </>
+    </LayoutDefault>
+    // <div className="relative flex h-screen min-h-dvh w-full flex-col overflow bg-background">
+    //   <Navbar />
+
+    //   <div className="mt-[450px] md:mt-[650px]">
+    //     <Footer />
+    //   </div>
+    // </div>
   );
 }

@@ -18,7 +18,7 @@ export default function LayoutDefault({
     <div className="relative flex h-screen min-h-dvh w-full flex-col overflow bg-background">
       <Navbar />
 
-      <main className="container mx-auto mt-[80px] flex max-w-[1024px] flex-col items-start px-8">
+      <main className="container mx-auto mt-[80px] flex max-w-[1280px] flex-col items-start px-8">
         {children}
       </main>
       <div className="mt-[450px] md:mt-[650px]">

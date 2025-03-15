@@ -1,5 +1,6 @@
 'use client';
 
+import { menuItems } from '@/constants/config';
 import { Divider, Link } from '@heroui/react';
 import type { IconProps } from '@iconify/react';
 import { Icon } from '@iconify/react';
@@ -9,30 +10,24 @@ import { SendoraICon } from './social';
 type SocialIconProps = Omit<IconProps, 'icon'>;
 
 const footerNavigation = {
-  services: [
-    // { name: 'Branding', href: '#' },
-    // { name: 'Data Analysis', href: '#' },
-    // { name: 'E-commerce Solutions', href: '#' },
-    // { name: 'Market Research', href: '#' },
-  ],
-  supportOptions: [
-    // { name: 'Pricing Plans', href: '#' },
-    // { name: 'User Guides', href: '#' },
-    // { name: 'Tutorials', href: '#' },
-    // { name: 'Service Status', href: '#' },
-  ],
+  services: menuItems.map((item) => {
+    return {
+      name: item.name,
+      href: item.url,
+    };
+  }),
   aboutUs: [
-    // { name: 'Our Story', href: '#' },
-    // { name: 'Latest News', href: '#' },
-    // { name: 'Career Opportunities', href: '#' },
-    // { name: 'Media Enquiries', href: '#' },
-    // { name: 'Collaborations', href: '#' },
+    { name: 'Tutorials', href: 'https://docs.sendora.org' },
+    { name: 'X', href: 'https://x.com/sendora_org' },
+    { name: 'Telegram', href: 'https://t.me/+gfEJK481L3FiMjg1' },
+    { name: 'Discord', href: 'https://discord.gg/YQp7fzv2G5' },
+    { name: 'Github', href: 'https://github.com/sendora-org' },
   ],
   legal: [
-    // { name: 'Claim', href: '#' },
-    // { name: 'Privacy', href: '#' },
-    // { name: 'Terms', href: '#' },
-    // { name: 'User Agreement', href: '#' },
+    { name: 'Claim', href: '#' },
+    { name: 'Privacy', href: '#' },
+    { name: 'Terms', href: '#' },
+    { name: 'User Agreement', href: '#' },
   ],
   social: [
     {
@@ -94,9 +89,9 @@ export default function Component() {
   );
 
   return (
-    <footer className="flex w-full flex-col container mx-auto    max-w-[1024px] ">
+    <footer className="flex w-full flex-col container mx-auto    max-w-[1280px] ">
       <div className="max-w-7xl px-2 pb-8 pt-16 sm:pt-32 lg:px-6 lg:pt-48">
-        <div className="xl:grid xl:grid-cols-3 xl:gap-8">
+        <div className="xl:grid xl:grid-cols-2 xl:gap-8">
           <div className="space-y-8 md:pr-8">
             <div className="flex items-center justify-start">
               <div className="rounded-full  text-background">
@@ -124,33 +119,28 @@ export default function Component() {
               ))}
             </div>
           </div>
-          {/* <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
-            <div className="md:grid md:grid-cols-2 md:gap-8">
-              <div>
-                {renderList({
-                  title: 'Services',
-                  items: footerNavigation.services,
-                })}
-              </div>
-              <div className="mt-10 md:mt-0">
-                {renderList({
-                  title: 'Support',
-                  items: footerNavigation.supportOptions,
-                })}
-              </div>
+          <div className="mt-8 grid grid-cols-3 md:gap-8   xl:mt-0">
+            <div>
+              {renderList({
+                title: 'Services',
+                items: footerNavigation.services,
+              })}
             </div>
-            <div className="md:grid md:grid-cols-2 md:gap-8">
-              <div>
-                {renderList({
-                  title: 'About Us',
-                  items: footerNavigation.aboutUs,
-                })}
-              </div>
-              <div className="mt-10 md:mt-0">
-                {renderList({ title: 'Legal', items: footerNavigation.legal })}
-              </div>
+
+            <div>
+              {renderList({
+                title: 'About Us',
+                items: footerNavigation.aboutUs,
+              })}
             </div>
-          </div> */}
+
+            <div className="">
+              {renderList({
+                title: 'Legal',
+                items: footerNavigation.legal,
+              })}
+            </div>
+          </div>
         </div>
         <Divider className="mt-16 sm:mt-20 lg:mt-24" />
         <div className="flex flex-wrap justify-between gap-2 pt-8">

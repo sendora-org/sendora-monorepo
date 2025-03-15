@@ -76,39 +76,29 @@ export const menuItems = [
     url: '/native-coins/1',
   },
   {
-    name: 'ERC20s',
-    uri: 'erc20s',
-    url: '/erc20s/1',
+    name: 'ERC-20 Tokens',
+    uri: 'erc20-tokens',
+    url: '/erc20-tokens/1',
   },
-  // {
-  //   name: "NFTs",
-  //   uri: "nfts",
-  //   url: "/nfts/1",
-  // },
-  // {
-  //   name: "Fiats",
-  //   uri: "fiats",
-  //   url: "/fiats/1",
-  // },
+  {
+    name: 'Stablecoins',
+    uri: 'stablecoins',
+    url: '/stablecoins/1',
+  },
+  {
+    name: 'NFT Transfers',
+    uri: 'nft-transfers',
+    url: '/nft-transfers/1',
+  },
+  {
+    name: 'Portfolio',
+    uri: 'portfolio',
+    url: '/portfolio',
+  },
 
-  // {
-  //   name: "Airdrops",
-  //   uri: "airdrops",
-  //   url: "/airdrops/1",
-  // },
-  // {
-  //   name: "Callthis",
-  //   uri: "callthis",
-  //   url: "/callthis/1",
-  // },
-  // {
-  //   name: "4ever",
-  //   uri: "4ever",
-  //   url: "/4ever",
-  // },
-  // {
-  //   name: "Portfolio",
-  //   uri: "portfolio",
-  //   url: "/portfolio/1",
-  // },
+  {
+    name: 'CallThat',
+    uri: 'callthat',
+    url: '/callthat/1',
+  },
 ];

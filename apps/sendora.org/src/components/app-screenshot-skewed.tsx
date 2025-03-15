@@ -479,8 +479,8 @@ const AppScreenshotSkewed = ({ ...props }: ComponentProps<'svg'>) => (
       </clipPath>
       <image
         height="2500"
-        id="image0_3051_12573"
         width="3978"
+        id="image0_3051_12573"
         xlinkHref="/ads/wrapperads3.png"
       />
     </defs>
