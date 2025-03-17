@@ -49,6 +49,11 @@ export default function RootLayout({
         <SIWEProvider>
           <Providers>{children}</Providers>
         </SIWEProvider>
+        <script
+          defer
+          src="https://assets.onedollarstats.com/stonks.js"
+          data-debug="sendora.org"
+        />
       </body>
     </html>
   );
