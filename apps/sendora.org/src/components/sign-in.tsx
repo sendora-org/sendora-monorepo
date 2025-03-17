@@ -63,9 +63,11 @@ export const SignIn = () => {
                 if (!connected) {
                   return (
                     <Button
-                      onPress={openConnectModal}
+                      onPress={() => {
+                        window?.stonks.event('Sign In Button click');
+                        openConnectModal();
+                      }}
                       type="button"
-                      data-s:event="Sign In Button click"
                     >
                       Sign In
                     </Button>
