@@ -64,6 +64,7 @@ export const SignIn = () => {
                   return (
                     <Button
                       onPress={() => {
+                        // @ts-ignore
                         window?.stonks.event('Sign In Button click');
                         openConnectModal();
                       }}
