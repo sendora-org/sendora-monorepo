@@ -62,7 +62,11 @@ export const SignIn = () => {
                 }
                 if (!connected) {
                   return (
-                    <Button onPress={openConnectModal} type="button">
+                    <Button
+                      onPress={openConnectModal}
+                      type="button"
+                      data-s:event="Sign In Button click"
+                    >
                       Sign In
                     </Button>
                   );
