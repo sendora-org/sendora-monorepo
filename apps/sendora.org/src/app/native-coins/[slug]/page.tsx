@@ -1,6 +1,7 @@
 import { TestStep } from '@/components/test-step';
 import { TestStep2 } from '@/components/test-step2';
 
+import AppTitle from '@/components/app-title';
 import H1Title from '@/components/h1-title';
 import H2Title from '@/components/h2-title';
 import H3Title from '@/components/h3-title';
@@ -25,7 +26,7 @@ export default async function Page({
   return (
     <LayoutDefault>
       <>
-        <H1Title>Send ETH to multiple recipients</H1Title>
+        <AppTitle title="Send ETH to multiple recipients" />
         <TestStep />
         <InputNativeCoin />
         <ConnectButton />

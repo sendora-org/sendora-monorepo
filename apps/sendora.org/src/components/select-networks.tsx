@@ -1,3 +1,4 @@
+'use client';
 import { type NetworkInfo, networks } from '@/constants/config';
 import { Avatar, Select, SelectItem } from '@heroui/react';
 import { clsx } from 'clsx';
