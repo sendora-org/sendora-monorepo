@@ -5,6 +5,7 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from '@heroui/react';
+import type { SharedSelection } from '@heroui/react';
 import React from 'react';
 
 export default function App({
@@ -36,7 +37,9 @@ export default function App({
         selectedKeys={selectedKeys}
         selectionMode="single"
         variant="flat"
-        onSelectionChange={setSelectedKeys}
+        onSelectionChange={(value: SharedSelection) => {
+          setSelectedKeys(value as Set<string>);
+        }}
       >
         <DropdownItem key="dot">Dot format : 1,234,567.89</DropdownItem>
         <DropdownItem key="comma">Comma format : 1.234.567,89</DropdownItem>
