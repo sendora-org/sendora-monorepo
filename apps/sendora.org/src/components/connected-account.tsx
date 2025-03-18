@@ -3,5 +3,16 @@ import { useAccount } from 'wagmi';
 
 export default () => {
   const { isConnected } = useAccount();
-  return <>{isConnected && <RainbowConnectButton />}</>;
+  return (
+    <>
+      {isConnected && (
+        <RainbowConnectButton
+          accountStatus={{
+            smallScreen: 'avatar',
+            largeScreen: 'full',
+          }}
+        />
+      )}
+    </>
+  );
 };
