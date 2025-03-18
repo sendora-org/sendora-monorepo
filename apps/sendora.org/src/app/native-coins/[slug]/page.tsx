@@ -7,7 +7,8 @@ import H3Title from '@/components/h3-title';
 import InputNativeCoin from '@/components/input-native-coin';
 import LayoutDefault from '@/components/layout-default';
 import { getVisitorId } from '@/libs/common';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+import ConnectButton from '@/components/connect-button';
 export async function generateStaticParams() {
   return [1, 56].map((chainId) => ({
     slug: chainId.toString(),
@@ -27,6 +28,7 @@ export default async function Page({
         <H1Title>Send ETH to multiple recipients</H1Title>
         <TestStep />
         <InputNativeCoin />
+        <ConnectButton />
       </>
     </LayoutDefault>
   );

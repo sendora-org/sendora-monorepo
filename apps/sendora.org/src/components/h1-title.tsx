@@ -1,7 +1,7 @@
 import type React from 'react';
 export default ({ children }: { children: React.ReactNode }) => {
   return (
-    <h1 className="flex flex-row flex-wrap-reverse items-center gap-2 text-3xl text-foreground-600 font-bold mb-8 ">
+    <h1 className="flex flex-row flex-wrap-reverse items-center gap-2 text-3xl text-foreground-600 font-bold mb-4 sm:mb-8 ">
       {children}
     </h1>
   );

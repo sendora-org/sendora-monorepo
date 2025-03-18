@@ -11,7 +11,7 @@ import { SIWEProvider } from './siwe-provider';
 
 export default function LayoutDefault({
   children,
-  mainClasses = 'mt-[40px]',
+  mainClasses = 'mt-[30px] sm:mt-[40px]',
 }: {
   children: React.ReactNode;
   mainClasses?: string;

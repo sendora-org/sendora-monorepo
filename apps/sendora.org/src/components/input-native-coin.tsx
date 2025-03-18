@@ -25,7 +25,7 @@ export default () => {
   };
   const [selectedKeys, setSelectedKeys] = useState(new Set(['dot']));
   return (
-    <div className="w-full relative">
+    <div className="w-full relative mb-12">
       <div className="flex w-full items-center justify-between mb-2">
         <H3Title>Recipients and amounts</H3Title>
         <ShowSample example={example} />
