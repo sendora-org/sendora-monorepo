@@ -18,7 +18,7 @@ export default () => {
   const onChange = (val: string) => {
     setValue(val);
   };
-  const [selectedKeys, setSelectedKeys] = useState(new Set(['dot']));
+  const [selectedKeys, setSelectedKeys] = useState(new Set(['USA']));
   return (
     <div className="w-full relative mb-12">
       <div className="flex w-full items-center justify-between mb-2">
