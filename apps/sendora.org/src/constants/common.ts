@@ -1,4 +1,4 @@
-export type NFType = 'USA' | 'DE' | 'FR' | 'CH' | 'DOT' | 'COMMA';
+export type NFType = 'USA' | 'DE' | 'FR' | 'CH'; //| 'DOT' | 'COMMA';
 export type NFValue = {
   decimalSeparator: '.' | ',';
   thousandSeparator: '' | '.' | ',' | `'` | ' ';
@@ -35,19 +35,19 @@ export const numberFormats: Record<NFType, NFValue> = {
     useGrouping: true,
   },
 
-  DOT: {
-    decimalSeparator: '.',
-    thousandSeparator: '',
-    code: 'en-US',
-    useGrouping: false,
-  },
+  // DOT: {
+  //   decimalSeparator: '.',
+  //   thousandSeparator: '',
+  //   code: 'en-US',
+  //   useGrouping: false,
+  // },
 
-  COMMA: {
-    decimalSeparator: ',',
-    thousandSeparator: '',
-    code: 'de-DE',
-    useGrouping: false,
-  },
+  // COMMA: {
+  //   decimalSeparator: ',',
+  //   thousandSeparator: '',
+  //   code: 'de-DE',
+  //   useGrouping: false,
+  // },
 };
 
 export const native_coin_input_example = [
