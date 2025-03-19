@@ -55,7 +55,7 @@ export default function App({
         <DropdownItem key="USA">USA : 1,234,567.89</DropdownItem>
         <DropdownItem key="DE">Germany: 1.234.567,89</DropdownItem>
         <DropdownItem key="FR">France: 1 234 567,89</DropdownItem>
-        <DropdownItem key="CH">Switzerland: 1'234'567,89 </DropdownItem>
+        <DropdownItem key="CH">Switzerland: 1'234'567.89 </DropdownItem>
         {/* <DropdownItem key="DOT">Dot: 1234567.89</DropdownItem>
         <DropdownItem key="COMMA">Comma: 1234567,89</DropdownItem> */}
       </DropdownMenu>
