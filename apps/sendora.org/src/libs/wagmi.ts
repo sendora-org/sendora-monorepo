@@ -21,7 +21,7 @@ export const getConfig = (chain: Chain, key = 'CONN') => {
     appUrl: 'https://sendora.org',
     appIcon: 'https://sendora.org/logo.png',
   });
-  console.log('correct chain => ', chain);
+
   return config;
 };
 
@@ -42,18 +42,12 @@ export const getAuthAdapter = () => {
       });
     },
     verify: async ({ message, signature }) => {
-      console.log('verify', { message, signature });
-
       const { login } = useAuthStore.getState();
       login(message, signature as Hex);
 
       return true;
     },
-    signOut: async () => {
-      console.log('signOut');
-      // const { logout } = useAuthStore.getState();
-      // logout();
-    },
+    signOut: async () => {},
   });
 
   return authenticationAdapter;

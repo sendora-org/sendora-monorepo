@@ -22,8 +22,6 @@ export default function App({
     [selectedKeys],
   );
 
-  console.log(selectedKeys, selectedKeys.values().next().value);
-
   return (
     <Dropdown>
       <DropdownTrigger>

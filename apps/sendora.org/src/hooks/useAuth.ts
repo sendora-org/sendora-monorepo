@@ -26,7 +26,7 @@ const getInitialAuthState = (): AuthStatus => {
         return 'authenticated';
       }
     } catch (e) {
-      console.log('getInitialAuthState =>', e);
+      // console.log('getInitialAuthState =>', e);
     }
   }
 
@@ -43,7 +43,7 @@ const getInitialAuthAddress = (): Hex => {
         return address as Hex;
       }
     } catch (e) {
-      console.log('getInitialAuthAddress =>', e);
+      // console.log('getInitialAuthAddress =>', e);
     }
   }
 
@@ -83,7 +83,6 @@ const useAuthStore = create<AuthState>((set) => ({
     });
     return setInterval(async () => {
       try {
-        console.log('guard');
         const result = localStorage.getItem('authStatus');
         const { address, message, signature } = JSON.parse(result ?? '');
         const { nonce } = Siwe.parseMessage(message);
@@ -94,12 +93,6 @@ const useAuthStore = create<AuthState>((set) => ({
           message: message,
           signature,
         });
-
-        console.log({ nonce });
-
-        console.log({ visitId });
-
-        console.log({ valid, nonce, visitId });
 
         if (nonce === visitId && valid) {
           set({ status: 'authenticated', loginAddress: address });
