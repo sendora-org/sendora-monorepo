@@ -9,12 +9,7 @@ import { useFullscreen } from '@mantine/hooks';
 import CodeMirror from '@uiw/react-codemirror';
 import { useState } from 'react';
 import { useMediaQuery } from 'usehooks-ts';
-const example = `0x1345fc0db80b4e3d872a3770ddab52ef16f2bf17,0.001
-0x4395780d9062D76c618c7C62659Cc31F0d20214e,0.002
-999.arb,0.003
-123456.bnb,0.004
-vitalik.eth,0.005
-sendora.base.eth,0.006`;
+import { native_coin_input_example } from '@/constants/common';
 
 export default () => {
   const { ref, toggle, fullscreen } = useFullscreen();
@@ -28,7 +23,7 @@ export default () => {
     <div className="w-full relative mb-12">
       <div className="flex w-full items-center justify-between mb-2">
         <H3Title>Recipients and amounts</H3Title>
-        <ShowSample example={example} />
+
       </div>
 
       <div ref={ref}>
@@ -46,6 +41,7 @@ export default () => {
                       selectedKeys={selectedKeys2}
                       setSelectedKeys={setSelectedKeys2}
                     /> */}
+          <ShowSample tabs={native_coin_input_example} />
           <DecimalSeparatorSwitch
             selectedKeys={selectedKeys}
             setSelectedKeys={setSelectedKeys}

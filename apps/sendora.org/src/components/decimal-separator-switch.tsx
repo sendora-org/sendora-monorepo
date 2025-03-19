@@ -39,8 +39,18 @@ export default function App({
           setSelectedKeys(value as Set<string>);
         }}
       >
-        <DropdownItem key="dot">Dot format : 1,234,567.89</DropdownItem>
-        <DropdownItem key="comma">Comma format : 1.234.567,89</DropdownItem>
+        {/* // USA  1,234,567.89
+            // South Korea 1234567.89
+            // Germany 1.234.567,89
+            // France  1 234 567,89
+            // Switzerland 1'234'567,89 
+        */}
+        <DropdownItem key="USA">USA : 1,234,567.89</DropdownItem>
+        <DropdownItem key="DE">Germany: 1.234.567,89</DropdownItem>
+        <DropdownItem key="FR">France: 1 234 567,89</DropdownItem>
+        <DropdownItem key="CH">Switzerland: 1'234'567,89 </DropdownItem>
+        <DropdownItem key="DOT">Dot: 1234567.89</DropdownItem>
+        <DropdownItem key="COMMA">Comma: 1234567,89</DropdownItem>
       </DropdownMenu>
     </Dropdown>
   );

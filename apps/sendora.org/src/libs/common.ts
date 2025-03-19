@@ -141,6 +141,12 @@ export function formatLocalizedNumber(
     : integerPart;
 }
 
+// USA  1,234,567.89
+// South Korea 1234567.89
+// Germany 1.234.567,89
+// France  1 234 567,89
+// Switzerland 1'234'567,89
+
 export function parseLocalizedNumber(
   input: string,
   _decimalSeparator: '.' | ',',
