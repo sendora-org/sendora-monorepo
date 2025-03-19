@@ -1,3 +1,4 @@
+import InputExchangeRate from '@/components/input-exchange-rate';
 import { TestStep } from '@/components/test-step';
 import { TestStep2 } from '@/components/test-step2';
 
@@ -35,6 +36,8 @@ export default async function Page({
       />
       <TestStep />
       <InputNativeCoin />
+
+      <InputExchangeRate symbol={network?.symbol} />
       <ConnectButton />
     </LayoutDefault>
   );
