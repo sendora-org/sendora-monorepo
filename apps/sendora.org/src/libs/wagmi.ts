@@ -3,10 +3,12 @@ import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { createAuthenticationAdapter } from '@rainbow-me/rainbowkit';
 // Using IndexedDB via https://github.com/jakearchibald/idb-keyval
 import { del, get, set } from 'idb-keyval';
+import { defineChain } from 'viem';
 import { createSiweMessage } from 'viem/siwe';
 import { createStorage } from 'wagmi';
 import type { Chain } from 'wagmi/chains';
 
+import type { NetworkInfo } from '@/constants/config';
 import type { Hex } from 'viem';
 import { getVisitorId } from './common';
 
@@ -70,4 +72,26 @@ export const getStorage = (key = 'CONN') => {
   });
 
   return storage;
+};
+
+export const composeViemChain = (network: NetworkInfo) => {
+  return defineChain({
+    id: Number(network.chainId),
+    name: network.name,
+    nativeCurrency: {
+      decimals: 18,
+      name: network.name,
+      symbol: network.symbol,
+    },
+    rpcUrls: {
+      default: { http: [network.rpcURL] },
+    },
+    blockExplorers: {
+      default: {
+        name: 'Evmos Block Explorer',
+        url: network.explorerURL,
+      },
+    },
+    iconUrl: network.avatar,
+  });
 };

@@ -4,6 +4,7 @@ import useAuthStore from '@/hooks/useAuth';
 import { getAuthAdapter } from '@/libs/wagmi';
 import { getConfig } from '@/libs/wagmi';
 import {
+  type Chain,
   RainbowKitAuthenticationProvider,
   RainbowKitProvider,
   darkTheme,
@@ -17,10 +18,13 @@ import { base } from 'wagmi/chains';
 
 const queryClient = new QueryClient();
 
-export const SIWEProvider = ({ children }: { children: React.ReactNode }) => {
+export const SIWEProvider = ({
+  children,
+  chain,
+}: { children: React.ReactNode; chain: Chain }) => {
   const { status } = useAuthStore();
   return (
-    <WagmiProvider config={getConfig(base, 'SIWE')}>
+    <WagmiProvider config={getConfig(chain, 'SIWE')}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitAuthenticationProvider
           enabled={true}

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import { SIWEProvider } from '@/components/siwe-provider';
+
 import { Providers } from './providers';
 
 const geistSans = Geist({
@@ -46,9 +46,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SIWEProvider>
-          <Providers>{children}</Providers>
-        </SIWEProvider>
+        <Providers>{children}</Providers>
+
         <script
           defer
           src="https://assets.onedollarstats.com/stonks.js"
