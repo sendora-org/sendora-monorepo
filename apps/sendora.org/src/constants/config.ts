@@ -102,3 +102,10 @@ export const menuItems = [
     url: '/callthat/1',
   },
 ];
+
+export function findNetwork<T extends keyof NetworkInfo>(
+  key: T,
+  value: NetworkInfo[T],
+): NetworkInfo | undefined {
+  return networks.find((network) => network[key] === value);
+}

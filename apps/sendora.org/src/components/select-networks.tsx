@@ -2,11 +2,12 @@
 import { type NetworkInfo, networks } from '@/constants/config';
 import { Avatar, Select, SelectItem } from '@heroui/react';
 import { clsx } from 'clsx';
+
 export default function SelectNetworks({
   classes = '',
-  defaultSelectedKeys = [1],
-  navigate = (e: string) => {
-    console.log(e);
+  defaultSelectedKeys = ['1'],
+  navigate = (chainId: string) => {
+    console.log(chainId);
   },
 }) {
   return (
