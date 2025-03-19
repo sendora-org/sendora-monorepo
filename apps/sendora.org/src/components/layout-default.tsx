@@ -18,7 +18,7 @@ export default function LayoutDefault({
 }: {
   children: React.ReactNode;
   mainClasses?: string;
-  chain: Chain;
+  chain?: Chain;
 }) {
   getVisitorId();
   return (
