@@ -290,3 +290,19 @@ export function getDecimalsScientific(num: number): number {
 
   return getDecimals(num);
 }
+
+export function runWorker(worker: Worker, value: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    worker.postMessage(value);
+
+    worker.onmessage = (event: MessageEvent<string>) => {
+      resolve(event.data);
+      worker.terminate();
+    };
+
+    worker.onerror = (error) => {
+      reject(error);
+      worker.terminate();
+    };
+  });
+}
