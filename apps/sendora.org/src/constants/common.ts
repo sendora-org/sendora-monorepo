@@ -29,7 +29,7 @@ export const numberFormats: Record<NFType, NFValue> = {
   },
 
   CH: {
-    decimalSeparator: ',',
+    decimalSeparator: '.',
     thousandSeparator: `'`,
     code: 'de-CH',
     useGrouping: true,
