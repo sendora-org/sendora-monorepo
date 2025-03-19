@@ -29,6 +29,10 @@ export default () => {
 
   const [selectedKeys, setSelectedKeys] = useState(new Set(['USA']));
 
+  const format = Array.from(selectedKeys).join('');
+  const { decimalSeparator, thousandSeparator, code, useGrouping } =
+    numberFormats[format as NFType];
+
   const updateAmount = (
     isRandom = false,
     fixedValue = 0.01,
@@ -36,9 +40,6 @@ export default () => {
     maxValue = 10,
     decimals = 2,
   ) => {
-    const format = Array.from(selectedKeys).join('');
-    const { decimalSeparator, thousandSeparator } =
-      numberFormats[format as NFType];
     if (!isRandom) {
       const decimals2 = getDecimalsScientific(fixedValue);
       console.log({ decimals2 });
@@ -78,7 +79,11 @@ export default () => {
 
       <div className="absolute -bottom-10 right-0">
         <ButtonGroup className="gap-1">
-          <AddAmount updateAmount={updateAmount} />
+          <AddAmount
+            updateAmount={updateAmount}
+            code={code}
+            useGrouping={useGrouping}
+          />
           {/* <DuplicateAddress
                       selectedKeys={selectedKeys2}
                       setSelectedKeys={setSelectedKeys2}

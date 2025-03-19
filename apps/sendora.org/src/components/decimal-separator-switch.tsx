@@ -1,3 +1,5 @@
+import { type NFType, numberFormats } from '@/constants/common';
+import { useLocale } from '@/hooks/useLocale';
 import {
   Button,
   Dropdown,
@@ -7,7 +9,6 @@ import {
 } from '@heroui/react';
 import type { SharedSelection } from '@heroui/react';
 import React from 'react';
-
 export default function App({
   selectedKeys,
   setSelectedKeys,
@@ -17,6 +18,7 @@ export default function App({
 }) {
   // const [] = React.useState(new Set(["dot"]));
 
+  const { setLocale } = useLocale();
   const selectedValue = React.useMemo(
     () => Array.from(selectedKeys).join(', ').replace(/_/g, ''),
     [selectedKeys],
@@ -37,6 +39,11 @@ export default function App({
         variant="flat"
         onSelectionChange={(value: SharedSelection) => {
           setSelectedKeys(value as Set<string>);
+
+          const format = Array.from(value).join('');
+          const { decimalSeparator, thousandSeparator, code, useGrouping } =
+            numberFormats[format as NFType];
+          setLocale(code);
         }}
       >
         {/* // USA  1,234,567.89

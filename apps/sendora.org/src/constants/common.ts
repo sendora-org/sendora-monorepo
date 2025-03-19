@@ -2,37 +2,51 @@ export type NFType = 'USA' | 'DE' | 'FR' | 'CH' | 'DOT' | 'COMMA';
 export type NFValue = {
   decimalSeparator: '.' | ',';
   thousandSeparator: '' | '.' | ',' | `'` | ' ';
+  code: 'en-US' | 'de-DE' | 'fr-FR' | 'de-CH';
+  useGrouping: boolean;
 };
 
 export const numberFormats: Record<NFType, NFValue> = {
   USA: {
     decimalSeparator: '.',
     thousandSeparator: ',',
+    code: 'en-US',
+    useGrouping: true,
   },
 
   DE: {
     decimalSeparator: ',',
     thousandSeparator: '.',
+    code: 'de-DE',
+    useGrouping: true,
   },
 
   FR: {
     decimalSeparator: ',',
     thousandSeparator: ' ',
+    code: 'fr-FR',
+    useGrouping: true,
   },
 
   CH: {
     decimalSeparator: ',',
     thousandSeparator: `'`,
+    code: 'de-CH',
+    useGrouping: true,
   },
 
   DOT: {
     decimalSeparator: '.',
     thousandSeparator: '',
+    code: 'en-US',
+    useGrouping: false,
   },
 
   COMMA: {
     decimalSeparator: ',',
     thousandSeparator: '',
+    code: 'de-DE',
+    useGrouping: false,
   },
 };
 

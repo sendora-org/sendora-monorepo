@@ -1,3 +1,4 @@
+import type { NFValue } from '@/constants/common';
 import {
   Button,
   Modal,
@@ -12,6 +13,8 @@ import { useState } from 'react';
 
 export default function AddAmount({
   updateAmount,
+  code,
+  useGrouping,
 }: {
   updateAmount: (
     isRandom: boolean,
@@ -20,6 +23,8 @@ export default function AddAmount({
     maxValue: number,
     decimals: number,
   ) => void;
+  useGrouping: boolean;
+  code: NFValue['code'];
 }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -54,6 +59,7 @@ export default function AddAmount({
                 {!isRandom && (
                   <NumberInput
                     formatOptions={{
+                      useGrouping: useGrouping,
                       minimumFractionDigits: 0,
                       maximumFractionDigits: 20,
                     }}
@@ -74,6 +80,7 @@ export default function AddAmount({
                   <div className="flex flex-col gap-2">
                     <NumberInput
                       formatOptions={{
+                        useGrouping: useGrouping,
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 20,
                       }}
@@ -87,6 +94,7 @@ export default function AddAmount({
                     />
                     <NumberInput
                       formatOptions={{
+                        useGrouping: useGrouping,
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 20,
                       }}
@@ -101,7 +109,7 @@ export default function AddAmount({
                     <NumberInput
                       formatOptions={{
                         minimumFractionDigits: 0,
-                        maximumFractionDigits: 20,
+                        maximumFractionDigits: 0,
                       }}
                       fullWidth
                       isRequired
