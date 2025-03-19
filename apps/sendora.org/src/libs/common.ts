@@ -266,7 +266,7 @@ export function getRandomNumber(
 }
 
 export function splitText(text: string): string[] {
-  return text.split(/[\s,|.|，|-]+/).filter((word) => word.length > 0);
+  return text.split(/[\s,|，|-]+/).filter((word) => word.length > 0);
 }
 
 function getDecimals(num: number): number {
