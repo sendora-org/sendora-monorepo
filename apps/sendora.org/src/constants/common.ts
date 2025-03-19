@@ -1,3 +1,41 @@
+export type NFType = 'USA' | 'DE' | 'FR' | 'CH' | 'DOT' | 'COMMA';
+export type NFValue = {
+  decimalSeparator: '.' | ',';
+  thousandSeparator: '' | '.' | ',' | `'` | ' ';
+};
+
+export const numberFormats: Record<NFType, NFValue> = {
+  USA: {
+    decimalSeparator: '.',
+    thousandSeparator: ',',
+  },
+
+  DE: {
+    decimalSeparator: ',',
+    thousandSeparator: '.',
+  },
+
+  FR: {
+    decimalSeparator: ',',
+    thousandSeparator: ' ',
+  },
+
+  CH: {
+    decimalSeparator: ',',
+    thousandSeparator: `'`,
+  },
+
+  DOT: {
+    decimalSeparator: '.',
+    thousandSeparator: '',
+  },
+
+  COMMA: {
+    decimalSeparator: ',',
+    thousandSeparator: '',
+  },
+};
+
 export const native_coin_input_example = [
   {
     id: 'USA',

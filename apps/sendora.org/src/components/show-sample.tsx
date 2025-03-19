@@ -35,7 +35,7 @@ export default function App({
               <ModalBody>
                 <Tabs className="px-4" aria-label="Dynamic tabs" items={tabs}>
                   {(item) => (
-                    <Tab className='py-1' key={item.id} title={item.label}>
+                    <Tab className="py-1" key={item.id} title={item.label}>
                       <CodeMirror
                         // className="rounded-lg"
                         value={item.content}
