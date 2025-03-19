@@ -91,7 +91,7 @@ export default ({ symbol = 'ETH' }: { symbol: string }) => {
             </div>
           }
           startContent={
-            <div className="pointer-events-none flex w-24  items-center">
+            <div className="pointer-events-none flex w-32  items-center">
               <span className="text-default-400 text-small">1 {symbol} = </span>
             </div>
           }
