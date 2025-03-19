@@ -1,4 +1,8 @@
 import LayoutDefault from '@/components/layout-default';
+import {
+  formatLocalizedNumberWithSmallNumbers,
+  formatSmallNumber,
+} from '@/libs/common';
 
 export async function generateStaticParams() {
   return [1, 56].map((chainId) => ({
@@ -12,6 +16,7 @@ export default async function Page({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+
   return (
     <LayoutDefault>
       <div>My Post: {slug}</div>
