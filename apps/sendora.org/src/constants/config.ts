@@ -97,7 +97,7 @@ export const menuItems = [
   },
 
   {
-    name: 'CallThat',
+    name: 'Callthat',
     uri: 'callthat',
     url: '/callthat/1',
   },

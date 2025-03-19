@@ -1,5 +1,5 @@
+import H1Title from '@/components/h1-title';
 import LayoutDefault from '@/components/layout-default';
-
 export default async function Page({
   params,
 }: {
@@ -8,7 +8,7 @@ export default async function Page({
   const { slug } = await params;
   return (
     <LayoutDefault>
-      <div>My Post: {slug}</div>
+      <H1Title>Coming soon</H1Title>
     </LayoutDefault>
   );
 }
