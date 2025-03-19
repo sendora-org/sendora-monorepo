@@ -19,7 +19,7 @@ export default async function Page({
   const { slug } = await params;
 
   return (
-    <LayoutDefault>
+    <LayoutDefault uri="callthat">
       <H1Title>Coming soon</H1Title>
     </LayoutDefault>
   );

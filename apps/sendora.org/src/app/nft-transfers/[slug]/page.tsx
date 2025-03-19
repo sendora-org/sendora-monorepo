@@ -13,7 +13,7 @@ export default async function Page({
 }) {
   const { slug } = await params;
   return (
-    <LayoutDefault>
+    <LayoutDefault uri="nft-transfers">
       <H1Title>Coming soon</H1Title>
     </LayoutDefault>
   );

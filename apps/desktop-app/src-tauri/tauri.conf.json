@@ -6,8 +6,8 @@
   "build": {
     "beforeDevCommand": "",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "pnpm run build",
-    "frontendDist": "../../sendora.org/dist"
+    "beforeBuildCommand": "",
+    "frontendDist": "../../sendora.org/out"
   },
   "app": {
     "windows": [

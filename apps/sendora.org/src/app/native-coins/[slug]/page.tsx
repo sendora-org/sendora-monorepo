@@ -29,7 +29,7 @@ export default async function Page({
   const network = findNetwork('chainId', slug) ?? networks[0];
 
   return (
-    <LayoutDefault chain={composeViemChain(network)}>
+    <LayoutDefault uri="native-coins" chain={composeViemChain(network)}>
       <AppTitle
         title={`Send ${network?.symbol} to multiple recipients`}
         chainId={slug}

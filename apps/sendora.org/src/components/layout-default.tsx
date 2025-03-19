@@ -15,16 +15,17 @@ export default function LayoutDefault({
   children,
   mainClasses = 'mt-[30px] sm:mt-[40px]',
   chain = base,
+  uri,
 }: {
   children: React.ReactNode;
   mainClasses?: string;
   chain?: Chain;
+  uri?: string;
 }) {
-  getVisitorId();
   return (
     <SIWEProvider chain={chain}>
       <div className="relative flex h-screen min-h-dvh w-full flex-col overflow bg-background">
-        <Navbar />
+        <Navbar uri={uri} />
 
         <main
           className={clsx(
