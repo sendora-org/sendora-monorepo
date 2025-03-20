@@ -104,13 +104,6 @@ export default function Component() {
             </div>
 
             <p className="text-small text-default-500">
-              <Link
-                isExternal
-                showAnchorIcon
-                href="https://dexscreener.com/base/0xb7e943C2582f76Ef220d081468CeC97ccdaDc3Ee"
-              >
-                $SNDRA rises!
-              </Link>{' '}
               🚀 Building the best tool for Web3!
             </p>
             <div className="flex space-x-6">

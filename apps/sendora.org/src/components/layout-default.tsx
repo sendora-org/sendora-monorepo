@@ -14,11 +14,13 @@ import { SIWEProvider } from './siwe-provider';
 export default function LayoutDefault({
   children,
   mainClasses = 'mt-[30px] sm:mt-[40px]',
+  footClasess = 'mt-[150px] md:mt-[200px]',
   chain = base,
   uri,
 }: {
   children: React.ReactNode;
   mainClasses?: string;
+  footClasess?: string;
   chain?: Chain;
   uri?: string;
 }) {
@@ -29,13 +31,13 @@ export default function LayoutDefault({
 
         <main
           className={clsx(
-            'container mx-auto flex max-w-[1280px] flex-col items-start px-8',
+            'container mx-auto flex max-w-[1280px] flex-col items-start px-2 sm:px-8',
             mainClasses,
           )}
         >
           {children}
         </main>
-        <div className="mt-[450px] md:mt-[650px]">
+        <div className={clsx('', footClasess)}>
           <Footer />
         </div>
       </div>

@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 export default function Home() {
   const router = useRouter();
   return (
-    <LayoutDefault>
+    <LayoutDefault footClasess="mt-[350px] md:mt-[650px]">
       <>
         <section className="z-20 flex flex-col items-start justify-center gap-[18px] sm:gap-6">
           {/* <Button
@@ -109,7 +109,7 @@ export default function Home() {
           <AnimatePresence mode="wait">
             <m.div
               animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
-              className="absolute top-[40%]"
+              className="absolute top-[20%] sm:top-[40%]"
               initial={{ filter: 'blur(16px)', opacity: 0, y: 300 }}
               transition={{
                 bounce: 0,

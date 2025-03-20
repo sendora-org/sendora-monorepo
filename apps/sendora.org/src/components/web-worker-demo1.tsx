@@ -15,6 +15,8 @@ export default () => {
           worker.postMessage(num);
           worker.onmessage = (event: MessageEvent<number>) => {
             console.log(` result=> ${event.data}`);
+
+            alert(event.data);
           };
         }}
       >
@@ -31,6 +33,7 @@ export default () => {
           worker.postMessage(value);
           worker.onmessage = (event: MessageEvent<string>) => {
             console.log(` result=> ${event.data}`);
+            alert(event.data);
           };
         }}
       >
@@ -46,6 +49,7 @@ export default () => {
           );
           const result = await runWorker(worker, value);
           console.log({ result });
+          alert(result);
         }}
       >
         Calc keccak256 2
