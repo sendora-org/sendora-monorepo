@@ -1,8 +1,10 @@
+import { findNetwork, networks } from '@/constants/config';
 import { getVisitorId } from '@/libs/common';
+import { composeViemChain } from '@/libs/wagmi';
 import { Siwe } from 'ox';
 import type { Hex } from 'viem';
 import { http, createPublicClient, createWalletClient, custom } from 'viem';
-import { base } from 'viem/chains';
+import { base, mainnet } from 'viem/chains';
 import { create } from 'zustand';
 
 type AuthStatus = 'unauthenticated' | 'loading' | 'authenticated';
@@ -77,16 +79,20 @@ const useAuthStore = create<AuthState>((set) => ({
   },
 
   guard: () => {
-    const publicClient = createPublicClient({
-      chain: base,
-      transport: http(),
-    });
     return setInterval(async () => {
       try {
         const result = localStorage.getItem('authStatus');
         const { address, message, signature } = JSON.parse(result ?? '');
-        const { nonce } = Siwe.parseMessage(message);
+        const { nonce, chainId } = Siwe.parseMessage(message);
+
         const visitId = await getVisitorId();
+        console.log('meta', { nonce, visitId });
+
+        const network = findNetwork('chainId', String(chainId)) ?? networks[0];
+        const publicClient = createPublicClient({
+          chain: composeViemChain(network),
+          transport: http(),
+        });
 
         const valid = await publicClient.verifyMessage({
           address: address,
@@ -95,15 +101,17 @@ const useAuthStore = create<AuthState>((set) => ({
         });
 
         if (nonce === visitId && valid) {
-          set({ status: 'authenticated', loginAddress: address });
+          console.log('ooookk');
+          // set({ status: 'authenticated', loginAddress: address });
         } else {
+          console.log('failedddddd', { nonce, visitId, valid });
           set({ status: 'unauthenticated' });
         }
       } catch (error) {
         console.error('❌ guard error:', error);
         set({ status: 'unauthenticated' });
       }
-    }, 30 * 1000);
+    }, 5 * 1000);
   },
 }));
 
