@@ -19,6 +19,7 @@ export default function UploadAction({
   return (
     <div className="flex sm:flex-row flex-col gap-2">
       <Select
+        isRequired
         className="w-full"
         label="Recipient Column"
         placeholder="Select an column"
