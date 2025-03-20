@@ -1,7 +1,7 @@
 {
   "name": "sendora.org",
   "short_name": "SENDORA",
-  "description":"🚀 Building the best tool for Web3!",
+  "description": "🚀 Building the best tool for Web3!",
   "start_url": "/native-coins/1",
   "icons": [
     {

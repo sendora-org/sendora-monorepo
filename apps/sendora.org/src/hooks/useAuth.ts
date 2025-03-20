@@ -79,39 +79,43 @@ const useAuthStore = create<AuthState>((set) => ({
   },
 
   guard: () => {
-    return setInterval(async () => {
-      try {
-        const result = localStorage.getItem('authStatus');
-        const { address, message, signature } = JSON.parse(result ?? '');
-        const { nonce, chainId } = Siwe.parseMessage(message);
+    return setInterval(
+      async () => {
+        try {
+          const result = localStorage.getItem('authStatus');
+          const { address, message, signature } = JSON.parse(result ?? '');
+          const { nonce, chainId } = Siwe.parseMessage(message);
 
-        const visitId = await getVisitorId();
-        console.log('meta', { nonce, visitId });
+          const visitId = await getVisitorId();
+          console.log('meta', { nonce, visitId });
 
-        const network = findNetwork('chainId', String(chainId)) ?? networks[0];
-        const publicClient = createPublicClient({
-          chain: composeViemChain(network),
-          transport: http(),
-        });
+          const network =
+            findNetwork('chainId', String(chainId)) ?? networks[0];
+          const publicClient = createPublicClient({
+            chain: composeViemChain(network),
+            transport: http(),
+          });
 
-        const valid = await publicClient.verifyMessage({
-          address: address,
-          message: message,
-          signature,
-        });
+          const valid = await publicClient.verifyMessage({
+            address: address,
+            message: message,
+            signature,
+          });
 
-        if (nonce === visitId && valid) {
-          console.log('ooookk');
-          // set({ status: 'authenticated', loginAddress: address });
-        } else {
-          console.log('failedddddd', { nonce, visitId, valid });
+          if (nonce === visitId && valid) {
+            console.log('ooookk');
+            // set({ status: 'authenticated', loginAddress: address });
+          } else {
+            console.log('failedddddd', { nonce, visitId, valid });
+            set({ status: 'unauthenticated' });
+          }
+        } catch (error) {
+          console.error('❌ guard error:', error);
           set({ status: 'unauthenticated' });
         }
-      } catch (error) {
-        console.error('❌ guard error:', error);
-        set({ status: 'unauthenticated' });
-      }
-    }, 5 * 1000);
+      },
+      10 * 60 * 1000,
+    );
   },
 }));
 
