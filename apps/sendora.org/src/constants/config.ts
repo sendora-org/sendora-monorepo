@@ -85,11 +85,11 @@ export const menuItems = [
     uri: 'stablecoins',
     url: '/stablecoins/1',
   },
-  {
-    name: 'NFT Transfers',
-    uri: 'nft-transfers',
-    url: '/nft-transfers/1',
-  },
+  // {
+  //   name: 'NFT Transfers',
+  //   uri: 'nft-transfers',
+  //   url: '/nft-transfers/1',
+  // },
   {
     name: 'Portfolio',
     uri: 'portfolio',
