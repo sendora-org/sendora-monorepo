@@ -75,48 +75,6 @@ export default function UploadSpreadsheet() {
                     spreadsheetBuffer={spreadsheetBuffer}
                   />
                 )}
-
-                {/* {tableData.columns?.length >= 1 && (
-                  <>
-                    {value.size > 0 && (
-                      <div className="flex flex-wrap gap-4 items-center">
-                        <Button
-                          onPress={() => {
-                            if (value2.size > 0) {
-                              const to = value.values().next().value!;
-                              const amount = value2.values().next().value!;
-                              console.log({ to, amount });
-                              const data = tableData.rows
-                                .map((row) => {
-                                  return `${row[to] ?? ''},${
-                                    row[amount] ?? ''
-                                  }`;
-                                })
-                                .join('\n');
-                              console.log(data);
-                              updateCM(data);
-                              onClose();
-                            } else {
-                              const to = value.values().next().value!;
-                              const data = tableData.rows
-                                .map((row) => {
-                                  return `${row[to] ?? ''}`;
-                                })
-                                .join('\n');
-                              console.log(data);
-                              updateCM(data);
-                              onClose();
-                            }
-                          }}
-                          className="bg-gradient-to-tr from-purple-600 to-fuchica-600 text-[#f7cf5294] shadow-lg"
-                          fullWidth
-                        >
-                          Continue
-                        </Button>
-                      </div>
-                    )}
-                  </>
-                )} */}
               </ModalBody>
             </>
           )}
