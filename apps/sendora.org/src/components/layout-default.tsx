@@ -31,7 +31,7 @@ export default function LayoutDefault({
 
         <main
           className={clsx(
-            'container mx-auto flex max-w-[1280px] flex-col items-start px-2 sm:px-8',
+            'container mx-auto flex max-w-[1280px] flex-col items-start px-2 sm:px-6',
             mainClasses,
           )}
         >
