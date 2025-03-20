@@ -88,7 +88,9 @@ export default () => {
                       selectedKeys={selectedKeys2}
                       setSelectedKeys={setSelectedKeys2}
                     /> */}
-          <ShowSample tabs={native_coin_input_example} />
+          <ShowSample
+            example={native_coin_input_example[format as NFType].content ?? ''}
+          />
           <DecimalSeparatorSwitch
             selectedKeys={selectedKeys}
             setSelectedKeys={setSelectedKeys}
