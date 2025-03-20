@@ -4,6 +4,8 @@ import H3Title from '@/components/h3-title';
 import ShowSample from '@/components/show-sample';
 import { native_coin_input_example } from '@/constants/common';
 import { type NFType, numberFormats } from '@/constants/common';
+import { local2NumberFormat } from '@/constants/common';
+import { useLocale } from '@/hooks/useLocale';
 import { getRandomNumber } from '@/libs/common';
 import { splitText } from '@/libs/common';
 import {
@@ -26,10 +28,10 @@ export default () => {
   const onChange = (val: string) => {
     setValue(val);
   };
+  const { setLocale, locale } = useLocale();
+  // const [selectedKeys, setSelectedKeys] = useState(new Set(['USA']));
 
-  const [selectedKeys, setSelectedKeys] = useState(new Set(['USA']));
-
-  const format = Array.from(selectedKeys).join('');
+  const format = local2NumberFormat[locale];
   const { decimalSeparator, thousandSeparator, code, useGrouping } =
     numberFormats[format as NFType];
 
@@ -91,10 +93,7 @@ export default () => {
           <ShowSample
             example={native_coin_input_example[format as NFType].content ?? ''}
           />
-          <DecimalSeparatorSwitch
-            selectedKeys={selectedKeys}
-            setSelectedKeys={setSelectedKeys}
-          />
+          <DecimalSeparatorSwitch />
           {/* <UploadExcel updateCM={setValue} /> */}
 
           {/* {UploadExcel({ updateCM: setValue })} */}

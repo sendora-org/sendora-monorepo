@@ -6,6 +6,13 @@ export type NFValue = {
   useGrouping: boolean;
 };
 
+export const local2NumberFormat: Record<NFValue['code'], NFType> = {
+  'en-US': 'USA',
+  'de-DE': 'DE',
+  'fr-FR': 'FR',
+  'de-CH': 'CH',
+};
+
 export const numberFormats: Record<NFType, NFValue> = {
   USA: {
     decimalSeparator: '.',
