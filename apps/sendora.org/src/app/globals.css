@@ -35,3 +35,7 @@ body:is(.dark *) {
   border-radius: 14px;
   padding: 16px;
 }
+
+table {
+  width: 100%;
+}

@@ -27,12 +27,16 @@
     "immer": "^10.1.1",
     "next": "15.2.1",
     "ox": "^0.6.10",
+    "pretty-bytes": "^6.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-dropzone-esm": "^15.2.0",
+    "react-virtuoso": "^4.12.5",
     "swr": "^2.3.3",
     "usehooks-ts": "^3.1.1",
     "viem": "2.x",
     "wagmi": "^2.14.13",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

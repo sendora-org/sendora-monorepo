@@ -2,10 +2,12 @@
 import DecimalSeparatorSwitch from '@/components/decimal-separator-switch';
 import H3Title from '@/components/h3-title';
 import ShowSample from '@/components/show-sample';
+import UploadSpreadsheet from '@/components/upload-spreadsheet';
 import { native_coin_input_example } from '@/constants/common';
 import { type NFType, numberFormats } from '@/constants/common';
 import { local2NumberFormat } from '@/constants/common';
 import { useLocale } from '@/hooks/useLocale';
+import { useNativeCoinsValue } from '@/hooks/useNativeCoinsValue';
 import { getRandomNumber } from '@/libs/common';
 import { splitText } from '@/libs/common';
 import {
@@ -23,7 +25,7 @@ import { useMediaQuery } from 'usehooks-ts';
 import AddAmount from './add-amount';
 export default () => {
   const { ref, toggle, fullscreen } = useFullscreen();
-  const [value, setValue] = useState('');
+  const { value, setValue } = useNativeCoinsValue();
   const matches = useMediaQuery('(min-width: 768px)');
   const onChange = (val: string) => {
     setValue(val);
@@ -68,6 +70,7 @@ export default () => {
     <div className="w-full relative mb-12">
       <div className="flex w-full items-center justify-between mb-2">
         <H3Title>Recipients and amounts</H3Title>
+        <UploadSpreadsheet />
       </div>
 
       <div ref={ref}>

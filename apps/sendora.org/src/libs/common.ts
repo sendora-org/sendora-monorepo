@@ -291,11 +291,42 @@ export function getDecimalsScientific(num: number): number {
   return getDecimals(num);
 }
 
-export function runWorker(worker: Worker, value: string): Promise<string> {
+// export function runWorker(worker: Worker, value: string): Promise<string> {
+//   return new Promise((resolve, reject) => {
+//     worker.postMessage(value);
+
+//     worker.onmessage = (event: MessageEvent<string>) => {
+//       resolve(event.data);
+//       worker.terminate();
+//     };
+
+//     worker.onerror = (error) => {
+//       reject(error);
+//       worker.terminate();
+//     };
+//   });
+// }
+
+// export function runWorker<T>(worker: Worker, value: T): Promise<T> {
+//   return new Promise((resolve, reject) => {
+//     worker.postMessage(value);
+
+//     worker.onmessage = (event: MessageEvent<T>) => {
+//       resolve(event.data);
+//       worker.terminate();
+//     };
+
+//     worker.onerror = (error) => {
+//       reject(error);
+//       worker.terminate();
+//     };
+//   });
+// }
+export function runWorker<T, R>(worker: Worker, value: T): Promise<R> {
   return new Promise((resolve, reject) => {
     worker.postMessage(value);
 
-    worker.onmessage = (event: MessageEvent<string>) => {
+    worker.onmessage = (event: MessageEvent<R>) => {
       resolve(event.data);
       worker.terminate();
     };
@@ -305,4 +336,71 @@ export function runWorker(worker: Worker, value: string): Promise<string> {
       worker.terminate();
     };
   });
+}
+
+export const getWorkbook = async (ab: ArrayBuffer) => {
+  const worker = new Worker(
+    new URL('@/web-workers/spreadsheet-workbook.ts', import.meta.url),
+    { type: 'module' },
+  );
+  const result = await runWorker<ArrayBuffer, string[] | null>(worker, ab);
+  return result;
+};
+
+export type Column = { label: string; key: string };
+export type Row = Record<string, unknown> & {
+  key: string;
+};
+
+export type TableData = {
+  columns: Column[];
+  rows: Row[];
+};
+
+export const getTableData = async (ab: ArrayBuffer, sheetIndex = 0) => {
+  const worker = new Worker(
+    new URL('@/web-workers/spreadsheet-tabledata.ts', import.meta.url),
+    { type: 'module' },
+  );
+  const input = {
+    ab,
+    sheetIndex,
+  };
+  const result = await runWorker<typeof input, TableData | null>(worker, input);
+  return result;
+};
+
+function columnToIndex(column: string): number {
+  let index = 0;
+  for (let i = 0; i < column.length; i++) {
+    index = index * 26 + (column.charCodeAt(i) - 'A'.charCodeAt(0) + 1);
+  }
+  return index;
+}
+
+export function getColumnCount(range: string): number {
+  const match = range.match(/^([A-Z]+)\d+:([A-Z]+)\d+$/);
+  if (!match) {
+    throw new Error('Invalid range format');
+  }
+
+  const startColumn = match[1];
+  const endColumn = match[2];
+
+  const startIndex = columnToIndex(startColumn);
+  const endIndex = columnToIndex(endColumn);
+
+  return endIndex - startIndex + 1;
+}
+
+export function numberToLetters(tmp: number): string {
+  let result = '';
+  let num = tmp;
+  while (num > 0) {
+    num--;
+    const remainder = num % 26;
+    result = String.fromCharCode(65 + remainder) + result;
+    num = Math.floor(num / 26);
+  }
+  return result;
 }
