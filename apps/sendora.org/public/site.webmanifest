@@ -1,6 +1,8 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "sendora.org",
+  "short_name": "SENDORA",
+  "description":"🚀 Building the best tool for Web3!",
+  "start_url": "/native-coins/1",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -17,5 +19,19 @@
   ],
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
-  "display": "standalone"
+  "display": "standalone",
+  "screenshots": [
+    {
+      "src": "/ads/ads3.png",
+      "type": "image/png",
+      "sizes": "wide",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/ads/ads3.png",
+      "type": "image/png",
+      "sizes": "wide",
+      "form_factor": "wide"
+    }
+  ]
 }
