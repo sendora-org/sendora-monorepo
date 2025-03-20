@@ -46,7 +46,7 @@ export default () => {
   ) => {
     if (!isRandom) {
       const decimals2 = getDecimalsScientific(fixedValue);
-      console.log({ decimals2 });
+
       setValue(
         value
           .split('\n')

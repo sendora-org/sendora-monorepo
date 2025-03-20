@@ -60,26 +60,8 @@ export default function UploadAction({
                   return `${row[recipientKey] ?? ''},${row[amountKey] ?? ''}`;
                 })
                 .join('\n');
-              console.log(data);
               setValue(data);
               onClose();
-
-              // if (value2.size > 0) {
-              //   const to = value.values().next().value!;
-              //   const amount = value2.values().next().value!;
-              //   console.log({ to, amount });
-
-              // } else {
-              //   const to = value.values().next().value!;
-              //   const data = tableData.rows
-              //     .map((row) => {
-              //       return `${row[to] ?? ''}`;
-              //     })
-              //     .join('\n');
-              //   console.log(data);
-              //   updateCM(data);
-              //   onClose();
-              // }
             }}
             className="bg-gradient-to-tr from-purple-600 to-fuchica-600 text-[#f7cf5294] shadow-lg"
           >
