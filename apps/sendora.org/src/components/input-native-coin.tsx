@@ -75,6 +75,7 @@ export default () => {
 
       <div ref={ref}>
         <CodeMirror
+          basicSetup={{ history: false }}
           value={value}
           height={fullscreen ? '100vh' : matches ? '450px' : '300px'}
           onChange={onChange}
