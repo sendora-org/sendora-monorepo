@@ -7,7 +7,7 @@ import {
   ModalHeader,
   useDisclosure,
 } from '@heroui/react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import H3Title from './h3-title';
 import H4Title from './h4-title';
 import SheetTabs from './sheet-tabs';
@@ -15,22 +15,15 @@ import SpreadsheetDropzone from './spreadsheet-dropzone';
 export default function UploadSpreadsheet() {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
-  const spreadsheetBufferRef = useRef<ArrayBuffer | null>(null);
-  const [, forceUpdate] = useState({});
+  const [spreadsheetBuffer, setSpreadsheetBuffer] =
+    useState<ArrayBuffer | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
-      console.log('clean isopen', isOpen);
-      spreadsheetBufferRef.current = null;
-      forceUpdate({});
+      console.log('cleanr isopen');
+      setSpreadsheetBuffer(null);
     }
   }, [isOpen]);
-
-  useEffect(() => {
-    return () => {
-      spreadsheetBufferRef.current = null;
-    };
-  }, []);
   return (
     <>
       <Button size="sm" onPress={onOpen}>
@@ -63,19 +56,18 @@ export default function UploadSpreadsheet() {
                 try {
                   const file = acceptedFiles[0];
                   const data = await file.arrayBuffer();
-                  spreadsheetBufferRef.current = data;
-                  forceUpdate({});
+                  setSpreadsheetBuffer(data);
                 } catch (e) {
                   console.log('err=>', e);
                 }
               }}
             />
-            {spreadsheetBufferRef.current != null && (
+            {spreadsheetBuffer != null && (
               <SheetTabs
                 onClose={() => {
                   onOpenChange();
                 }}
-                spreadsheetBuffer={spreadsheetBufferRef.current}
+                spreadsheetBuffer={spreadsheetBuffer}
               />
             )}
           </ModalBody>
