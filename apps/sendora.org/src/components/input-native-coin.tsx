@@ -98,9 +98,6 @@ export default () => {
             example={native_coin_input_example[format as NFType].content ?? ''}
           />
           <DecimalSeparatorSwitch />
-          {/* <UploadExcel updateCM={setValue} /> */}
-
-          {/* {UploadExcel({ updateCM: setValue })} */}
           <Button isIconOnly size="sm" onPress={toggle}>
             <Icon
               icon="qlementine-icons:fullscreen-16"

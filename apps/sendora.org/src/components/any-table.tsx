@@ -16,7 +16,7 @@ export default function AnyTable({
   return (
     <TableVirtuoso
       data={tableData.rows}
-      style={{ height: 500, width: '100%' }}
+      style={{ height: 350, width: '100%' }}
       fixedHeaderContent={() => (
         <>
           <th

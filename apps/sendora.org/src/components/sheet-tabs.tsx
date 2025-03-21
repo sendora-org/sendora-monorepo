@@ -12,9 +12,7 @@ export default function SheetTabs({
   const [sheetNames, setSheetNames] = useState<string[] | null>(null);
   const [selected, setSelected] = useState('0');
 
-  console.log('SheetTabs');
   useEffect(() => {
-    // console.log({ spreadsheetBuffer });
     setSheetNames(null);
     getWorkbook(spreadsheetBuffer).then((result) => {
       setSheetNames(result);
