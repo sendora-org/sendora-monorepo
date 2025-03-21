@@ -17,6 +17,10 @@ export default function SheetTabs({
     getWorkbook(spreadsheetBuffer).then((result) => {
       setSheetNames(result);
     });
+
+    return () => {
+      setSheetNames(null);
+    };
   }, [spreadsheetBuffer]);
   return (
     <div className="flex w-full flex-col gap-2">
@@ -47,11 +51,13 @@ export default function SheetTabs({
           ))}
         </Tabs>
       )}
-      <SheetTableData
-        onClose={onClose}
-        sheetIndex={Number(selected)}
-        spreadsheetBuffer={spreadsheetBuffer}
-      />
+      {sheetNames != null && (
+        <SheetTableData
+          onClose={onClose}
+          sheetIndex={Number(selected)}
+          spreadsheetBuffer={spreadsheetBuffer}
+        />
+      )}
     </div>
   );
 }
