@@ -1,21 +1,23 @@
-import { useNativeCoinsValue } from '@/hooks/useNativeCoinsValue';
 import type { Column, Row } from '@/libs/common';
+import { runWorker } from '@/libs/common';
 import { Button, Select, SelectItem } from '@heroui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function UploadAction({
-  tableData,
+  columns,
+  recipientKey,
+  setRecipientKey,
+  amountKey,
+  setAmountKey,
   onClose,
 }: {
-  tableData: {
-    columns: Column[];
-    rows: Row[];
-  };
+  columns: Column[];
   onClose: () => void;
+  recipientKey: string;
+  amountKey: string;
+  setRecipientKey: (v: string) => void;
+  setAmountKey: (v: string) => void;
 }) {
-  const [recipientKey, setRecipientKey] = useState('');
-  const [amountKey, setAmountKey] = useState('');
-  const { setValue } = useNativeCoinsValue();
   return (
     <div className="flex sm:flex-row flex-col gap-2">
       <Select
@@ -29,7 +31,7 @@ export default function UploadAction({
           setRecipientKey(Array.from(v).join(''));
         }}
       >
-        {tableData.columns.map((column) => (
+        {columns.map((column) => (
           <SelectItem key={column.key}>{column.label}</SelectItem>
         ))}
       </Select>
@@ -44,31 +46,10 @@ export default function UploadAction({
           setAmountKey(Array.from(v).join(''));
         }}
       >
-        {tableData.columns.map((column) => (
+        {columns.map((column) => (
           <SelectItem key={column.key}>{column.label}</SelectItem>
         ))}
       </Select>
-
-      {recipientKey !== '' && (
-        <div className="flex flex-wrap gap-4 items-center">
-          <Button
-            size="lg"
-            fullWidth
-            onPress={() => {
-              const data = tableData.rows
-                .map((row) => {
-                  return `${row[recipientKey] ?? ''},${row[amountKey] ?? ''}`;
-                })
-                .join('\n');
-              setValue(data);
-              onClose();
-            }}
-            className="bg-gradient-to-tr from-purple-600 to-fuchica-600 text-[#f7cf5294] shadow-lg"
-          >
-            Insert to editor
-          </Button>
-        </div>
-      )}
     </div>
   );
 }
