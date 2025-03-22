@@ -1,9 +1,9 @@
 'use client';
 
 import { vscodeDark } from '@/libs/vscodeDark';
-import { defaultKeymap,historyKeymap,history } from '@codemirror/commands';
-import { highlightActiveLine, keymap, lineNumbers ,} from '@codemirror/view';
-import { EditorView, basicSetup, } from 'codemirror';
+import { defaultKeymap, historyKeymap, history } from '@codemirror/commands';
+import { highlightActiveLine, keymap, lineNumbers } from '@codemirror/view';
+import { EditorView, basicSetup } from 'codemirror';
 import React, {
   useEffect,
   forwardRef,
@@ -35,7 +35,7 @@ const SNDRACodemirror = forwardRef(
           lineNumbers(),
           highlightActiveLine(),
           history(),
-          keymap.of([...defaultKeymap,...historyKeymap]),
+          keymap.of([...defaultKeymap, ...historyKeymap]),
           vscodeDark,
         ],
         parent: editorRef.current,

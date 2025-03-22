@@ -144,10 +144,11 @@ export default function Component() {
           </div>
         </div>
         <Divider className="mt-16 sm:mt-20 lg:mt-24" />
-        <div className="flex flex-wrap justify-between gap-2 pt-8">
+        <div className="flex flex-wrap justify-between gap-2 pt-8 sm:items-center">
           <p className="text-small text-default-400">
             &copy; 2025 SENDORA Inc. All rights reserved.
           </p>
+          <p className="text-xs text-default-400">contact: garyshay@proton.me</p>
         </div>
       </div>
     </footer>
