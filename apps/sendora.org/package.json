@@ -12,6 +12,7 @@
   "dependencies": {
     "@codemirror/commands": "^6.8.0",
     "@codemirror/lang-javascript": "^6.2.3",
+    "@codemirror/search": "^6.5.10",
     "@codemirror/view": "^6.36.4",
     "@fingerprintjs/fingerprintjs": "^4.6.1",
     "@heroui/react": "^2.7.5",

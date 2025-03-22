@@ -76,6 +76,9 @@ importers:
       '@codemirror/lang-javascript':
         specifier: ^6.2.3
         version: 6.2.3
+      '@codemirror/search':
+        specifier: ^6.5.10
+        version: 6.5.10
       '@codemirror/view':
         specifier: ^6.36.4
         version: 6.36.4

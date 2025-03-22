@@ -2,6 +2,7 @@
 
 import { vscodeDark } from '@/libs/vscodeDark';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
+import { search, searchKeymap } from '@codemirror/search';
 import { highlightActiveLine, keymap, lineNumbers } from '@codemirror/view';
 import { EditorView, basicSetup } from 'codemirror';
 import React, {
@@ -35,7 +36,8 @@ const SNDRACodemirror = forwardRef(
           lineNumbers(),
           highlightActiveLine(),
           history(),
-          keymap.of([...defaultKeymap, ...historyKeymap]),
+          search(),
+          keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
           vscodeDark,
         ],
         parent: editorRef.current,
