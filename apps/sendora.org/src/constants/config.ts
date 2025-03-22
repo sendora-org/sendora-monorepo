@@ -37,6 +37,24 @@ export const networks: NetworkInfo[] = [
     rpcURL: 'https://arbitrum.llamarpc.com',
     explorerURL: 'https://arbiscan.io',
   },
+
+  {
+    name: 'Abstract',
+    symbol: 'ETH',
+    avatar: '/chain-logo/evm_2741.png',
+    chainId: '2741',
+    rpcURL: 'https://api.mainnet.abs.xyz',
+    explorerURL: 'https://abscan.org',
+  },
+
+  {
+    name: 'OP Mainnet',
+    symbol: 'ETH',
+    avatar: '/chain-logo/evm_10.png',
+    chainId: '10',
+    rpcURL: 'https://optimism.llamarpc.com',
+    explorerURL: 'https://optimistic.etherscan.io',
+  },
   {
     name: 'BNB Chain',
     symbol: 'BNB',
@@ -45,6 +63,23 @@ export const networks: NetworkInfo[] = [
     rpcURL: 'https://binance.llamarpc.com',
     explorerURL: 'https://bscscan.com',
   },
+  {
+    name: 'Kaia Mainnet',
+    symbol: 'KAIA',
+    avatar: '/chain-logo/evm_8217.png',
+    chainId: '8217',
+    rpcURL: 'https://public-en.node.kaia.io',
+    explorerURL: 'https://kaiascan.io',
+  },
+  {
+    name: 'Berachain',
+    symbol: 'BERA',
+    avatar: '/chain-logo/evm_80094.png',
+    chainId: '80094',
+    rpcURL: 'https://rpc.berachain.com',
+    explorerURL: 'https://berascan.com',
+  },
+
   {
     name: 'Polygon',
     symbol: 'POL',

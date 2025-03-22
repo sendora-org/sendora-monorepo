@@ -148,7 +148,9 @@ export default function Component() {
           <p className="text-small text-default-400">
             &copy; 2025 SENDORA Inc. All rights reserved.
           </p>
-          <p className="text-xs text-default-400">contact: garyshay@proton.me</p>
+          <p className="text-xs text-default-400">
+            contact: garyshay@proton.me
+          </p>
         </div>
       </div>
     </footer>
