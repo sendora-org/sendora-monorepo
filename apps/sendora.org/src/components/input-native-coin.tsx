@@ -21,8 +21,12 @@ import { Icon } from '@iconify/react';
 import { useFullscreen } from '@mantine/hooks';
 import CodeMirror from '@uiw/react-codemirror';
 import { useState } from 'react';
+import { useRef } from 'react';
 import { useMediaQuery } from 'usehooks-ts';
 import AddAmount from './add-amount';
+import SNDRACodemirror, { type SNDRACodemirrorRef } from './codemirror-sndra';
+import UIWCodemirror from './codemirror-uiw';
+import Parent from './test-forward-ref';
 export default () => {
   const { ref, toggle, fullscreen } = useFullscreen();
   const { value, setValue } = useNativeCoinsValue();
@@ -30,6 +34,9 @@ export default () => {
   const onChange = (val: string) => {
     setValue(val);
   };
+
+  const editorRef = useRef<SNDRACodemirrorRef | null>(null);
+
   const { setLocale, locale } = useLocale();
   // const [selectedKeys, setSelectedKeys] = useState(new Set(['USA']));
 
@@ -66,6 +73,16 @@ export default () => {
       );
     }
   };
+
+  const handleGetValue = () => {
+    console.log('handleGetValue');
+    if (editorRef.current) {
+      const content = editorRef.current.getValue();
+      alert(`content:\n${content}`);
+      console.log('content:', content);
+    }
+  };
+
   return (
     <div className="w-full relative mb-12">
       <div className="flex w-full items-center justify-between mb-2">
@@ -73,7 +90,16 @@ export default () => {
         <UploadSpreadsheet />
       </div>
 
-      <div ref={ref}>
+      {/* <Parent /> */}
+
+      {/* <Button onPress={handleGetValue}> click</Button> */}
+      <SNDRACodemirror
+        ref={editorRef}
+        value={value}
+        onChange={onChange}
+        fullscreen={fullscreen}
+      />
+      {/* <div ref={ref}>
         <CodeMirror
           basicSetup={{ history: false }}
           value={value}
@@ -81,7 +107,7 @@ export default () => {
           onChange={onChange}
           theme={vscodeDark}
         />
-      </div>
+      </div> */}
 
       <div className="absolute -bottom-10 right-0">
         <ButtonGroup className="gap-1">

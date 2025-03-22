@@ -63,8 +63,6 @@ function parseTableData(ab: ArrayBuffer, sheetIndex: number) {
       }
     }
 
-    console.log(columns)
-   
     return {
       columns,
       rows,

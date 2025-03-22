@@ -34,6 +34,7 @@ body:is(.dark *) {
 .cm-editor {
   border-radius: 14px;
   padding: 16px;
+  height: 100%;
 }
 
 table {

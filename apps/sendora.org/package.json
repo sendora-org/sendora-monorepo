@@ -10,6 +10,9 @@
     "format": "biome format --write"
   },
   "dependencies": {
+    "@codemirror/commands": "^6.8.0",
+    "@codemirror/lang-javascript": "^6.2.3",
+    "@codemirror/view": "^6.36.4",
     "@fingerprintjs/fingerprintjs": "^4.6.1",
     "@heroui/react": "^2.7.5",
     "@heroui/theme": "^2.4.12",
@@ -22,6 +25,7 @@
     "@uiw/codemirror-themes": "^4.23.10",
     "@uiw/react-codemirror": "^4.23.10",
     "clsx": "^2.1.1",
+    "codemirror": "^6.0.1",
     "framer-motion": "^12.4.11",
     "idb-keyval": "^6.2.1",
     "immer": "^10.1.1",
