@@ -22,7 +22,7 @@ export default function UploadAction({
     <div className="flex sm:flex-row flex-col gap-2">
       <Select
         isRequired
-        className="w-full"
+        className="md:w-[50%]"
         label="Recipient Column"
         placeholder="Select an column"
         selectedKeys={new Set([recipientKey])}
@@ -37,7 +37,7 @@ export default function UploadAction({
       </Select>
 
       <Select
-        className="w-full"
+        className="md:w-[50%]"
         label="Amount Column"
         placeholder="Select an column"
         selectedKeys={new Set([amountKey])}

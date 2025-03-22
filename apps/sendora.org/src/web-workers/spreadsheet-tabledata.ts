@@ -23,7 +23,7 @@ self.onmessage = (event: MessageEvent<Input>) => {
 
 function parseTableData(ab: ArrayBuffer, sheetIndex: number) {
   if (ab.byteLength > 0) {
-    const workbook = XLSX.read(ab, { cellNF: true });
+    const workbook = XLSX.read(ab, { cellNF: true, dense: true });
 
     // biome-ignore lint/suspicious/noExplicitAny: reason
     const rawData: any[] = XLSX.utils.sheet_to_json(
@@ -63,6 +63,8 @@ function parseTableData(ab: ArrayBuffer, sheetIndex: number) {
       }
     }
 
+    console.log(columns)
+   
     return {
       columns,
       rows,
