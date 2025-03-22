@@ -52,10 +52,11 @@ export default function UploadSpreadsheet() {
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">
             Upload a spreadsheet
-            <H3Title>
+            <H4Title>
               Supports CSV, TXT, ODS, XLS, XLSX, and NUMBERS formats.
-            </H3Title>
-            <H4Title>The table should not exceed 500,000 rows.</H4Title>
+            </H4Title>
+            <H4Title>On mobile , limit to 10,000 rows.</H4Title>
+            <H4Title>On PC , limit to 1,000,000 rows.</H4Title>
           </ModalHeader>
           <ModalBody>
             <SpreadsheetDropzone

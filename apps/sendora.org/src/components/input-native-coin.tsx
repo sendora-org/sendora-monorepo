@@ -14,23 +14,17 @@ import {
   formatLocalizedNumberWithSmallNumbers,
   getDecimalsScientific,
 } from '@/libs/common';
-import { parseLocalizedNumber } from '@/libs/common';
-import { vscodeDark } from '@/libs/vscodeDark';
 import { Button, ButtonGroup } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { useFullscreen } from '@mantine/hooks';
-import CodeMirror from '@uiw/react-codemirror';
-import { useState } from 'react';
 import { useRef } from 'react';
-import { useMediaQuery } from 'usehooks-ts';
 import AddAmount from './add-amount';
 import SNDRACodemirror, { type SNDRACodemirrorRef } from './codemirror-sndra';
-import UIWCodemirror from './codemirror-uiw';
-import Parent from './test-forward-ref';
+
 export default () => {
-  const { ref, toggle, fullscreen } = useFullscreen();
+  const { toggle, fullscreen } = useFullscreen();
   const { value, setValue } = useNativeCoinsValue();
-  const matches = useMediaQuery('(min-width: 768px)');
+
   const onChange = (val: string) => {
     setValue(val);
   };
@@ -51,9 +45,9 @@ export default () => {
     maxValue = 10,
     decimals = 2,
   ) => {
+    const value = editorRef?.current?.getValue() ?? '';
     if (!isRandom) {
       const decimals2 = getDecimalsScientific(fixedValue);
-
       setValue(
         value
           .split('\n')
@@ -90,24 +84,12 @@ export default () => {
         <UploadSpreadsheet />
       </div>
 
-      {/* <Parent /> */}
-
-      {/* <Button onPress={handleGetValue}> click</Button> */}
       <SNDRACodemirror
         ref={editorRef}
         value={value}
         onChange={onChange}
         fullscreen={fullscreen}
       />
-      {/* <div ref={ref}>
-        <CodeMirror
-          basicSetup={{ history: false }}
-          value={value}
-          height={fullscreen ? '100vh' : matches ? '450px' : '300px'}
-          onChange={onChange}
-          theme={vscodeDark}
-        />
-      </div> */}
 
       <div className="absolute -bottom-10 right-0">
         <ButtonGroup className="gap-1">
@@ -126,7 +108,11 @@ export default () => {
           <DecimalSeparatorSwitch />
           <Button isIconOnly size="sm" onPress={toggle}>
             <Icon
-              icon="qlementine-icons:fullscreen-16"
+              icon={
+                fullscreen
+                  ? 'qlementine-icons:fullscreen-exit-16'
+                  : 'qlementine-icons:fullscreen-16'
+              }
               width="16"
               height="16"
             />
