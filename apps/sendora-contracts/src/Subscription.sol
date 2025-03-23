@@ -24,13 +24,7 @@ interface INFT {
 
     function ownerOf(uint256 id) external view returns (address result);
 }
-
 contract Subscription is ETHPriceFinder {
-    struct Stake {
-        uint256 unlockTime;
-        bool isStaked;
-    }
-
     struct Subscriber {
         uint256 id;
         uint256 expiry;
@@ -48,7 +42,6 @@ contract Subscription is ETHPriceFinder {
     uint256 public constant REWARD_AMOUNT = 2; // Referral reward: 200 USD,Temporarily change to 2 for convenient on-chain testing.
     uint256 public constant AIRDROP_AMOUNT = 2; // Airdrop: 200 USD,Temporarily change to 2 for convenient on-chain testing.
 
-    uint256 public constant STAKE_AMOUNT = 1_000_000 * 10 ** 18;
     address public constant SNDRA = 0xb7e943C2582f76Ef220d081468CeC97ccdaDc3Ee;
     address public constant ETH_SDNRA_POOL_BASE =
         0x0A22340713E114aeb7D004351Dc09fD7539C8DC7;
@@ -61,7 +54,6 @@ contract Subscription is ETHPriceFinder {
     Subscriber[] public subscribers;
 
     mapping(address => uint256) public addressToId;
-    mapping(address => Stake) public stakes;
 
     event Bought(
         address indexed recipient,
@@ -69,13 +61,6 @@ contract Subscription is ETHPriceFinder {
         address referrer
     );
 
-    event Staked(
-        address indexed user,
-        uint256 amount,
-        uint256 numberOfYears,
-        uint256 unlockTime
-    );
-    event Unstaked(address indexed user, uint256 amount);
     event SubscriptionUpdated(
         address indexed subscriber,
         uint256 numberOfYears,
@@ -243,45 +228,6 @@ contract Subscription is ETHPriceFinder {
         }
 
         return validReferrer;
-    }
-
-    function stake(uint256 numberOfYears, address referrer) public {
-        require(numberOfYears > 0, "Must stake for at least 1 year");
-        require(!stakes[msg.sender].isStaked, "Already staked");
-
-        uint256 unlockTime = block.timestamp + (numberOfYears * 365 days);
-
-        require(
-            IERC20(SNDRA).transferFrom(msg.sender, address(this), STAKE_AMOUNT),
-            "Token transfer failed"
-        );
-
-        stakes[msg.sender] = Stake({unlockTime: unlockTime, isStaked: true});
-
-        addSubscription(msg.sender, numberOfYears, referrer);
-
-        emit Staked(msg.sender, numberOfYears, STAKE_AMOUNT, unlockTime);
-    }
-
-    function unstake() public {
-        Stake memory userStake = stakes[msg.sender];
-        require(userStake.isStaked, "No staked tokens found");
-        require(
-            block.timestamp >= userStake.unlockTime,
-            "Tokens are still locked"
-        );
-        delete stakes[msg.sender];
-
-        require(
-            IERC20(SNDRA).transfer(msg.sender, STAKE_AMOUNT),
-            "Token transfer failed"
-        );
-
-        emit Unstaked(msg.sender, STAKE_AMOUNT);
-    }
-
-    function gift(uint256 numberOfYears, address recipient) public onlyOwner {
-        addSubscription(recipient, numberOfYears, address(0));
     }
 
     function countSubscribers() public view returns (uint256) {
