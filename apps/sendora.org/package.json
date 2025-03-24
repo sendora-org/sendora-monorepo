@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 1420 --turbopack",
+    "dev": "next dev -p 1420",
+    "next":"next",
     "build": "next build",
     "preview": "serve out -c ../serve.json ",
     "lint": "biome check --write",
@@ -30,7 +31,7 @@
     "framer-motion": "^12.4.11",
     "idb-keyval": "^6.2.1",
     "immer": "^10.1.1",
-    "next": "15.2.1",
+    "next": "15.2.3",
     "ox": "^0.6.10",
     "pretty-bytes": "^6.1.1",
     "react": "^19.0.0",
@@ -39,7 +40,7 @@
     "react-virtuoso": "^4.12.5",
     "swr": "^2.3.3",
     "usehooks-ts": "^3.1.1",
-    "viem": "2.x",
+    "viem": "2.23.13",
     "wagmi": "^2.14.13",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "zustand": "^5.0.3"
