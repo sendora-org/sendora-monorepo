@@ -1,3 +1,14 @@
+import {
+  http,
+  createPublicClient,
+  decodeFunctionResult,
+  encodeFunctionData,
+  namehash,
+  toHex,
+} from 'viem';
+import { arbitrum, base, bsc, mainnet } from 'viem/chains';
+import { normalize, packetToBytes } from 'viem/ens';
+
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 export const getVisitorId = async () => {
   const fpPromise = FingerprintJS.load();
@@ -403,4 +414,247 @@ export function numberToLetters(tmp: number): string {
     num = Math.floor(num / 26);
   }
   return result;
+}
+
+export type ReceipientStatus =
+  | { status: 'wrongAddress'; message: 'Wrong Address' }
+  | { status: 'duplicateAddress'; message: 'Duplicate Address' }
+  | { status: 'valid'; message: 'Valid' }
+  | { status: 'zeroAmount'; message: 'Zero Amount' }
+  | { status: 'wrongAmount'; message: 'Wrong Amount' }
+  | { status: 'emptyAmount'; message: 'Empty Amount' };
+
+export function checkTransaction(
+  address: string,
+  amount: string | null,
+  usedAddresses: string[] = [],
+): ReceipientStatus {
+  const isAddressValid = address.length > 0 && address.startsWith('0x');
+
+  if (!isAddressValid) {
+    return { status: 'wrongAddress', message: 'Wrong Address' };
+  }
+
+  if (usedAddresses.includes(address)) {
+    return { status: 'duplicateAddress', message: 'Duplicate Address' };
+  }
+
+  if (amount === null || amount === '') {
+    return { status: 'emptyAmount', message: 'Empty Amount' };
+  }
+
+  const parsedAmount = Number.parseFloat(amount);
+  if (Number.isNaN(parsedAmount)) {
+    return { status: 'wrongAmount', message: 'Wrong Amount' };
+  }
+
+  if (parsedAmount === 0) {
+    return { status: 'zeroAmount', message: 'Zero Amount' };
+  }
+
+  if (parsedAmount > 0) {
+    return { status: 'valid', message: 'Valid' };
+  }
+
+  return { status: 'wrongAmount', message: 'Wrong Amount' };
+}
+
+// Splits a string by extracting an Ethereum address (standard or ENS format) if present.
+export function splitByEthereumAddress(input: string): string[] {
+  // Regular expression for Ethereum addresses:
+  // - Standard: starts with "0x" followed by 40 hex characters
+  // - ENS: e.g., "name.eth", "name.base.eth", "name.bnb", "name.arb"
+  const ethAddressRegex =
+    /^0x[a-fA-F0-9]{40}|[\p{L}\p{N}-]+\.eth|[\p{L}\p{N}-]+\.base.eth|[\p{L}\p{N}-]+\.bnb|[\p{L}\p{N}-]+\.arb/u;
+
+  // Match the regex against the input string
+  const match = input.match(ethAddressRegex);
+
+  if (match) {
+    const ethAddress = match[0]; // Extract the matched Ethereum address
+    const remaining = input.slice(ethAddress.length); // Get the remaining string after the address
+
+    // Return the address and the remaining string as an array
+    return [ethAddress, remaining];
+  }
+
+  // If no Ethereum address is found, return the input as a single-element array
+  return [input];
+}
+
+/**
+ * Splits a large string by newline (\n) and groups lines into chunks of specified size.
+ * @param input - The large input string to split.
+ * @param chunkSize - Number of lines per group (default: 1000).
+ * @returns An array of string arrays, where each inner array contains up to chunkSize lines.
+ */
+export function splitLinesIntoChunks(
+  input: string,
+  chunkSize = 1000,
+): string[][] {
+  // Validate chunkSize
+  if (chunkSize <= 0) {
+    throw new Error('chunkSize must be greater than 0');
+  }
+
+  // Split the string by newline into an array of lines
+  const lines = input.split('\n');
+
+  // Calculate the number of chunks needed
+  const totalLines = lines.length;
+  const chunkCount = Math.ceil(totalLines / chunkSize);
+
+  // Pre-allocate the result array for better performance
+  const result: string[][] = new Array(chunkCount);
+
+  // Populate each chunk
+  for (let i = 0; i < chunkCount; i++) {
+    const start = i * chunkSize;
+    const end = Math.min(start + chunkSize, totalLines);
+    result[i] = lines.slice(start, end);
+  }
+
+  return result;
+}
+
+/**
+ * Removes leading and trailing noise characters from a string containing a number,
+ * preserving the original number format (including thousand separators, decimal separators, and subscripts).
+ * @param input - The input string containing a number with possible noise.
+ * @returns The string with leading and trailing noise removed, or empty string if no valid number found.
+ */
+export function removeNumberNoise(input: string): string {
+  // Step 1: Define regex to match number part with noise
+  // Matches: optional leading noise, number part (including separators and subscripts), optional trailing noise
+  const numberRegex = /^[^0-9]*([0-9₀-₉.,' ]+)[^0-9]*$/;
+
+  // Step 2: Extract the number part
+  const match = input.match(numberRegex);
+  if (!match || !match[1]) {
+    return ''; // No valid number found
+  }
+
+  // Step 3: Return the raw number part without modification
+  return match[1];
+}
+
+export function flattenArray<T>(chunks: T[][]): T[] {
+  return chunks.reduce((acc, curr) => acc.concat(curr), []);
+}
+
+export const queryAddressFromENS = async (ensType: string, names: string[]) => {
+  if (names.length === 0) {
+    return [];
+  }
+
+  const ENSQuery = '0x9cbc881c6184a40f1a5ae2074b40bbd1df3304a3';
+  const ENSQueryABI = [
+    {
+      inputs: [
+        { internalType: 'address', name: 'ensRegistry', type: 'address' },
+        { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      ],
+      name: 'getAddressFromENS',
+      outputs: [{ internalType: 'address', name: '', type: 'address' }],
+      stateMutability: 'view',
+      type: 'function',
+    },
+  ];
+  const registerMap = {
+    '.bnb': {
+      register: '0x08CEd32a7f3eeC915Ba84415e9C07a7286977956',
+      network: bsc,
+    },
+    '.base.eth': {
+      register: '0xb94704422c2a1e396835a571837aa5ae53285a95',
+      network: base,
+    },
+    '.eth': {
+      register: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
+      network: mainnet,
+    },
+    '.arb': {
+      register: '0x4a067EE58e73ac5E4a43722E008DFdf65B2bF348',
+      network: arbitrum,
+    },
+  };
+
+  const publicClient = createPublicClient({
+    chain: registerMap[ensType].network,
+    transport: http(),
+  });
+  const queryName = (name) => {
+    const readContractParameters = {
+      address: ENSQuery,
+      abi: ENSQueryABI,
+      functionName: 'getAddressFromENS',
+      args: [registerMap[ensType].register, namehash(normalize(name))],
+    } as const;
+
+    return readContractParameters;
+  };
+
+  const results = await publicClient.multicall({
+    contracts: names.map((name) => queryName(name)),
+  });
+
+  return results.map((result, index) => ({
+    ...result,
+    id: names[index],
+  }));
+};
+
+export const queryNameFromENS = async (addresses: Hex[]) => {
+  const publicClient = createPublicClient({
+    chain: mainnet,
+    transport: http(),
+  });
+
+  const universalResolverAddress = '0x74E20Bd2A1fE0cdbe45b9A1d89cb7e0a45b36376';
+
+  const universalResolverReverseAbi = [
+    {
+      name: 'reverse',
+      type: 'function',
+      stateMutability: 'view',
+      inputs: [{ type: 'bytes', name: 'reverseName' }],
+      outputs: [
+        { type: 'string', name: 'resolvedName' },
+        { type: 'address', name: 'resolvedAddress' },
+        { type: 'address', name: 'reverseResolver' },
+        { type: 'address', name: 'resolver' },
+      ],
+    },
+  ];
+
+  const queryName = (address: Hex) => {
+    const reverseNode = `${address.toLowerCase().substring(2)}.addr.reverse`;
+    const readContractParameters = {
+      address: universalResolverAddress,
+      abi: universalResolverReverseAbi,
+      functionName: 'reverse',
+      args: [toHex(packetToBytes(reverseNode))],
+    } as const;
+    return readContractParameters;
+  };
+
+  const results = await publicClient.multicall({
+    contracts: addresses.map((address) => queryName(address)),
+  });
+
+  return results.map((result, index) => ({
+    ...result,
+    id: addresses[index],
+  }));
+};
+
+export function isZero(value: unknown) {
+  if (typeof value === 'number') {
+    return value === 0;
+  }
+  if (typeof value === 'string') {
+    const parsed = Number.parseFloat(value);
+    return !Number.isNaN(parsed) && parsed === 0;
+  }
+  return false;
 }

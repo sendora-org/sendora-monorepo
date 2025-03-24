@@ -1,5 +1,4 @@
 import type { Column, Row } from '@/libs/common';
-import XLSX from 'xlsx';
 
 type Input = {
   recipientKey: string;

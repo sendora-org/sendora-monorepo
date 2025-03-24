@@ -39,6 +39,11 @@ const SNDRACodemirror = forwardRef(
           search(),
           keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
           vscodeDark,
+          // EditorView.updateListener.of((update) => {
+          //   if (update.docChanged) {
+          //     onChange('');
+          //   }
+          // }),
         ],
         parent: editorRef.current,
       });

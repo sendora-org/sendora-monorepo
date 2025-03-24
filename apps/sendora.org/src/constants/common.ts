@@ -66,6 +66,7 @@ export const native_coin_input_example = {
 999.arb,0.003
 123456.bnb,0.004
 vitalik.eth,0.005
+0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045,66
 sendora.eth,0.1
 sendora.base.eth,0.006`,
   },
@@ -77,6 +78,7 @@ sendora.base.eth,0.006`,
 999.arb,0,003
 123456.bnb,0,004
 vitalik.eth,0,005
+0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045,66
 sendora.eth,0,1
 sendora.base.eth,0,006`,
   },
@@ -88,6 +90,7 @@ sendora.base.eth,0,006`,
 999.arb,0,003
 123456.bnb,0,004
 vitalik.eth,0,005
+0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045,66
 sendora.eth,0,1
 sendora.base.eth,0,006`,
   },
@@ -99,6 +102,7 @@ sendora.base.eth,0,006`,
 999.arb,0.003
 123456.bnb,0.004
 vitalik.eth,0.005
+0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045,66
 sendora.eth,0.1
 sendora.base.eth,0.006`,
   },
