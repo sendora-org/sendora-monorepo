@@ -169,7 +169,10 @@ async function handler(input: Input) {
         if (item.addressType === '.eth') {
           const { status, result } = ethAddrs.find(
             (result) => result.id === item.ensName,
-          );
+          ) ?? {
+            status: 'failure',
+            result: '',
+          };
           return {
             ...item,
             address: status === 'success' ? result : '',
@@ -179,7 +182,10 @@ async function handler(input: Input) {
         if (item.addressType === '.base.eth') {
           const { status, result } = baseAddrs.find(
             (result) => result.id === item.ensName,
-          );
+          ) ?? {
+            status: 'failure',
+            result: '',
+          };
           return {
             ...item,
             address: status === 'success' ? result : '',
@@ -189,7 +195,10 @@ async function handler(input: Input) {
         if (item.addressType === '.bnb') {
           const { status, result } = bnbAddrs.find(
             (result) => result.id === item.ensName,
-          );
+          ) ?? {
+            status: 'failure',
+            result: '',
+          };
           return {
             ...item,
             address: status === 'success' ? result : '',
@@ -199,7 +208,10 @@ async function handler(input: Input) {
         if (item.addressType === '.arb') {
           const { status, result } = arbAddrs.find(
             (result) => result.id === item.ensName,
-          );
+          ) ?? {
+            status: 'failure',
+            result: '',
+          };
           return {
             ...item,
             address: status === 'success' ? result : '',

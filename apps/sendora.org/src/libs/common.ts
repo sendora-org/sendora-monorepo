@@ -6,6 +6,7 @@ import {
   namehash,
   toHex,
 } from 'viem';
+import type { Chain, Hex } from 'viem';
 import { arbitrum, base, bsc, mainnet } from 'viem/chains';
 import { normalize, packetToBytes } from 'viem/ens';
 
@@ -559,8 +560,13 @@ export const queryAddressFromENS = async (ensType: string, names: string[]) => {
       stateMutability: 'view',
       type: 'function',
     },
-  ];
-  const registerMap = {
+  ] as const;
+
+  type Ivalue = {
+    register: Hex;
+    network: Chain;
+  };
+  const registerMap: Record<string, Ivalue> = {
     '.bnb': {
       register: '0x08CEd32a7f3eeC915Ba84415e9C07a7286977956',
       network: bsc,
@@ -583,7 +589,7 @@ export const queryAddressFromENS = async (ensType: string, names: string[]) => {
     chain: registerMap[ensType].network,
     transport: http(),
   });
-  const queryName = (name) => {
+  const queryName = (name: string) => {
     const readContractParameters = {
       address: ENSQuery,
       abi: ENSQueryABI,
@@ -625,7 +631,7 @@ export const queryNameFromENS = async (addresses: Hex[]) => {
         { type: 'address', name: 'resolver' },
       ],
     },
-  ];
+  ] as const;
 
   const queryName = (address: Hex) => {
     const reverseNode = `${address.toLowerCase().substring(2)}.addr.reverse`;
