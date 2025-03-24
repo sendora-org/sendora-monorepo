@@ -229,10 +229,6 @@ async function handler(input: Input) {
   return lines.map((item, index) => {
     let status = 'valid';
 
-    if (keyCount[item.address] > 1) {
-      status = 'duplicateAddress';
-    }
-
     if (item.addressType === 'string') {
       status = 'wrongAddress';
     } else {
@@ -244,6 +240,12 @@ async function handler(input: Input) {
     if (status === 'valid') {
       if (item.amountErrorType !== '') {
         status = item.amountErrorType;
+      }
+    }
+
+    if(status==='valid'){
+      if (keyCount[item.address] > 1) {
+        status = 'duplicateAddress';
       }
     }
 
