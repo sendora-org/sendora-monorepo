@@ -94,9 +94,10 @@ type IColumnkeys =
 
 type Iprops = {
   data: IReceipent[];
+  deleteLine: (line: number[]) => void;
 };
 
-export default function App({ data }: Iprops) {
+export default function App({ data, deleteLine }: Iprops) {
   const [filterValue, setFilterValue] = React.useState('');
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
     new Set([]),
@@ -264,7 +265,7 @@ export default function App({ data }: Iprops) {
                 className="text-md text-danger cursor-pointer valid:opacity-50"
                 onClick={() => {
                   console.log('delete');
-                  // updateRow([receipient.id]);
+                  deleteLine([receipient.id]);
                 }}
               >
                 <DeleteIcon />
@@ -357,7 +358,7 @@ export default function App({ data }: Iprops) {
                   selectedKeys,
                   filteredItems.map(({ id }) => id),
                 );
-                // updateRow(filteredItems.map(({ id }) => Number(id)));
+                deleteLine(filteredItems.map(({ id }) => Number(id)));
               }}
             >
               {' '}
@@ -371,7 +372,7 @@ export default function App({ data }: Iprops) {
 
                   selectedKeys,
                 );
-                // updateRow(Array.from(selectedKeys).map((id) => Number(id)));
+                deleteLine(Array.from(selectedKeys).map((id) => Number(id)));
               }}
               color="danger"
             >
@@ -387,7 +388,7 @@ export default function App({ data }: Iprops) {
     onSearchChange,
     filteredItems.length,
     selectedKeys,
-    // updateRow,
+    deleteLine,
     filteredItems,
     onClear,
     statusFilter,

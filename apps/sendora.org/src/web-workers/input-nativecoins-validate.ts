@@ -243,7 +243,7 @@ async function handler(input: Input) {
       }
     }
 
-    if(status==='valid'){
+    if (status === 'valid') {
       if (keyCount[item.address] > 1) {
         status = 'duplicateAddress';
       }

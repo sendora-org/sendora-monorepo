@@ -11,6 +11,7 @@ import React, {
   useRef,
   useImperativeHandle,
 } from 'react';
+import { Subject } from 'rxjs';
 import { useMediaQuery } from 'usehooks-ts';
 
 export interface SNDRACodemirrorRef {
@@ -27,6 +28,7 @@ const SNDRACodemirror = forwardRef(
   ({ value, onChange, fullscreen }: UIWCodemirrorProps, ref) => {
     const editorRef = useRef<HTMLDivElement | null>(null);
     const editorViewRef = useRef<EditorView | null>(null);
+    console.log(4444, { value });
 
     useEffect(() => {
       if (!editorRef.current) return;
@@ -39,11 +41,11 @@ const SNDRACodemirror = forwardRef(
           search(),
           keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
           vscodeDark,
-          // EditorView.updateListener.of((update) => {
-          //   if (update.docChanged) {
-          //     onChange('');
-          //   }
-          // }),
+          EditorView.updateListener.of((update) => {
+            if (update.docChanged) {
+              onChange('');
+            }
+          }),
         ],
         parent: editorRef.current,
       });
@@ -53,7 +55,7 @@ const SNDRACodemirror = forwardRef(
       return () => {
         view.destroy();
       };
-    }, [value]);
+    }, [value, onChange]);
 
     useEffect(() => {
       if (

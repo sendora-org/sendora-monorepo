@@ -20,20 +20,62 @@ import { runWorker } from '@/libs/common';
 import { Button, ButtonGroup } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { useFullscreen } from '@mantine/hooks';
-import { useRef } from 'react';
+// @ts-ignore
+import countBy from 'lodash.countby';
+import { useCallback, useMemo, useRef } from 'react';
 import { useState } from 'react';
 import AddAmount from './add-amount';
 import SNDRACodemirror, { type SNDRACodemirrorRef } from './codemirror-sndra';
-
 export default () => {
   const { toggle, fullscreen } = useFullscreen();
   const { value, setValue } = useNativeCoinsValue();
 
   const [checkValue, setCheckValue] = useState<IReceipent[]>([]);
 
-  const onChange = (val: string) => {
-    // setValue(val);
+  // const onChange = (val: string) => {
+  //   setCheckValue([]);
+  // };
+  const onChange = useCallback((newValue: string) => {
     setCheckValue([]);
+  }, []);
+
+  const deleteLine = (lineNumbers: number[]) => {
+    const value = editorRef?.current?.getValue() ?? '';
+
+    setCheckValue((prevV: IReceipent[]) => {
+      const tmp = prevV
+        .filter((_, index) => {
+          return !lineNumbers.includes(index + 1);
+        })
+        .map((item, index) => {
+          return {
+            ...item,
+            id: index + 1,
+          };
+        });
+      const keyCount = countBy(tmp, 'address');
+      return tmp.map((item) => {
+        return {
+          ...item,
+          status:
+            item.status === 'valid' || item.status === 'duplicateAddress'
+              ? keyCount[item.address] > 1
+                ? 'duplicateAddress'
+                : 'valid'
+              : item.status,
+        };
+      });
+    });
+
+    const val = value
+      .split('\n')
+      .filter((_: unknown, index: number) => {
+        return !lineNumbers.includes(index + 1);
+      })
+      .join('\n');
+
+    console.log('deleteline', { val, value });
+    setValue(val);
   };
 
   const editorRef = useRef<SNDRACodemirrorRef | null>(null);
@@ -75,6 +117,17 @@ export default () => {
     }
   };
 
+  // const CM = useMemo(() => {
+  //   return (
+  //     <SNDRACodemirror
+  //       ref={editorRef}
+  //       value={value}
+  //       onChange={onChange}
+  //       fullscreen={fullscreen}
+  //     />
+  //   );
+  // }, [value, onChange, fullscreen]);
+
   return (
     <>
       <div className="w-full relative mb-12">
@@ -83,6 +136,7 @@ export default () => {
           <UploadSpreadsheet />
         </div>
 
+        {/* {CM} */}
         <SNDRACodemirror
           ref={editorRef}
           value={value}
@@ -149,7 +203,9 @@ export default () => {
       >
         Continue
       </Button>
-      {checkValue.length > 0 && <CheckTable data={checkValue} />}
+      {checkValue.length > 0 && (
+        <CheckTable data={checkValue} deleteLine={deleteLine} />
+      )}
     </>
   );
 };
