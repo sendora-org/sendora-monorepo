@@ -107,10 +107,9 @@ type IColumnkeys =
 type Iprops = {
   deleteLine: (line: number[]) => void;
   worker: Worker | null;
-  count: number;
 };
 
-export default function App({ deleteLine, worker, count }: Iprops) {
+export default function App({ deleteLine, worker }: Iprops) {
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
     new Set([]),
   );
@@ -149,15 +148,7 @@ export default function App({ deleteLine, worker, count }: Iprops) {
     isFetching,
     isPlaceholderData,
   } = useQuery({
-    queryKey: [
-      'projects',
-      worker,
-      count,
-      page,
-      pageSize,
-      sortDescriptor,
-      searchKeys,
-    ],
+    queryKey: ['projects', worker, page, pageSize, sortDescriptor, searchKeys],
     // cacheTime: 0,
     staleTime: 0,
     queryFn: () =>

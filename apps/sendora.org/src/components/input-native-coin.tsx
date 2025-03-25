@@ -53,46 +53,46 @@ export default () => {
   const { toggle, fullscreen } = useFullscreen();
   const { value, setValue } = useNativeCoinsValue();
 
-  const [checkValue, setCheckValue] = useState<IReceipent[]>([]);
+  const [checkValue, setCheckValue] = useState(false);
 
   // const onChange = (val: string) => {
   //   setCheckValue([]);
   // };
-  const onChange = useCallback((newValue: string) => {
-    setCheckValue([]);
+  const onChange = useCallback((newValue: boolean) => {
+    setCheckValue(false);
   }, []);
 
   useEffect(() => {
-    onChange(value);
+    onChange(typeof value !== 'string');
   }, [onChange, value]);
 
   const deleteLine = (lineNumbers: number[]) => {
     const value = editorRef?.current?.getValue() ?? '';
 
-    setCheckValue((prevV: IReceipent[]) => {
-      const tmp = prevV
-        .filter((_, index) => {
-          return !lineNumbers.includes(index + 1);
-        })
-        .map((item, index) => {
-          return {
-            ...item,
-            id: index + 1,
-          };
-        });
-      const keyCount = countBy(tmp, 'address');
-      return tmp.map((item) => {
-        return {
-          ...item,
-          status:
-            item.status === 'valid' || item.status === 'duplicateAddress'
-              ? keyCount[item.address] > 1
-                ? 'duplicateAddress'
-                : 'valid'
-              : item.status,
-        };
-      });
-    });
+    // setCheckValue((prevV: IReceipent[]) => {
+    //   const tmp = prevV
+    //     .filter((_, index) => {
+    //       return !lineNumbers.includes(index + 1);
+    //     })
+    //     .map((item, index) => {
+    //       return {
+    //         ...item,
+    //         id: index + 1,
+    //       };
+    //     });
+    //   const keyCount = countBy(tmp, 'address');
+    //   return tmp.map((item) => {
+    //     return {
+    //       ...item,
+    //       status:
+    //         item.status === 'valid' || item.status === 'duplicateAddress'
+    //           ? keyCount[item.address] > 1
+    //             ? 'duplicateAddress'
+    //             : 'valid'
+    //           : item.status,
+    //     };
+    //   });
+    // });
 
     const val = value
       .split('\n')
@@ -156,7 +156,7 @@ export default () => {
         <SNDRACodemirror
           ref={editorRef}
           value={value}
-          onChange={onChange}
+          onChange={() => onChange(false)}
           fullscreen={fullscreen}
         />
 
@@ -226,7 +226,7 @@ export default () => {
             console.log(ff);
           }
 
-          setCheckValue(result);
+          setCheckValue(true);
         }}
       >
         Continue
@@ -243,12 +243,8 @@ export default () => {
       {/* {checkValue.length > 0 && (
         <CheckTable2 data={checkValue} deleteLine={deleteLine} />
       )} */}
-      {checkValue.length > 0 && (
-        <CheckTable2
-          count={checkValue.length}
-          worker={taffydbRef.current}
-          deleteLine={deleteLine}
-        />
+      {checkValue && (
+        <CheckTable2 worker={taffydbRef.current} deleteLine={deleteLine} />
       )}
     </>
   );
