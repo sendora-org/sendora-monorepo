@@ -181,6 +181,9 @@ importers:
       swr:
         specifier: ^2.3.3
         version: 2.3.3(react@19.0.0)
+      taffydb:
+        specifier: ^2.7.3
+        version: 2.7.3
       usehooks-ts:
         specifier: ^3.1.1
         version: 3.1.1(react@19.0.0)
@@ -11446,6 +11449,10 @@ packages:
       dequal: 2.0.3
       react: 19.0.0
       use-sync-external-store: 1.4.0(react@19.0.0)
+    dev: false
+
+  /taffydb@2.7.3:
+    resolution: {integrity: sha512-GQ3gtYFSOAxSMN/apGtDKKkbJf+8izz5YfbGqIsUc7AMiQOapARZ76dhilRY2h39cynYxBFdafQo5HUL5vgkrg==}
     dev: false
 
   /tailwind-merge@2.5.4:

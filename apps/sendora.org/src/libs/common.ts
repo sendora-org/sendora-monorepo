@@ -354,6 +354,7 @@ export function runWorker2<T, R>(worker: Worker, value: T): Promise<R> {
     worker.postMessage(value);
 
     worker.onmessage = (event: MessageEvent<R>) => {
+      console.log('sssss', event);
       resolve(event.data);
       // worker.terminate();
     };

@@ -27,11 +27,14 @@ import {
   Tooltip,
   User,
 } from '@heroui/react';
+
 // @ts-ignore
 import orderBy from 'lodash.orderby';
 // @ts-ignore
 import sortBy from 'lodash.sortBy';
 import React, { useMemo } from 'react';
+// @ts-ignore
+import TAFFY from 'taffydb';
 import { ChevronDownIcon } from './chevron-down-icon';
 import { DeleteIcon } from './delete-icon';
 import { SearchIcon } from './search-icon';
@@ -104,6 +107,8 @@ type Iprops = {
 };
 
 export default function App({ data, deleteLine }: Iprops) {
+  // const db = TAFFY(data)
+
   const [filterValue, setFilterValue] = React.useState('');
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
     new Set([]),
