@@ -452,15 +452,18 @@ export default function App({ data, deleteLine }: Iprops) {
         )}
       </TableHeader>
       <TableBody emptyContent={'No data found'} items={sortedItems}>
-        {(item) => (
-          <TableRow key={item.id}>
-            {(columnKey) => (
-              <TableCell>
-                {renderCell(item, columnKey as IColumnkeys)}
-              </TableCell>
-            )}
-          </TableRow>
-        )}
+        {
+          // biome-ignore  lint/suspicious/noExplicitAny: reason
+          (item: any) => (
+            <TableRow key={item.id}>
+              {(columnKey) => (
+                <TableCell>
+                  {renderCell(item, columnKey as IColumnkeys)}
+                </TableCell>
+              )}
+            </TableRow>
+          )
+        }
       </TableBody>
     </Table>
   );
