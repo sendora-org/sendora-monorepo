@@ -103,6 +103,9 @@ importers:
       '@rainbow-me/rainbowkit':
         specifier: ^2.2.4
         version: 2.2.4(@tanstack/react-query@5.67.3)(@types/react@19.0.0)(react-dom@19.0.0)(react@19.0.0)(viem@2.23.13)(wagmi@2.14.13)
+      '@react-stately/data':
+        specifier: ^3.12.2
+        version: 3.12.2(react@19.0.0)
       '@sinclair/typebox':
         specifier: ^0.34.29
         version: 0.34.29
@@ -4815,6 +4818,16 @@ packages:
       '@react-stately/select': 3.6.11(react@19.0.0)
       '@react-stately/utils': 3.10.5(react@19.0.0)
       '@react-types/combobox': 3.13.3(react@19.0.0)
+      '@react-types/shared': 3.28.0(react@19.0.0)
+      '@swc/helpers': 0.5.15
+      react: 19.0.0
+    dev: false
+
+  /@react-stately/data@3.12.2(react@19.0.0):
+    resolution: {integrity: sha512-u0yQkISnPyR5RjpNJCSxyC28bx/UvUKtVYRH5yx/MtXbP+2Byn7ItQ+evRqpJB5XsWFlyohGebgbXvL3JSBVsg==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
+    dependencies:
       '@react-types/shared': 3.28.0(react@19.0.0)
       '@swc/helpers': 0.5.15
       react: 19.0.0

@@ -18,7 +18,7 @@ import {
   getDecimalsScientific,
 } from '@/libs/common';
 import { runWorker } from '@/libs/common';
-// import { runWorker2 } from '@/libs/common';
+import { runWorker2 } from '@/libs/common';
 import {
   batchInsertWithTransaction,
   createTable,
@@ -36,7 +36,19 @@ import AddAmount from './add-amount';
 import SNDRACodemirror, { type SNDRACodemirrorRef } from './codemirror-sndra';
 
 export default () => {
-  const workerRef = useRef<Worker | null>(null);
+  const taffydbRef = useRef<Worker | null>(null);
+  useEffect(() => {
+    taffydbRef.current = new Worker(
+      new URL('@/web-workers/demo3.ts', import.meta.url),
+      { type: 'module' },
+    );
+
+    return () => {
+      if (taffydbRef.current) {
+        taffydbRef.current.terminate();
+      }
+    };
+  }, []);
 
   const { toggle, fullscreen } = useFullscreen();
   const { value, setValue } = useNativeCoinsValue();
@@ -49,6 +61,10 @@ export default () => {
   const onChange = useCallback((newValue: string) => {
     setCheckValue([]);
   }, []);
+
+  useEffect(() => {
+    onChange(value);
+  }, [onChange, value]);
 
   const deleteLine = (lineNumbers: number[]) => {
     const value = editorRef?.current?.getValue() ?? '';
@@ -210,7 +226,6 @@ export default () => {
             thousandSeparator: thousandSeparator,
           };
 
-          console.log(33333, workerRef.current);
           const worker = new Worker(
             new URL(
               '@/web-workers/input-nativecoins-validate.ts',
@@ -224,7 +239,16 @@ export default () => {
             input,
           );
 
-          console.log({ result });
+          if (taffydbRef.current) {
+            const initPayload = {
+              type: 'initialize',
+              payload: result,
+            };
+
+            console.log('initialize');
+            const ff = await runWorker2(taffydbRef.current, initPayload);
+            console.log(ff);
+          }
 
           setCheckValue(result);
         }}
@@ -234,16 +258,22 @@ export default () => {
       {/* {checkValue.length > 0 && (
         <CheckTable data={checkValue} deleteLine={deleteLine} />
       )} */}
-      <CheckTable
+      {/* <CheckTable
         data={checkValue}
         deleteLine={deleteLine}
         // decimalSeparator={decimalSeparator}
         // thousandSeparator={thousandSeparator}
-      />
+      /> */}
       {/* {checkValue.length > 0 && (
         <CheckTable2 data={checkValue} deleteLine={deleteLine} />
       )} */}
-      <CheckTable2 data={checkValue} deleteLine={deleteLine} />
+      {checkValue.length > 0 && (
+        <CheckTable2
+          count={checkValue.length}
+          worker={taffydbRef.current}
+          deleteLine={deleteLine}
+        />
+      )}
     </>
   );
 };

@@ -6,7 +6,7 @@
     "dev": "next dev -p 1420",
     "next": "next",
     "build": "next build",
-    "preview": "serve out -c ../serve.json ",
+    "preview": "serve  out -c ../serve.json ",
     "lint": "biome check --write",
     "format": "biome format --write"
   },
@@ -22,6 +22,7 @@
     "@lezer/highlight": "^1.2.1",
     "@mantine/hooks": "^7.17.2",
     "@rainbow-me/rainbowkit": "^2.2.4",
+    "@react-stately/data": "^3.12.2",
     "@sinclair/typebox": "^0.34.29",
     "@sqlite.org/sqlite-wasm": "3.49.1-build2",
     "@supercharge/promise-pool": "^3.2.0",

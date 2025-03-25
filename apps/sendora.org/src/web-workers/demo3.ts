@@ -48,6 +48,8 @@ function handle(type: any, payload: any): any {
 
       // Search
       if (searchKey && searchField) {
+
+        console.log({searchKey,searchField})
         result = result.filter({
           [searchField]: { like: searchKey },
         });
@@ -55,11 +57,13 @@ function handle(type: any, payload: any): any {
 
       // Filter
       if (filter) {
+        console.log({filter})
         result = result.filter(filter);
       }
 
       // Sort
       if (sortField) {
+        console.log({sortField})
         result = result.order(`${sortField} ${sortOrder}`);
       }
 
@@ -69,14 +73,12 @@ function handle(type: any, payload: any): any {
       let sumValue = 0;
       // SUM
       if (sumField) {
+        console.log({sumField})
         sumValue = result.sum(sumField);
       }
 
       // totalRecords
-      const totalRecords = result.count();
-
-      console.log({ paginatedResult, start, pageSize });
-
+      // const totalRecords = result.count();
       const returns = {
         type: 'query_result',
         data: paginatedResult,
@@ -84,11 +86,10 @@ function handle(type: any, payload: any): any {
         pagination: {
           page,
           pageSize,
-          totalRecords,
-          totalPages: Math.ceil(totalRecords / pageSize),
+          totalRecords:10000,
+          totalPages: 100//Math.ceil(totalRecords / pageSize),
         },
       };
-      console.log(returns);
       postMessage(returns);
       break;
     }

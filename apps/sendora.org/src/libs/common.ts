@@ -354,8 +354,31 @@ export function runWorker2<T, R>(worker: Worker, value: T): Promise<R> {
     worker.postMessage(value);
 
     worker.onmessage = (event: MessageEvent<R>) => {
-      console.log('sssss', event);
       resolve(event.data);
+      // worker.terminate();
+    };
+
+    worker.onerror = (error) => {
+      reject(error);
+      // worker.terminate();
+    };
+  });
+}
+
+export function runWorker3<T, R>(
+  worker: Worker,
+  type: string,
+  value: T,
+): Promise<R> {
+  return new Promise((resolve, reject) => {
+    worker.postMessage(value);
+
+    worker.onmessage = (event: MessageEvent<R>) => {
+      // @ts-ignore
+      if (type === event.data.type) {
+        resolve(event.data);
+      }
+
       // worker.terminate();
     };
 

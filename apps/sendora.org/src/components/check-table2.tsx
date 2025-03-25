@@ -1,12 +1,7 @@
 import { CopyText } from '@/components/copy-text';
 import { local2NumberFormat, numberFormats } from '@/constants/common';
 import { useLocale } from '@/hooks/useLocale';
-import Decimal from 'decimal.js';
-
-import {
-  formatLocalizedNumber,
-  formatLocalizedNumberWithSmallNumbers,
-} from '@/libs/common';
+import { runWorker2 } from '@/libs/common';
 import { emojiAvatarForAddress } from '@/libs/emojiAvatarFOrAddress';
 import { formatBigIntNumber } from '@/libs/number';
 import {
@@ -18,6 +13,8 @@ import {
   DropdownTrigger,
   Input,
   Pagination,
+  type SortDescriptor,
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -27,15 +24,22 @@ import {
   Tooltip,
   User,
 } from '@heroui/react';
-import { sort } from 'fast-sort';
-// @ts-ignore
-import orderBy from 'lodash.orderby';
-// @ts-ignore
-import sortBy from 'lodash.sortBy';
+import { useAsyncList } from '@react-stately/data';
+import {
+  QueryClient,
+  QueryClientProvider,
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
+import { useEffect, useRef } from 'react';
 import React, { useMemo } from 'react';
+import useSWR from 'swr';
 import { ChevronDownIcon } from './chevron-down-icon';
 import { DeleteIcon } from './delete-icon';
 import { SearchIcon } from './search-icon';
+
+import { queryItems } from '@/libs/taffydb';
 
 export const columns = [
   { name: 'No.', uid: 'id', sortable: true },
@@ -101,25 +105,34 @@ type IColumnkeys =
   | 'amount';
 
 type Iprops = {
-  data: IReceipent[];
   deleteLine: (line: number[]) => void;
+  worker: Worker | null;
+  count: number;
 };
 
-export default function App({ data, deleteLine }: Iprops) {
-  const [filterValue, setFilterValue] = React.useState('');
+export default function App({ deleteLine, worker, count }: Iprops) {
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
     new Set([]),
   );
   const [visibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
   const [statusFilter, setStatusFilter] = React.useState<Selection>('all');
-  const rowsPerPage = 100;
+
+  // Page
+  const pageSize = 100;
+  const [page, setPage] = React.useState(1);
+
+  // Search
+  const [searchKeys, setSearchKeys] = React.useState('');
+
+  // Sort
   const [sortDescriptor, setSortDescriptor] = React.useState({
     column: 'id' as Key,
     direction: 'ascending' as SortDirection,
   });
-  const [page, setPage] = React.useState(1);
 
-  const hasSearchFilter = Boolean(filterValue);
+  // Filter
+
+  console.log({sortDescriptor})
 
   const headerColumns = React.useMemo(() => {
     return columns.filter((column) =>
@@ -127,66 +140,29 @@ export default function App({ data, deleteLine }: Iprops) {
     );
   }, [visibleColumns]);
 
-  const filteredItems = React.useMemo(() => {
-    let filteredData = [...data];
+  const queryClient = useQueryClient();
 
-    if (hasSearchFilter) {
-      filteredData = filteredData.filter(
-        (receipient) =>
-          receipient.name.toLowerCase().includes(filterValue.toLowerCase()) ||
-          receipient?.address
-            ?.toLowerCase()
-            .includes(filterValue.toLowerCase()),
-      );
-    }
-    if (
-      statusFilter !== 'all' &&
-      Array.from(statusFilter).length !== statusOptions.length
-    ) {
-      filteredData = filteredData.filter((receipient) =>
-        Array.from(statusFilter).includes(receipient.status),
-      );
-    }
-
-    return filteredData;
-  }, [data, filterValue, statusFilter, hasSearchFilter]);
-
-  const pages = Math.ceil(filteredItems.length / rowsPerPage);
-
-  // const sortedItems = React.useMemo(() => {
-  //   const start = (page - 1) * rowsPerPage;
-  //   const end = start + rowsPerPage;
-  //   return [...filteredItems]
-  //     .sort((a, b) => {
-  //       const first = a[sortDescriptor.column as IColumnkeys];
-  //       const second = b[sortDescriptor.column as IColumnkeys];
-  //       const cmp = first < second ? -1 : first > second ? 1 : 0;
-  //       return sortDescriptor.direction === 'descending' ? -cmp : cmp;
-  //     })
-  //     .slice(start, end);
-  // }, [sortDescriptor, page, filteredItems]);
-
-  const sortedItems = React.useMemo(() => {
-    if (!filteredItems.length) return [];
-
-    const start = (page - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-
-    if (sortDescriptor.direction === 'ascending') {
-      return (
-        sort(filteredItems)
-          // biome-ignore  lint/suspicious/noExplicitAny: reason
-          .asc((u: any) => u[sortDescriptor.column])
-          .slice(start, end)
-      );
-    }
-    return (
-      sort(filteredItems)
-        // biome-ignore lint/suspicious/noExplicitAny: reason
-        .desc((u: any) => u[sortDescriptor.column])
-        .slice(start, end)
-    );
-  }, [sortDescriptor, page, filteredItems]);
+  const {
+    status,
+    data: queryData,
+    error,
+    isFetching,
+    isPlaceholderData,
+  } = useQuery({
+    queryKey: [
+      'projects',
+      worker,
+      count,
+      page,
+      pageSize,
+      sortDescriptor,
+      searchKeys,
+    ],
+    queryFn: () =>
+      queryItems(worker, page, pageSize, sortDescriptor, searchKeys),
+    placeholderData: keepPreviousData,
+    // staleTime: 5000,
+  });
 
   const UserIcon = ({ address }: { address: string }) => {
     const { color: backgroundColor, emoji } = useMemo(
@@ -300,20 +276,18 @@ export default function App({ data, deleteLine }: Iprops) {
     }
   };
 
-  const onSearchChange = React.useCallback(
-    (value: React.SetStateAction<string>) => {
-      if (value) {
-        setFilterValue(value);
-        setPage(1);
-      } else {
-        setFilterValue('');
-      }
-    },
-    [],
-  );
+  const onSearchChange = React.useCallback((value: string) => {
+    if (value) {
+      console.log('onsearchchange', value);
+      setSearchKeys(value);
+      setPage(1);
+    } else {
+      setSearchKeys('');
+    }
+  }, []);
 
   const onClear = React.useCallback(() => {
-    setFilterValue('');
+    setSearchKeys('');
     setPage(1);
   }, []);
 
@@ -331,12 +305,13 @@ export default function App({ data, deleteLine }: Iprops) {
           <Input
             isClearable
             className="w-full sm:max-w-[44%]"
-            placeholder="Search by name..."
+            placeholder="Search by receipient ..."
             startContent={<SearchIcon />}
-            value={filterValue}
+            value={searchKeys}
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
+
           <div className="flex gap-3">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
@@ -367,8 +342,8 @@ export default function App({ data, deleteLine }: Iprops) {
         <div className="flex justify-between items-center">
           <span className="w-[30%] text-small text-default-400">
             {selectedKeys === 'all'
-              ? `${filteredItems.length} of ${filteredItems.length} selected`
-              : `${selectedKeys.size} of ${filteredItems.length} selected`}
+              ? `${queryData?.pagination?.totalRecords} of ${queryData?.pagination?.totalRecords} selected`
+              : `${selectedKeys.size} of ${queryData?.pagination?.totalRecords} selected`}
           </span>
           {selectedKeys === 'all' ? (
             <Button
@@ -378,9 +353,9 @@ export default function App({ data, deleteLine }: Iprops) {
                   11111,
                   'all',
                   selectedKeys,
-                  filteredItems.map(({ id }) => id),
+                  // filteredItems.map(({ id }) => id),
                 );
-                deleteLine(filteredItems.map(({ id }) => Number(id)));
+                // deleteLine(filteredItems.map(({ id }) => Number(id)));
               }}
             >
               {' '}
@@ -408,13 +383,12 @@ export default function App({ data, deleteLine }: Iprops) {
     );
   }, [
     onSearchChange,
-    filteredItems.length,
     selectedKeys,
     deleteLine,
-    filteredItems,
+    searchKeys,
     onClear,
     statusFilter,
-    filterValue,
+    queryData,
   ]);
 
   const bottomContent = React.useMemo(() => {
@@ -426,12 +400,12 @@ export default function App({ data, deleteLine }: Iprops) {
           showShadow
           color="primary"
           page={page}
-          total={pages}
+          total={queryData?.pagination.totalPages ?? 1}
           onChange={setPage}
         />
       </div>
     );
-  }, [page, pages]);
+  }, [page, queryData]);
 
   return (
     <Table
@@ -442,7 +416,11 @@ export default function App({ data, deleteLine }: Iprops) {
       topContent={topContent}
       topContentPlacement="outside"
       classNames={{
-        wrapper: 'max-h-[382px]',
+        base: 'relative ',
+        wrapper: 'max-h-[382px] relative',
+        // ${isFetching ? ' overflow-hidden' : ''}
+        loadingWrapper:
+          'absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-50',
       }}
       selectedKeys={selectedKeys}
       selectionMode="multiple"
@@ -461,16 +439,24 @@ export default function App({ data, deleteLine }: Iprops) {
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody emptyContent={'No data found'} items={sortedItems}>
-        {(item) => (
-          <TableRow key={item.id}>
-            {(columnKey) => (
-              <TableCell>
-                {renderCell(item, columnKey as IColumnkeys)}
-              </TableCell>
-            )}
-          </TableRow>
-        )}
+      <TableBody
+        emptyContent={'No data found'}
+        // isLoading={isFetching}
+        items={queryData?.data ?? []}
+        // loadingContent={<Spinner label="Loading..." />}
+      >
+        {
+          // biome-ignore  lint/suspicious/noExplicitAny: reason
+          (item: any) => (
+            <TableRow key={item.id}>
+              {(columnKey) => (
+                <TableCell>
+                  {renderCell(item, columnKey as IColumnkeys)}
+                </TableCell>
+              )}
+            </TableRow>
+          )
+        }
       </TableBody>
     </Table>
   );
