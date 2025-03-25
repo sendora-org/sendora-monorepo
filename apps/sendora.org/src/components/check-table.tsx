@@ -83,6 +83,7 @@ export type IReceipent = {
   address: string;
   addressType: string;
   amount: bigint;
+  amountRaw: string;
 };
 type IColumnkeys =
   | 'id'
@@ -208,18 +209,24 @@ export default function App({ data, deleteLine }: Iprops) {
         return (
           <div className="flex flex-col">
             <p className="text-bold text-small capitalize">
-              {formatBigIntNumber(
-                cellValue as bigint,
-                thousandSeparator,
-                decimalSeparator,
-              )}
+              {receipient.status === 'valid' &&
+                formatBigIntNumber(
+                  cellValue as bigint,
+                  thousandSeparator,
+                  decimalSeparator,
+                )}
+
+              {receipient.status !== 'valid' && receipient.amountRaw}
             </p>
             <p className="text-bold text-tiny capitalize text-default-400">
-              {formatBigIntNumber(
-                receipient.amount as bigint,
-                thousandSeparator,
-                decimalSeparator,
-              )}
+              {receipient.status === 'valid' &&
+                formatBigIntNumber(
+                  receipient.amount as bigint,
+                  thousandSeparator,
+                  decimalSeparator,
+                )}
+
+              {receipient.status !== 'valid' && receipient.amountRaw}
             </p>
           </div>
         );

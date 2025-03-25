@@ -58,6 +58,7 @@ export type IReceipent = {
   address: string;
   addressType: string;
   amount: bigint;
+  amountRaw: string;
 };
 
 async function handler(input: Input) {
@@ -69,7 +70,7 @@ async function handler(input: Input) {
       const newchunk = chunk.map((line: string) => {
         const arr = splitByEthereumAddress(line);
         let addressType = 'string';
-        let amount = arr.length >= 2 ? removeNumberNoise(arr[1].trim()) : '';
+        const amount = arr.length >= 2 ? removeNumberNoise(arr[1].trim()) : '';
         let amountBigInt = 0n;
         if (isAddress(arr[0], { strict: false })) {
           addressType = 'address';
@@ -114,13 +115,6 @@ async function handler(input: Input) {
           }
         }
 
-        if (amountErrorType === 'wrongAmount') {
-          const amountStr = arr[1].trim().startsWith(',')
-            ? arr[1].trim().slice(1)
-            : arr[1].trim();
-          amount = arr.length >= 2 ? amountStr : '';
-        }
-
         return {
           input: arr[0],
           isReceipientValid: addressType !== 'string',
@@ -130,6 +124,7 @@ async function handler(input: Input) {
           ensName:
             addressType !== 'address' && addressType !== 'string' ? arr[0] : '',
           amount: amountBigInt,
+          amountRaw: amount,
         };
       });
 
@@ -283,6 +278,7 @@ async function handler(input: Input) {
       address: item.address,
       addressType: item.addressType,
       amount: item.amount,
+      amountRaw: item.amountRaw,
     };
   });
 

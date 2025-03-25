@@ -537,7 +537,8 @@ export function splitLinesIntoChunks(
  * Removes leading and trailing noise characters from a string containing a number,
  * preserving the original number format (including thousand separators, decimal separators, and subscripts).
  * @param input - The input string containing a number with possible noise.
- * @returns The string with leading and trailing noise removed, or empty string if no valid number found.
+ * @returns The string with leading and trailing noise removed if valid number found,
+ *          or original string with trimmed spaces and first comma removed if no valid number.
  */
 export function removeNumberNoise(input: string): string {
   // Step 1: Define regex to match number part with noise
@@ -546,12 +547,17 @@ export function removeNumberNoise(input: string): string {
 
   // Step 2: Extract the number part
   const match = input.match(numberRegex);
-  if (!match || !match[1]) {
-    return ''; // No valid number found
+  if (match?.[1]) {
+    // Step 3: Return the raw number part without modification if valid number found
+    return match[1];
   }
 
-  // Step 3: Return the raw number part without modification
-  return match[1];
+  // Step 4: If no valid number found, trim spaces and remove first comma if present
+  let result = input.trim();
+  if (result.startsWith(',')) {
+    result = result.substring(1).trim();
+  }
+  return result;
 }
 
 export function flattenArray<T>(chunks: T[][]): T[] {
