@@ -1,6 +1,7 @@
 'use client';
 import CheckTable from '@/components/check-table';
 import type { IReceipent } from '@/components/check-table';
+import CheckTable2 from '@/components/check-table2';
 import DecimalSeparatorSwitch from '@/components/decimal-separator-switch';
 import H3Title from '@/components/h3-title';
 import ShowSample from '@/components/show-sample';
@@ -17,16 +18,26 @@ import {
   getDecimalsScientific,
 } from '@/libs/common';
 import { runWorker } from '@/libs/common';
+// import { runWorker2 } from '@/libs/common';
+import {
+  batchInsertWithTransaction,
+  createTable,
+  initDB,
+  queryData,
+} from '@/libs/sqlite3';
 import { Button, ButtonGroup } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { useFullscreen } from '@mantine/hooks';
 // @ts-ignore
 import countBy from 'lodash.countby';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useState } from 'react';
 import AddAmount from './add-amount';
 import SNDRACodemirror, { type SNDRACodemirrorRef } from './codemirror-sndra';
+
 export default () => {
+  const workerRef = useRef<Worker | null>(null);
+
   const { toggle, fullscreen } = useFullscreen();
   const { value, setValue } = useNativeCoinsValue();
 
@@ -128,6 +139,19 @@ export default () => {
   //   );
   // }, [value, onChange, fullscreen]);
 
+  // useEffect(() => {
+  //   workerRef.current = new Worker(
+  //     new URL('@/web-workers/input-nativecoins-validate.ts', import.meta.url),
+  //     { type: 'module' },
+  //   );
+
+  //   return () => {
+  //     if (workerRef.current) {
+  //       workerRef.current.terminate();
+  //     }
+  //   };
+  // }, []);
+
   return (
     <>
       <div className="w-full relative mb-12">
@@ -179,7 +203,14 @@ export default () => {
       <Button
         onPress={async () => {
           console.log('continue');
+          const value = editorRef?.current?.getValue() ?? '';
+          const input = {
+            data: value,
+            decimalSeparator,
+            thousandSeparators: [thousandSeparator],
+          };
 
+          console.log(33333, workerRef.current);
           const worker = new Worker(
             new URL(
               '@/web-workers/input-nativecoins-validate.ts',
@@ -187,25 +218,27 @@ export default () => {
             ),
             { type: 'module' },
           );
-          const value = editorRef?.current?.getValue() ?? '';
-          const input = {
-            data: value,
-            decimalSeparator,
-            thousandSeparators: [thousandSeparator],
-          };
+
           const result = await runWorker<typeof input, IReceipent[]>(
             worker,
             input,
           );
+
+          console.log({ result });
 
           setCheckValue(result);
         }}
       >
         Continue
       </Button>
-      {checkValue.length > 0 && (
+      {/* {checkValue.length > 0 && (
         <CheckTable data={checkValue} deleteLine={deleteLine} />
-      )}
+      )} */}
+      <CheckTable data={checkValue} deleteLine={deleteLine} />
+      {/* {checkValue.length > 0 && (
+        <CheckTable2 data={checkValue} deleteLine={deleteLine} />
+      )} */}
+      {/* <CheckTable2 data={checkValue} deleteLine={deleteLine} /> */}
     </>
   );
 };

@@ -349,6 +349,21 @@ export function runWorker<T, R>(worker: Worker, value: T): Promise<R> {
     };
   });
 }
+export function runWorker2<T, R>(worker: Worker, value: T): Promise<R> {
+  return new Promise((resolve, reject) => {
+    worker.postMessage(value);
+
+    worker.onmessage = (event: MessageEvent<R>) => {
+      resolve(event.data);
+      // worker.terminate();
+    };
+
+    worker.onerror = (error) => {
+      reject(error);
+      // worker.terminate();
+    };
+  });
+}
 
 export const getWorkbook = async (ab: ArrayBuffer) => {
   const worker = new Worker(

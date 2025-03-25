@@ -28,7 +28,6 @@ const SNDRACodemirror = forwardRef(
   ({ value, onChange, fullscreen }: UIWCodemirrorProps, ref) => {
     const editorRef = useRef<HTMLDivElement | null>(null);
     const editorViewRef = useRef<EditorView | null>(null);
-    console.log(4444, { value });
 
     useEffect(() => {
       if (!editorRef.current) return;

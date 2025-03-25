@@ -9,20 +9,54 @@ import {
   splitByEthereumAddress,
 } from '@/libs/common';
 import { flattenArray } from '@/libs/common';
+import {
+  batchInsertWithTransaction,
+  createTable,
+  initDB,
+  queryData,
+} from '@/libs/sqlite3';
 import { PromisePool } from '@supercharge/promise-pool';
 // @ts-ignore
 import countBy from 'lodash.countby';
 import { isAddress } from 'viem';
+
+import type { Database } from '@sqlite.org/sqlite-wasm';
 type Input = {
   data: string;
   thousandSeparators: string[];
   decimalSeparator: '.' | ',';
 };
 
+// let db: Database | null = null;
+
 self.onmessage = async (event: MessageEvent<Input>) => {
+  // if (db == null) {
+  //   console.log('db is null');
+  //   const _db = await initDB();
+  //   db = _db;
+  // }
+
   const result = await handler(event.data);
 
   postMessage(result);
+};
+
+type IStatus =
+  | 'valid'
+  | 'wrongAddress'
+  | 'emptyAmount'
+  | 'wrongAmount'
+  | 'zeroAmount'
+  | 'duplicateAddress';
+
+export type IReceipent = {
+  id: number;
+  name: string;
+  status: IStatus;
+  ensName: string;
+  address: string;
+  addressType: string;
+  amount: string;
 };
 
 async function handler(input: Input) {
@@ -51,15 +85,6 @@ async function handler(input: Input) {
             addressType = '.arb';
           }
         }
-
-        //       export type ReceipientStatus =
-        // | { status: 'wrongAddress'; message: 'Wrong Address' }
-        // | { status: 'duplicateAddress'; message: 'Duplicate Address' } //
-        // | { status: 'valid'; message: 'Valid' } //
-
-        // | { status: 'zeroAmount'; message: 'Zero Amount' }
-        // | { status: 'wrongAmount'; message: 'Wrong Amount' }
-        // | { status: 'emptyAmount'; message: 'Empty Amount' };
 
         let amountErrorType = '';
 
@@ -226,7 +251,7 @@ async function handler(input: Input) {
 
   const lines = flattenArray(results);
   const keyCount = countBy(lines, 'address');
-  return lines.map((item, index) => {
+  const newLines = lines.map((item, index) => {
     let status = 'valid';
 
     if (item.addressType === 'string') {
@@ -250,12 +275,34 @@ async function handler(input: Input) {
     }
 
     return {
-      ...item,
-      isReceipientDuplicate: keyCount[item.address] > 1,
-      status,
-
-      name: item.input,
       id: index + 1,
+      name: item.input,
+      status,
+      ensName: item.ensName,
+      address: item.address,
+      addressType: item.addressType,
+      amount: item.amount,
     };
   });
+
+  // if (db) {
+  //   await createTable(db);
+  //   await batchInsertWithTransaction(
+  //     db,
+  //     newLines.map((item) => {
+  //       return [
+  //         item.id,
+  //         item.name,
+  //         item.status,
+  //         item.ensName,
+  //         item.address,
+  //         item.addressType,
+  //         item.amount,
+  //       ];
+  //     }),
+  //   );
+  //   await queryData(db);
+  // }
+
+  return newLines;
 }
