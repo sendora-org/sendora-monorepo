@@ -27,6 +27,10 @@ import {
   Tooltip,
   User,
 } from '@heroui/react';
+// @ts-ignore
+import orderBy from 'lodash.orderby';
+// @ts-ignore
+import sortBy from 'lodash.sortBy';
 import React, { useMemo } from 'react';
 import { ChevronDownIcon } from './chevron-down-icon';
 import { DeleteIcon } from './delete-icon';
@@ -147,17 +151,31 @@ export default function App({ data, deleteLine }: Iprops) {
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
+  // const sortedItems = React.useMemo(() => {
+  //   const start = (page - 1) * rowsPerPage;
+  //   const end = start + rowsPerPage;
+  //   return [...filteredItems]
+  //     .sort((a, b) => {
+  //       const first = a[sortDescriptor.column as IColumnkeys];
+  //       const second = b[sortDescriptor.column as IColumnkeys];
+  //       const cmp = first < second ? -1 : first > second ? 1 : 0;
+  //       return sortDescriptor.direction === 'descending' ? -cmp : cmp;
+  //     })
+  //     .slice(start, end);
+  // }, [sortDescriptor, page, filteredItems]);
+
   const sortedItems = React.useMemo(() => {
+    if (!filteredItems.length) return [];
+
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
-    return [...filteredItems]
-      .sort((a, b) => {
-        const first = a[sortDescriptor.column as IColumnkeys];
-        const second = b[sortDescriptor.column as IColumnkeys];
-        const cmp = first < second ? -1 : first > second ? 1 : 0;
-        return sortDescriptor.direction === 'descending' ? -cmp : cmp;
-      })
-      .slice(start, end);
+
+    const sortType = sortDescriptor.direction === 'ascending' ? 'asc' : 'desc';
+
+    return orderBy(filteredItems, [sortDescriptor.column], [sortType]).slice(
+      start,
+      end,
+    );
   }, [sortDescriptor, page, filteredItems]);
 
   const UserIcon = ({ address }: { address: string }) => {

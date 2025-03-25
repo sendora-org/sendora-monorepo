@@ -243,7 +243,7 @@ export default () => {
       {/* {checkValue.length > 0 && (
         <CheckTable2 data={checkValue} deleteLine={deleteLine} />
       )} */}
-      {/* <CheckTable2 data={checkValue} deleteLine={deleteLine} /> */}
+      <CheckTable2 data={checkValue} deleteLine={deleteLine} />
     </>
   );
 };

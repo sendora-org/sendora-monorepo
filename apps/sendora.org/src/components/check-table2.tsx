@@ -8,6 +8,7 @@ import {
   formatLocalizedNumberWithSmallNumbers,
 } from '@/libs/common';
 import { emojiAvatarForAddress } from '@/libs/emojiAvatarFOrAddress';
+import { formatBigIntNumber } from '@/libs/number';
 import {
   Button,
   Chip,
@@ -26,10 +27,16 @@ import {
   Tooltip,
   User,
 } from '@heroui/react';
+import { sort } from 'fast-sort';
+// @ts-ignore
+import orderBy from 'lodash.orderby';
+// @ts-ignore
+import sortBy from 'lodash.sortBy';
 import React, { useMemo } from 'react';
 import { ChevronDownIcon } from './chevron-down-icon';
 import { DeleteIcon } from './delete-icon';
 import { SearchIcon } from './search-icon';
+
 export const columns = [
   { name: 'No.', uid: 'id', sortable: true },
   { name: 'Receipient', uid: 'name', sortable: true },
@@ -81,7 +88,8 @@ export type IReceipent = {
   ensName: string;
   address: string;
   addressType: string;
-  amount: string;
+  amount: bigint;
+  amountRaw: string;
 };
 type IColumnkeys =
   | 'id'
@@ -98,13 +106,6 @@ type Iprops = {
 };
 
 export default function App({ data, deleteLine }: Iprops) {
-  // query
-  // search
-  // filter
-  // sort
-
-  // delete
-
   const [filterValue, setFilterValue] = React.useState('');
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
     new Set([]),
@@ -152,34 +153,39 @@ export default function App({ data, deleteLine }: Iprops) {
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
+  // const sortedItems = React.useMemo(() => {
+  //   const start = (page - 1) * rowsPerPage;
+  //   const end = start + rowsPerPage;
+  //   return [...filteredItems]
+  //     .sort((a, b) => {
+  //       const first = a[sortDescriptor.column as IColumnkeys];
+  //       const second = b[sortDescriptor.column as IColumnkeys];
+  //       const cmp = first < second ? -1 : first > second ? 1 : 0;
+  //       return sortDescriptor.direction === 'descending' ? -cmp : cmp;
+  //     })
+  //     .slice(start, end);
+  // }, [sortDescriptor, page, filteredItems]);
+
   const sortedItems = React.useMemo(() => {
+    if (!filteredItems.length) return [];
+
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
-    return [...filteredItems]
-      .sort((a, b) => {
-        if (sortDescriptor.column === 'amount') {
-          try {
-            const first = new Decimal(
-              a[sortDescriptor.column as IColumnkeys] ?? 0,
-            );
-            const second = new Decimal(
-              b[sortDescriptor.column as IColumnkeys] ?? 0,
-            );
-            const cmp = first.lt(second) ? -1 : first.gt(second) ? 1 : 0;
 
-            return sortDescriptor.direction === 'descending' ? -cmp : cmp;
-          } catch (e) {}
-
-          const cmp = -1;
-          return sortDescriptor.direction === 'descending' ? -cmp : cmp;
-        }
-        const first = a[sortDescriptor.column as IColumnkeys];
-        const second = b[sortDescriptor.column as IColumnkeys];
-        const cmp = first < second ? -1 : first > second ? 1 : 0;
-
-        return sortDescriptor.direction === 'descending' ? -cmp : cmp;
-      })
-      .slice(start, end);
+    if (sortDescriptor.direction === 'ascending') {
+      return (
+        sort(filteredItems)
+          // biome-ignore  lint/suspicious/noExplicitAny: reason
+          .asc((u: any) => u[sortDescriptor.column])
+          .slice(start, end)
+      );
+    }
+    return (
+      sort(filteredItems)
+        // biome-ignore lint/suspicious/noExplicitAny: reason
+        .desc((u: any) => u[sortDescriptor.column])
+        .slice(start, end)
+    );
   }, [sortDescriptor, page, filteredItems]);
 
   const UserIcon = ({ address }: { address: string }) => {
@@ -230,9 +236,25 @@ export default function App({ data, deleteLine }: Iprops) {
       case 'amount':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{cellValue}</p>
+            <p className="text-bold text-small capitalize">
+              {receipient.status === 'valid' &&
+                formatBigIntNumber(
+                  cellValue as bigint,
+                  thousandSeparator,
+                  decimalSeparator,
+                )}
+
+              {receipient.status !== 'valid' && receipient.amountRaw}
+            </p>
             <p className="text-bold text-tiny capitalize text-default-400">
-              {receipient.amount}
+              {receipient.status === 'valid' &&
+                formatBigIntNumber(
+                  receipient.amount as bigint,
+                  thousandSeparator,
+                  decimalSeparator,
+                )}
+
+              {receipient.status !== 'valid' && receipient.amountRaw}
             </p>
           </div>
         );
@@ -301,7 +323,7 @@ export default function App({ data, deleteLine }: Iprops) {
         <header className="mb-6 flex w-full items-center justify-between ">
           <div className="flex flex-col ">
             <h1 className="text-xl font-bold text-default-500 lg:text-2xl">
-              Confirm table2
+              Confirm
             </h1>
           </div>
         </header>
