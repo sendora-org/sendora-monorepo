@@ -9,6 +9,7 @@ import {
   splitByEthereumAddress,
 } from '@/libs/common';
 import { flattenArray } from '@/libs/common';
+import { parseAndScaleNumber } from '@/libs/number';
 import {
   batchInsertWithTransaction,
   createTable,
@@ -23,7 +24,7 @@ import { isAddress } from 'viem';
 import type { Database } from '@sqlite.org/sqlite-wasm';
 type Input = {
   data: string;
-  thousandSeparators: string[];
+  thousandSeparator: string;
   decimalSeparator: '.' | ',';
 };
 
@@ -56,11 +57,11 @@ export type IReceipent = {
   ensName: string;
   address: string;
   addressType: string;
-  amount: string;
+  amount: bigint;
 };
 
 async function handler(input: Input) {
-  const { data, thousandSeparators, decimalSeparator } = input;
+  const { data, thousandSeparator, decimalSeparator } = input;
   const chunks = splitLinesIntoChunks(data, 1000);
   const { results } = await PromisePool.withConcurrency(1)
     .for(chunks)
@@ -69,6 +70,7 @@ async function handler(input: Input) {
         const arr = splitByEthereumAddress(line);
         let addressType = 'string';
         let amount = arr.length >= 2 ? removeNumberNoise(arr[1].trim()) : '';
+        let amountBigInt = 0n;
         if (isAddress(arr[0], { strict: false })) {
           addressType = 'address';
         } else {
@@ -101,15 +103,14 @@ async function handler(input: Input) {
         }
 
         if (amountErrorType === '') {
-          const amountNumber = parseLocalizedNumber(
-            amount,
-            decimalSeparator,
-            thousandSeparators,
-          );
-          if (amountNumber == null) {
+          try {
+            amountBigInt = parseAndScaleNumber(
+              amount,
+              thousandSeparator,
+              decimalSeparator,
+            );
+          } catch (e) {
             amountErrorType = 'wrongAmount';
-          } else {
-            amount = String(amountNumber);
           }
         }
 
@@ -128,7 +129,7 @@ async function handler(input: Input) {
           address: addressType === 'address' ? arr[0] : '',
           ensName:
             addressType !== 'address' && addressType !== 'string' ? arr[0] : '',
-          amount,
+          amount: amountBigInt,
         };
       });
 

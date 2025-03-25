@@ -207,7 +207,7 @@ export default () => {
           const input = {
             data: value,
             decimalSeparator,
-            thousandSeparators: [thousandSeparator],
+            thousandSeparator: thousandSeparator,
           };
 
           console.log(33333, workerRef.current);
@@ -234,7 +234,12 @@ export default () => {
       {/* {checkValue.length > 0 && (
         <CheckTable data={checkValue} deleteLine={deleteLine} />
       )} */}
-      <CheckTable data={checkValue} deleteLine={deleteLine} />
+      <CheckTable
+        data={checkValue}
+        deleteLine={deleteLine}
+        // decimalSeparator={decimalSeparator}
+        // thousandSeparator={thousandSeparator}
+      />
       {/* {checkValue.length > 0 && (
         <CheckTable2 data={checkValue} deleteLine={deleteLine} />
       )} */}

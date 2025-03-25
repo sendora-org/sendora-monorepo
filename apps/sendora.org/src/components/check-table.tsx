@@ -8,6 +8,7 @@ import {
   formatLocalizedNumberWithSmallNumbers,
 } from '@/libs/common';
 import { emojiAvatarForAddress } from '@/libs/emojiAvatarFOrAddress';
+import { formatBigIntNumber } from '@/libs/number';
 import {
   Button,
   Chip,
@@ -81,7 +82,7 @@ export type IReceipent = {
   ensName: string;
   address: string;
   addressType: string;
-  amount: string;
+  amount: bigint;
 };
 type IColumnkeys =
   | 'id'
@@ -145,38 +146,14 @@ export default function App({ data, deleteLine }: Iprops) {
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
-  // const items = React.useMemo(() => {
-  //   const start = (page - 1) * rowsPerPage;
-  //   const end = start + rowsPerPage;
-
-  //   return filteredItems.slice(start, end);
-  // }, [page, filteredItems]);
-
   const sortedItems = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
     return [...filteredItems]
       .sort((a, b) => {
-        if (sortDescriptor.column === 'amount') {
-          try {
-            const first = new Decimal(
-              a[sortDescriptor.column as IColumnkeys] ?? 0,
-            );
-            const second = new Decimal(
-              b[sortDescriptor.column as IColumnkeys] ?? 0,
-            );
-            const cmp = first.lt(second) ? -1 : first.gt(second) ? 1 : 0;
-
-            return sortDescriptor.direction === 'descending' ? -cmp : cmp;
-          } catch (e) {}
-
-          const cmp = -1;
-          return sortDescriptor.direction === 'descending' ? -cmp : cmp;
-        }
         const first = a[sortDescriptor.column as IColumnkeys];
         const second = b[sortDescriptor.column as IColumnkeys];
         const cmp = first < second ? -1 : first > second ? 1 : 0;
-
         return sortDescriptor.direction === 'descending' ? -cmp : cmp;
       })
       .slice(start, end);
@@ -230,9 +207,19 @@ export default function App({ data, deleteLine }: Iprops) {
       case 'amount':
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{cellValue}</p>
+            <p className="text-bold text-small capitalize">
+              {formatBigIntNumber(
+                cellValue as bigint,
+                thousandSeparator,
+                decimalSeparator,
+              )}
+            </p>
             <p className="text-bold text-tiny capitalize text-default-400">
-              {receipient.amount}
+              {formatBigIntNumber(
+                receipient.amount as bigint,
+                thousandSeparator,
+                decimalSeparator,
+              )}
             </p>
           </div>
         );
