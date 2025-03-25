@@ -20,14 +20,13 @@ export const queryItems = async <T>(
   sumField?: string,
   filter?: unknown,
 ): Promise<IResponse<T>> => {
-  console.log({ worker });
   if (worker) {
     let sortField = 'id';
-    let sortOrder = 'asec';
+    let sortOrder = 'asc';
 
     if (sortDescriptor) {
       sortField = sortDescriptor.column as string;
-      sortOrder = sortDescriptor.direction === 'ascending' ? 'asec' : 'desc';
+      sortOrder = sortDescriptor.direction === 'ascending' ? 'asc' : 'desc';
     }
     const queryPayload = {
       type: 'query',

@@ -39,7 +39,7 @@ export default () => {
   const taffydbRef = useRef<Worker | null>(null);
   useEffect(() => {
     taffydbRef.current = new Worker(
-      new URL('@/web-workers/demo3.ts', import.meta.url),
+      new URL('@/web-workers/demo4.ts', import.meta.url),
       { type: 'module' },
     );
 
@@ -143,30 +143,6 @@ export default () => {
       );
     }
   };
-
-  // const CM = useMemo(() => {
-  //   return (
-  //     <SNDRACodemirror
-  //       ref={editorRef}
-  //       value={value}
-  //       onChange={onChange}
-  //       fullscreen={fullscreen}
-  //     />
-  //   );
-  // }, [value, onChange, fullscreen]);
-
-  // useEffect(() => {
-  //   workerRef.current = new Worker(
-  //     new URL('@/web-workers/input-nativecoins-validate.ts', import.meta.url),
-  //     { type: 'module' },
-  //   );
-
-  //   return () => {
-  //     if (workerRef.current) {
-  //       workerRef.current.terminate();
-  //     }
-  //   };
-  // }, []);
 
   return (
     <>

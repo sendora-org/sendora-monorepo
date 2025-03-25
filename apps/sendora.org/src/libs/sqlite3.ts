@@ -21,9 +21,11 @@ export async function createTable(db: Database) {
             ensName TEXT,
             address TEXT,
             addressType TEXT,
-            amount TEXT
+            amount TEXT,
+            amountRaw TEXT
         );
     `);
+
   console.log('Table `example1` created');
 }
 

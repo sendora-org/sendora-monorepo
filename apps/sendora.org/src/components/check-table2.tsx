@@ -132,7 +132,7 @@ export default function App({ deleteLine, worker, count }: Iprops) {
 
   // Filter
 
-  console.log({sortDescriptor})
+  console.log({ sortDescriptor });
 
   const headerColumns = React.useMemo(() => {
     return columns.filter((column) =>
@@ -158,6 +158,8 @@ export default function App({ deleteLine, worker, count }: Iprops) {
       sortDescriptor,
       searchKeys,
     ],
+    // cacheTime: 0,
+    staleTime: 0,
     queryFn: () =>
       queryItems(worker, page, pageSize, sortDescriptor, searchKeys),
     placeholderData: keepPreviousData,

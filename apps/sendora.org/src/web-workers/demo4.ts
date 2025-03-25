@@ -1,23 +1,19 @@
-// @ts-ignore
-importScripts('/jslib/taffy-2.7.3-min.js');
-
-// @ts-ignore
-let db = TAFFY();
-
 // biome-ignore  lint/suspicious/noExplicitAny: reason
-self.onmessage = (event: MessageEvent<any>) => {
+self.onmessage = async (event: MessageEvent<any>) => {
   const { type, payload } = event.data;
   handle(type, payload);
-  // postMessage(result);
 };
 
+let mydb: never[] = [];
+// @ts-ignore
+import orderBy from 'lodash.orderby';
 // biome-ignore  lint/suspicious/noExplicitAny: reason
-function handle(type: any, payload: any): any {
+async function handle(type: any, payload: any): Promise<any> {
   switch (type) {
     case 'initialize': {
-      // @ts-ignore
-      db = TAFFY(payload);
+      mydb = payload;
       postMessage({ type: 'initialized', success: true });
+
       break;
     }
 
@@ -25,14 +21,15 @@ function handle(type: any, payload: any): any {
       const {
         filter,
         sortField = 'id',
-        sortOrder = 'asec',
+        sortOrder = 'asc',
         searchKey,
         searchField,
         sumField,
         page = 1,
         pageSize = 10,
       } = payload;
-      let result = db();
+      // biome-ignore  lint/suspicious/noExplicitAny: reason
+      let result: any = [];
 
       console.log({
         filter,
@@ -44,51 +41,52 @@ function handle(type: any, payload: any): any {
         pageSize,
       });
 
-      const start = (page - 1) * pageSize;
+      //   // Search
+      //   if (searchKey && searchField) {
+      //     console.log({ searchKey, searchField });
+      //     result = result.filter({
+      //       [searchField]: { like: searchKey },
+      //     });
+      //   }
 
-      // Search
-      if (searchKey && searchField) {
-        console.log({ searchKey, searchField });
-        result = result.filter({
-          [searchField]: { like: searchKey },
-        });
-      }
+      //   // Filter
+      //   if (filter) {
+      //     console.log({ filter });
 
-      // Filter
-      if (filter) {
-        console.log({ filter });
-        result = result.filter(filter);
-      }
+      //   }
 
       // Sort
       if (sortField) {
         console.log({ sortField });
-        result = result.order(`${sortField} ${sortOrder}`);
+        // result = orderBy(mydb, [sortField], [sortOrder]);
+
+        result = mydb.sort((a, b) => {
+          const first = a[sortField];
+          const second = b[sortField];
+          const cmp = first < second ? -1 : first > second ? 1 : 0;
+          return sortOrder === 'desc' ? -cmp : cmp;
+        });
       }
 
       // Pagination
-      const paginatedResult = result.start(start).limit(pageSize).get();
-
-      let sumValue = 0;
-      // SUM
-      if (sumField) {
-        console.log({ sumField });
-        sumValue = result.sum(sumField);
-      }
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize;
+      const paginatedResult = result.slice(start, end);
 
       // totalRecords
-      // const totalRecords = result.count();
+      const totalRecords = result.length;
       const returns = {
         type: 'query_result',
         data: paginatedResult,
-        sumValue,
+        // sumValue,
         pagination: {
           page,
           pageSize,
-          totalRecords: 10000,
-          totalPages: 100, //Math.ceil(totalRecords / pageSize),
+          totalRecords: totalRecords,
+          totalPages: Math.ceil(totalRecords / pageSize),
         },
       };
+
       postMessage(returns);
       break;
     }
