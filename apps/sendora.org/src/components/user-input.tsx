@@ -10,13 +10,14 @@ import { Button, ButtonGroup } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { useFullscreen } from '@mantine/hooks';
 import { memo, useCallback, useState } from 'react';
+import { Subject } from 'rxjs';
 import AddAmount from './add-amount';
 import SNDRACodemirror from './codemirror-sndra';
 import { ConfirmInput } from './confirm-input';
 
 import { forwardRef } from 'react';
 const SNDRACodemirrorMemo = memo(SNDRACodemirror);
-
+const eventSubject = new Subject<{ event: string }>();
 export default forwardRef(
   (
     { defaultValue = '', example }: { defaultValue: string; example: IExample },
@@ -28,6 +29,7 @@ export default forwardRef(
 
     const onDocChange = useCallback(() => {
       console.log('onDocChange');
+      eventSubject.next({ event: 'onDocChange' });
     }, []);
 
     return (
@@ -62,7 +64,7 @@ export default forwardRef(
             </ButtonGroup>
           </div>
         </div>
-        <ConfirmInput />
+        <ConfirmInput eventSubject={eventSubject} />
       </>
     );
   },

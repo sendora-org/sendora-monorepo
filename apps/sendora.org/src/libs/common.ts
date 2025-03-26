@@ -713,3 +713,11 @@ export function isZero(value: unknown) {
   }
   return false;
 }
+
+export function delay(ms: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, ms);
+  });
+}

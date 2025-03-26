@@ -10,7 +10,7 @@ export default ({ title, chainId }: { title: string; chainId: string }) => {
       <H1Title>{title}</H1Title>
       <SelectNetworks
         navigate={(chainId) => {
-          router.push(`/native-coins/${chainId}`)
+          router.push(`/native-coins/${chainId}`);
         }}
         defaultSelectedKeys={[chainId]}
       />

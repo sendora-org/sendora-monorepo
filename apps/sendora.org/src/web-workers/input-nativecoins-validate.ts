@@ -1,42 +1,24 @@
 import { splitLinesIntoChunks } from '@/libs/common';
 import {
-  formatLocalizedNumberWithSmallNumbers,
   isZero,
-  parseLocalizedNumber,
   queryAddressFromENS,
-  queryNameFromENS,
   removeNumberNoise,
   splitByEthereumAddress,
 } from '@/libs/common';
 import { flattenArray } from '@/libs/common';
 import { parseAndScaleNumber } from '@/libs/number';
-import {
-  batchInsertWithTransaction,
-  createTable,
-  initDB,
-  queryData,
-} from '@/libs/sqlite3';
 import { PromisePool } from '@supercharge/promise-pool';
 // @ts-ignore
 import countBy from 'lodash.countby';
 import { isAddress } from 'viem';
 
-import type { Database } from '@sqlite.org/sqlite-wasm';
 type Input = {
   data: string;
   thousandSeparator: string;
   decimalSeparator: '.' | ',';
 };
 
-// let db: Database | null = null;
-
 self.onmessage = async (event: MessageEvent<Input>) => {
-  // if (db == null) {
-  //   console.log('db is null');
-  //   const _db = await initDB();
-  //   db = _db;
-  // }
-
   const result = await handler(event.data);
 
   postMessage(result);
@@ -281,25 +263,6 @@ async function handler(input: Input) {
       amountRaw: item.amountRaw,
     };
   });
-
-  // if (db) {
-  //   await createTable(db);
-  //   await batchInsertWithTransaction(
-  //     db,
-  //     newLines.map((item) => {
-  //       return [
-  //         item.id,
-  //         item.name,
-  //         item.status,
-  //         item.ensName,
-  //         item.address,
-  //         item.addressType,
-  //         item.amount,
-  //       ];
-  //     }),
-  //   );
-  //   await queryData(db);
-  // }
 
   return newLines;
 }

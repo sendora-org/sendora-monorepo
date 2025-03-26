@@ -1,3 +1,6 @@
+import { numberFormats } from '@/constants/common';
+import { EditorRefContext } from '@/constants/contexts';
+import { useLocale } from '@/hooks/useLocale';
 // import { runWorker } from '@/libs/common';
 // import { runWorker2 } from '@/libs/common';
 // import CheckTable from '@/components/check-table';
@@ -12,133 +15,162 @@ import {
   formatLocalizedNumberWithSmallNumbers,
   getDecimalsScientific,
 } from '@/libs/common';
+import { delay } from '@/libs/common';
+import { WorkerService } from '@/libs/worker-service';
+import { Button } from '@heroui/react';
+import { useEffect, useRef, useState } from 'react';
+import { useContext } from 'react';
+import { firstValueFrom } from 'rxjs';
+import type { Subject } from 'rxjs';
+import { useAccount } from 'wagmi';
 import ConnectButton from './connect-button';
-// import AddAmount from './add-amount';
-// import { native_coin_input_example } from '@/constants/common';
-// import { type NFType, numberFormats } from '@/constants/common';
-// import ShowSample from '@/components/show-sample';
+import MyTimer from './my-timer';
+import ShowTable from './show-table';
+export const ConfirmInput = ({
+  eventSubject,
+}: { eventSubject: Subject<{ event: string }> }) => {
+  const { isConnected } = useAccount();
 
-//   const taffydbRef = useRef<Worker | null>(null);
-//   useEffect(() => {
-//     taffydbRef.current = new Worker(
-//       new URL('@/web-workers/demo4.ts', import.meta.url),
-//       { type: 'module' },
-//     );
+  const { locale } = useLocale();
+  const [isDataReady, setDataReady] = useState(false);
+  const [isLoading, setLoading] = useState(false);
+  const workerService = useRef<WorkerService | null>(null);
 
-//     return () => {
-//       if (taffydbRef.current) {
-//         taffydbRef.current.terminate();
-//       }
-//     };
-//   }, []);
+  const editorRef = useContext(EditorRefContext);
+  useEffect(() => {
+    const worker = new Worker(
+      new URL('@/web-workers/userinput-validate.ts', import.meta.url),
+      { type: 'module' },
+    );
+    workerService.current = new WorkerService(worker);
 
-export const ConfirmInput = () => {
-  //   const { locale } = useLocale();
-  // const [selectedKeys, setSelectedKeys] = useState(new Set(['USA']));
+    return () => {
+      if (workerService.current) {
+        workerService.current.terminate();
+      }
+      workerService.current = null;
+    };
+  }, []);
 
-  // const format = local2NumberFormat[locale];
-  // const { decimalSeparator, thousandSeparator, code, useGrouping } =
-  //   numberFormats[format as NFType];
+  useEffect(() => {
+    const subscription = eventSubject.subscribe(() => {
+      setDataReady(false);
+    });
 
-  //   const deleteLine = (lineNumbers: number[]) => {
-  //     const value = editorRef?.current?.getValue() ?? '';
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [eventSubject]);
 
-  //     // setCheckValue((prevV: IReceipent[]) => {
-  //     //   const tmp = prevV
-  //     //     .filter((_, index) => {
-  //     //       return !lineNumbers.includes(index + 1);
-  //     //     })
-  //     //     .map((item, index) => {
-  //     //       return {
-  //     //         ...item,
-  //     //         id: index + 1,
-  //     //       };
-  //     //     });
-  //     //   const keyCount = countBy(tmp, 'address');
-  //     //   return tmp.map((item) => {
-  //     //     return {
-  //     //       ...item,
-  //     //       status:
-  //     //         item.status === 'valid' || item.status === 'duplicateAddress'
-  //     //           ? keyCount[item.address] > 1
-  //     //             ? 'duplicateAddress'
-  //     //             : 'valid'
-  //     //           : item.status,
-  //     //     };
-  //     //   });
-  //     // });
+  // const reset = async (value: string) => {
+  //   if (workerService.current) {
+  //     const initRes = await firstValueFrom(
+  //       workerService.current.request('reset', value),
+  //     );
+  //     console.log('Inited:', initRes);
+  //   }
+  // };
 
-  //     const val = value
-  //       .split('\n')
-  //       .filter((_: unknown, index: number) => {
-  //         return !lineNumbers.includes(index + 1);
-  //       })
-  //       .join('\n');
+  async function testCRUD() {
+    if (workerService.current) {
+      // 创建数据
+      const initRes = await firstValueFrom(
+        workerService.current.request('reset', editorRef?.current?.getValue()),
+      );
+      console.log('Inited:', initRes);
 
-  //     console.log('deleteline', { val, value });
-  //     setValue(val);
-  //   };
+      // validate
+      const valiteRes = await firstValueFrom(
+        workerService.current.request('validate', numberFormats[locale]),
+      );
+      console.log('Validate:', valiteRes);
+
+      // // 更新数据
+      // const updateRes = await firstValueFrom(
+      //   workerService.current.request('update', {
+      //     key: createRes.key,
+      //     data: { name: 'Bob' },
+      //   }),
+      // );
+      // console.log('Updated:', updateRes);
+
+      // // 读取更新后数据
+      // const readUpdated = await firstValueFrom(
+      //   workerService.current.request('read', createRes.key),
+      // );
+      // console.log('Read After Update:', readUpdated);
+
+      // // // 删除数据
+      // // const deleteRes = await firstValueFrom(
+      // //   workerService.current.request('delete', createRes.key),
+      // // );
+      // // console.log('Deleted:', deleteRes);
+    }
+  }
+
+  // 准备数据
+  // 是否在准备中
+  // 数据是否准备好
+  // 清空数据
+
+  console.log({ isLoading });
+
   return (
     <>
-      Coinfirm input
       <ConnectButton />
+
+      {isConnected && !isDataReady && (
+        <Button
+          isLoading={isLoading}
+          fullWidth
+          color="secondary"
+          onPress={async () => {
+            try {
+              console.log('continue');
+              setLoading(true);
+              await delay(1000);
+              await testCRUD();
+              setLoading(false);
+
+              setDataReady(true);
+            } catch (e) {
+              console.log(e);
+            }
+            setLoading(false);
+          }}
+        >
+          {isLoading && (
+            <p className="flex gap-2">
+              <MyTimer />
+              Validating format, approx. 30s...
+            </p>
+          )}
+          {!isLoading && 'Continue'}
+        </Button>
+      )}
+
+      {isDataReady && <ShowTable workerService={workerService.current} />}
+      {/* <Button
+        onPress={() => {
+          setLoading(false);
+        }}
+      >
+        click
+      </Button>
+
+      <Button
+        onPress={async () => {
+          if (workerService.current) {
+            // 获取所有数据
+            const allData = await firstValueFrom(
+              workerService.current.request('getAll'),
+            );
+            console.log('All Data:', allData);
+          }
+        }}
+      >
+        query
+      </Button> */}
     </>
   );
-
-  //     <Button
-  //     onPress={async () => {
-  //       console.log('continue');
-  //       const value1 = editorRef?.current?.getValue() ?? '';
-  //       setValue(value1);
-  //       console.log({ value1 });
-  //       const input = {
-  //         data: value1,
-  //         decimalSeparator,
-  //         thousandSeparator: thousandSeparator,
-  //       };
-
-  //       const worker = new Worker(
-  //         new URL(
-  //           '@/web-workers/input-nativecoins-validate.ts',
-  //           import.meta.url,
-  //         ),
-  //         { type: 'module' },
-  //       );
-
-  //       const result = await runWorker<typeof input, IReceipent[]>(
-  //         worker,
-  //         input,
-  //       );
-
-  //       if (taffydbRef.current) {
-  //         const initPayload = {
-  //           type: 'initialize',
-  //           payload: result,
-  //         };
-
-  //         console.log('initialize');
-  //         const ff = await runWorker2(taffydbRef.current, initPayload);
-  //         console.log(ff);
-  //       }
-
-  //       setCheckValue(true);
-  //     }}
-  //   >
-  //     Continue
-  //   </Button>
-  //   {/* {checkValue.length > 0 && (
-  //     <CheckTable data={checkValue} deleteLine={deleteLine} />
-  //   )} */}
-  //   {/* <CheckTable
-  //     data={checkValue}
-  //     deleteLine={deleteLine}
-  //     // decimalSeparator={decimalSeparator}
-  //     // thousandSeparator={thousandSeparator}
-  //   /> */}
-  //   {/* {checkValue.length > 0 && (
-  //     <CheckTable2 data={checkValue} deleteLine={deleteLine} />
-  //   )} */}
-  //   {checkValue && (
-  //     <CheckTable2 worker={taffydbRef.current} deleteLine={deleteLine} />
-  //   )}
 };

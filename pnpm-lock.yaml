@@ -145,6 +145,9 @@ importers:
       immer:
         specifier: ^10.1.1
         version: 10.1.1
+      lodash.chunk:
+        specifier: ^4.2.0
+        version: 4.2.0
       lodash.countby:
         specifier: ^4.6.0
         version: 4.6.0
@@ -9044,6 +9047,10 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       p-locate: 4.1.0
+    dev: false
+
+  /lodash.chunk@4.2.0:
+    resolution: {integrity: sha512-ZzydJKfUHJwHa+hF5X66zLFCBrWn5GeF28OHEr4WVWtNDXlQ/IjWKPBiikqKo2ne0+v6JgCgJ0GzJp8k8bHC7w==}
     dev: false
 
   /lodash.countby@4.6.0:
