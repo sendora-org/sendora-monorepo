@@ -24,10 +24,9 @@ export default ({ defaultValue = '' }) => {
         ref={editorRef}
         defaultValue={defaultValue}
         onDocChange={() => console.log('onDocChange')}
-        fullscreen={fullscreen}
       />
     );
-  }, [defaultValue, fullscreen]);
+  }, [defaultValue]);
 
   return (
     <>
@@ -37,16 +36,7 @@ export default ({ defaultValue = '' }) => {
             <H3Title>Recipients and amounts</H3Title>
             <UploadSpreadsheet />
           </div>
-
-          {/* <SNDRACodemirror
-            ref={editorRef}
-            defaultValue={defaultValue}
-            onDocChange={() => console.log('onDocChange')}
-            fullscreen={fullscreen}
-          /> */}
-
           {CM}
-
           <div className="absolute -bottom-10 right-0">
             <ButtonGroup className="gap-1">
               <AddAmount />

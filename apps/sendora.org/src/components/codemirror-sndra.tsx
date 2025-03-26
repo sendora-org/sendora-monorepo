@@ -4,6 +4,7 @@ import { vscodeDark } from '@/libs/vscodeDark';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { search, searchKeymap } from '@codemirror/search';
 import { highlightActiveLine, keymap, lineNumbers } from '@codemirror/view';
+import { useFullscreen } from '@mantine/hooks';
 import { EditorView } from 'codemirror';
 import React, {
   useEffect,
@@ -11,7 +12,6 @@ import React, {
   useRef,
   useImperativeHandle,
 } from 'react';
-
 export interface SNDRACodemirrorRef {
   getValue: () => string;
   setValue: (value: string) => void;
@@ -19,23 +19,15 @@ export interface SNDRACodemirrorRef {
 
 interface SNDRACodemirrorProps {
   defaultValue?: string;
-  fullscreen?: boolean;
   onDocChange: () => void;
 }
 
 const SNDRACodemirror = forwardRef(
-  (
-    {
-      defaultValue = '',
-      fullscreen = false,
-      onDocChange,
-    }: SNDRACodemirrorProps,
-    ref,
-  ) => {
+  ({ defaultValue = '', onDocChange }: SNDRACodemirrorProps, ref) => {
     console.log(`SNDRACodemirror render ${new Date().toISOString()}`);
     const editorRef = useRef<HTMLDivElement | null>(null);
     const editorViewRef = useRef<EditorView | null>(null);
-
+    const { fullscreen } = useFullscreen();
     useEffect(() => {
       if (!editorRef.current) return;
       const view = new EditorView({
@@ -61,7 +53,7 @@ const SNDRACodemirror = forwardRef(
       return () => {
         view.destroy();
       };
-    }, [defaultValue, onDocChange]);
+    }, [onDocChange, defaultValue]);
 
     useImperativeHandle(ref, () => ({
       getValue: () => {
