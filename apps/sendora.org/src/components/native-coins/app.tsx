@@ -65,8 +65,6 @@ export const App = ({ network }: Iprops) => {
         setStepData={setStepData}
         resetSteps={resetSteps}
       />
-
-      <pre>{JSON.stringify(steps, null, 2)}</pre>
     </>
   );
 };

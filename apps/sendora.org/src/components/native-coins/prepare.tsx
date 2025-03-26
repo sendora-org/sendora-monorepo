@@ -21,9 +21,7 @@ export const Prepare = ({
   resetSteps,
   setStepData,
 }: IProps<string>) => {
-  console.log(1111, data);
   const editorRef = useRef<SNDRACodemirrorRef | null>(null);
-
   return (
     <>
       <EditorRefContext.Provider value={editorRef}>
@@ -43,7 +41,6 @@ export const Prepare = ({
           type="button"
           onClick={() => {
             nextStep();
-            console.log('ssssss', editorRef?.current?.getValue());
             setStepData(currentStep, editorRef?.current?.getValue() ?? '');
           }}
           disabled={currentStep === totalSteps - 1}
