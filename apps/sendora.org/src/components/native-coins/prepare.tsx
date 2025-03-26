@@ -9,7 +9,7 @@ type IProps<T> = {
   nextStep: () => void;
   prevStep: () => void;
   resetSteps: () => void;
-  setStepData: (stepIndex: number, newData: Record<string, T>) => void;
+  setStepData: (stepIndex: number, newData: Record<string, T> | string) => void;
 };
 
 export const Prepare = ({
