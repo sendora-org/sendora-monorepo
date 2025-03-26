@@ -39,12 +39,13 @@ export default function AddAmount() {
   ) => {
     const value = editorRef?.current?.getValue() ?? '';
     const setValue = editorRef?.current?.setValue;
+
     if (!isRandom) {
       setValue?.(
         value
           .split('\n')
           .map((item) => {
-            return `${splitText(item)[0]},${formatBigIntNumber(parseAndScaleNumber(fixedValue.toString(), thousandSeparator, decimalSeparator), thousandSeparator, decimalSeparator)}`;
+            return `${splitText(item)[0]},${formatBigIntNumber(parseAndScaleNumber(fixedValue.toString(), ',', '.'), thousandSeparator, decimalSeparator)}`;
           })
           .join('\n'),
       );
@@ -53,7 +54,7 @@ export default function AddAmount() {
         value
           .split('\n')
           .map((item) => {
-            return `${splitText(item)[0]},${formatBigIntNumber(parseAndScaleNumber(getRandomNumber(minValue, maxValue, decimals), thousandSeparator, decimalSeparator), thousandSeparator, decimalSeparator)}`;
+            return `${splitText(item)[0]},${formatBigIntNumber(parseAndScaleNumber(getRandomNumber(minValue, maxValue, decimals), ',', '.'), thousandSeparator, decimalSeparator)}`;
           })
           .join('\n'),
       );
@@ -75,7 +76,7 @@ export default function AddAmount() {
           {(onClose: () => void) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-              Update Amount
+                Update Amount
               </ModalHeader>
               <ModalBody>
                 <Switch isSelected={isRandom} onValueChange={setIsRandom}>

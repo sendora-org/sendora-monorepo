@@ -32,6 +32,7 @@ const SNDRACodemirror = forwardRef(
     }: SNDRACodemirrorProps,
     ref,
   ) => {
+    console.log(`SNDRACodemirror render ${new Date().toISOString()}`);
     const editorRef = useRef<HTMLDivElement | null>(null);
     const editorViewRef = useRef<EditorView | null>(null);
 

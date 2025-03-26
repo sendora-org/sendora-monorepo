@@ -9,7 +9,7 @@ import { useLocale } from '@/hooks/useLocale';
 import { Button, ButtonGroup } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { useFullscreen } from '@mantine/hooks';
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import AddAmount from './add-amount';
 import SNDRACodemirror, { type SNDRACodemirrorRef } from './codemirror-sndra';
 
@@ -17,6 +17,18 @@ export default ({ defaultValue = '' }) => {
   const { toggle, fullscreen } = useFullscreen();
   const { locale } = useLocale();
   const editorRef = useRef<SNDRACodemirrorRef | null>(null);
+
+  const CM = useMemo(() => {
+    return (
+      <SNDRACodemirror
+        ref={editorRef}
+        defaultValue={defaultValue}
+        onDocChange={() => console.log('onDocChange')}
+        fullscreen={fullscreen}
+      />
+    );
+  }, [defaultValue, fullscreen]);
+
   return (
     <>
       <EditorRefContext.Provider value={editorRef}>
@@ -26,12 +38,14 @@ export default ({ defaultValue = '' }) => {
             <UploadSpreadsheet />
           </div>
 
-          <SNDRACodemirror
+          {/* <SNDRACodemirror
             ref={editorRef}
             defaultValue={defaultValue}
             onDocChange={() => console.log('onDocChange')}
             fullscreen={fullscreen}
-          />
+          /> */}
+
+          {CM}
 
           <div className="absolute -bottom-10 right-0">
             <ButtonGroup className="gap-1">
