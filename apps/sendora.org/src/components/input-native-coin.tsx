@@ -10,6 +10,7 @@ import { Button, ButtonGroup } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { useFullscreen } from '@mantine/hooks';
 import { useRef } from 'react';
+import AddAmount from './add-amount';
 import SNDRACodemirror, { type SNDRACodemirrorRef } from './codemirror-sndra';
 
 export default ({ defaultValue = '' }) => {
@@ -34,15 +35,8 @@ export default ({ defaultValue = '' }) => {
 
           <div className="absolute -bottom-10 right-0">
             <ButtonGroup className="gap-1">
-              {/* <AddAmount
-              updateAmount={updateAmount}
-              code={code}
-              useGrouping={useGrouping}
-            /> */}
-              {/* <DuplicateAddress
-                      selectedKeys={selectedKeys2}
-                      setSelectedKeys={setSelectedKeys2}
-                    /> */}
+              <AddAmount />
+
               <ShowSample
                 example={native_coin_input_example[locale].content ?? ''}
               />

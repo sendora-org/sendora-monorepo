@@ -4,7 +4,6 @@ export type LocaleInfo = {
   decimalSeparator: '.' | ',';
   thousandSeparator: '' | '.' | ',' | `'` | ' ';
   locale: Locale;
-  useGrouping: boolean;
 };
 
 export const numberFormats: Record<Locale, LocaleInfo> = {
@@ -12,28 +11,24 @@ export const numberFormats: Record<Locale, LocaleInfo> = {
     decimalSeparator: '.',
     thousandSeparator: ',',
     locale: 'en-US',
-    useGrouping: true,
   },
 
   'de-DE': {
     decimalSeparator: ',',
     thousandSeparator: '.',
     locale: 'de-DE',
-    useGrouping: true,
   },
 
   'fr-FR': {
     decimalSeparator: ',',
     thousandSeparator: ' ',
     locale: 'fr-FR',
-    useGrouping: true,
   },
 
   'de-CH': {
     decimalSeparator: '.',
     thousandSeparator: `'`,
     locale: 'de-CH',
-    useGrouping: true,
   },
 };
 

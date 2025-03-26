@@ -7,11 +7,11 @@
 // import { useLocale } from '@/hooks/useLocale';
 // import { useNativeCoinsValue } from '@/hooks/useNativeCoinsValue';
 // import { getRandomNumber } from '@/libs/common';
-// import { splitText } from '@/libs/common';
-// import {
-//   formatLocalizedNumberWithSmallNumbers,
-//   getDecimalsScientific,
-// } from '@/libs/common';
+import { splitText } from '@/libs/common';
+import {
+  formatLocalizedNumberWithSmallNumbers,
+  getDecimalsScientific,
+} from '@/libs/common';
 
 // import AddAmount from './add-amount';
 // import { native_coin_input_example } from '@/constants/common';
@@ -40,35 +40,6 @@ export const ConfirmInput = () => {
   // const { decimalSeparator, thousandSeparator, code, useGrouping } =
   //   numberFormats[format as NFType];
 
-  // const updateAmount = (
-  //   isRandom = false,
-  //   fixedValue = 0.01,
-  //   minValue = 0.01,
-  //   maxValue = 10,
-  //   decimals = 2,
-  // ) => {
-  //   const value = editorRef?.current?.getValue() ?? '';
-  //   if (!isRandom) {
-  //     const decimals2 = getDecimalsScientific(fixedValue);
-  //     setValue(
-  //       value
-  //         .split('\n')
-  //         .map((item) => {
-  //           return `${splitText(item)[0]},${formatLocalizedNumberWithSmallNumbers(fixedValue, decimalSeparator, thousandSeparator, decimals2)}`;
-  //         })
-  //         .join('\n'),
-  //     );
-  //   } else {
-  //     setValue(
-  //       value
-  //         .split('\n')
-  //         .map((item) => {
-  //           return `${splitText(item)[0]},${formatLocalizedNumberWithSmallNumbers(getRandomNumber(minValue, maxValue, decimals), decimalSeparator, thousandSeparator, decimals)}`;
-  //         })
-  //         .join('\n'),
-  //     );
-  //   }
-  // };
   //   const deleteLine = (lineNumbers: number[]) => {
   //     const value = editorRef?.current?.getValue() ?? '';
 

@@ -264,17 +264,21 @@ function fromSubscript(subscript: string): string {
 export function getRandomNumber(
   min: number,
   max: number,
-  decimals: number,
-): number {
+  _decimals: number,
+): string {
   if (min > max) {
     throw new Error('min > max');
   }
-  if (decimals < 0) {
-    throw new Error('decimals < 0');
+  let decimals = _decimals;
+  const randomValue = Math.random() * (max - min) + min;
+  if (decimals >= 6) {
+    decimals = 6;
   }
 
-  const randomValue = Math.random() * (max - min) + min;
-  return Number.parseFloat(randomValue.toFixed(decimals));
+  if (decimals < 0) {
+    decimals = 0;
+  }
+  return randomValue.toFixed(decimals);
 }
 
 export function splitText(text: string): string[] {
