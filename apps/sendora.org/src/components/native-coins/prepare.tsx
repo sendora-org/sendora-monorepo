@@ -1,4 +1,5 @@
-import InputNativeCoin from '@/components/input-native-coin';
+import UserInput from '@/components/user-input';
+import { native_coin_input_example } from '@/constants/common';
 import { EditorRefContext } from '@/constants/contexts';
 import { useRef } from 'react';
 import type { SNDRACodemirrorRef } from '../codemirror-sndra';
@@ -25,7 +26,11 @@ export const Prepare = ({
   return (
     <>
       <EditorRefContext.Provider value={editorRef}>
-        <InputNativeCoin defaultValue={data ?? ''} ref={editorRef} />
+        <UserInput
+          example={native_coin_input_example}
+          defaultValue={data ?? ''}
+          ref={editorRef}
+        />
 
         <div className="mt-[500px]">------------</div>
         <button

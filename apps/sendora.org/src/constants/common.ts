@@ -38,6 +38,7 @@ export type ExampleInfo = {
   content: string;
 };
 
+export type IExample = Record<Locale, ExampleInfo>;
 export const native_coin_input_example: Record<Locale, ExampleInfo> = {
   'en-US': {
     id: 'en-US',
