@@ -1,4 +1,3 @@
-import { getWorkbook } from '@/libs/common';
 import {
   Button,
   Modal,
@@ -8,7 +7,6 @@ import {
   useDisclosure,
 } from '@heroui/react';
 import { useEffect, useRef, useState } from 'react';
-import H3Title from './h3-title';
 import H4Title from './h4-title';
 import SheetTabs from './sheet-tabs';
 import SpreadsheetDropzone from './spreadsheet-dropzone';
@@ -20,7 +18,6 @@ export default function UploadSpreadsheet() {
 
   useEffect(() => {
     if (!isOpen) {
-      console.log('clean isopen', isOpen);
       spreadsheetBufferRef.current = null;
       forceUpdate({});
     }
@@ -67,7 +64,7 @@ export default function UploadSpreadsheet() {
                   spreadsheetBufferRef.current = data;
                   forceUpdate({});
                 } catch (e) {
-                  console.log('err=>', e);
+                  console.log('SpreadsheetDropzone onDrop error =>', e);
                 }
               }}
             />

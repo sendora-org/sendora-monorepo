@@ -1,5 +1,4 @@
-import { type NFType, numberFormats } from '@/constants/common';
-import { local2NumberFormat } from '@/constants/common';
+import type { Locale } from '@/constants/common';
 import { useLocale } from '@/hooks/useLocale';
 import {
   Button,
@@ -17,34 +16,24 @@ export default function App() {
     <Dropdown>
       <DropdownTrigger>
         <Button className="capitalize" size="sm">
-          {local2NumberFormat[locale]}
+          {locale}
         </Button>
       </DropdownTrigger>
       <DropdownMenu
         disallowEmptySelection
         aria-label="Single selection example"
-        selectedKeys={new Set([local2NumberFormat[locale]])}
+        selectedKeys={new Set([locale])}
         selectionMode="single"
         variant="flat"
         onSelectionChange={(value: SharedSelection) => {
-          const format = Array.from(value).join('');
-          const { decimalSeparator, thousandSeparator, code, useGrouping } =
-            numberFormats[format as NFType];
-          setLocale(code);
+          const selectedLocale = Array.from(value).join('') as Locale;
+          setLocale(selectedLocale);
         }}
       >
-        {/* // USA  1,234,567.89
-            // South Korea 1234567.89
-            // Germany 1.234.567,89
-            // France  1 234 567,89
-            // Switzerland 1'234'567,89 
-        */}
-        <DropdownItem key="USA">USA : 1,234,567.89</DropdownItem>
-        <DropdownItem key="DE">Germany: 1.234.567,89</DropdownItem>
-        <DropdownItem key="FR">France: 1 234 567,89</DropdownItem>
-        <DropdownItem key="CH">Switzerland: 1'234'567.89 </DropdownItem>
-        {/* <DropdownItem key="DOT">Dot: 1234567.89</DropdownItem>
-        <DropdownItem key="COMMA">Comma: 1234567,89</DropdownItem> */}
+        <DropdownItem key="en-US">en-US : 1,234,567.89</DropdownItem>
+        <DropdownItem key="de-DE">de-DE: 1.234.567,89</DropdownItem>
+        <DropdownItem key="fr-FR">fr-FR: 1 234 567,89</DropdownItem>
+        <DropdownItem key="de-CH">de-CH: 1'234'567.89 </DropdownItem>
       </DropdownMenu>
     </Dropdown>
   );

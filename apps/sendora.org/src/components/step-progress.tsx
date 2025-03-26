@@ -11,7 +11,7 @@ const StepProgress = ({ currentStep = 1, totalSteps = 4, name = '' }) => {
   ));
 
   return (
-    <div className="w-40 mb-2">
+    <div className="w-64 mb-2">
       <div className="flex items-center justify-start my-1">
         <H2Title>{name}</H2Title>
         <h4 className="ml-2 text-left text-sm text-gray-800 dark:text-neutral-200">

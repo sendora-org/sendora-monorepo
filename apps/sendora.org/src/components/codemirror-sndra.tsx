@@ -4,35 +4,41 @@ import { vscodeDark } from '@/libs/vscodeDark';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { search, searchKeymap } from '@codemirror/search';
 import { highlightActiveLine, keymap, lineNumbers } from '@codemirror/view';
-import { EditorView, basicSetup } from 'codemirror';
+import { EditorView } from 'codemirror';
 import React, {
   useEffect,
   forwardRef,
   useRef,
   useImperativeHandle,
 } from 'react';
-import { Subject } from 'rxjs';
-import { useMediaQuery } from 'usehooks-ts';
 
 export interface SNDRACodemirrorRef {
   getValue: () => string;
+  setValue: (value: string) => void;
 }
 
-interface UIWCodemirrorProps {
-  value: string;
-  onChange: (val: string) => void;
+interface SNDRACodemirrorProps {
+  defaultValue?: string;
   fullscreen?: boolean;
+  onDocChange: () => void;
 }
 
 const SNDRACodemirror = forwardRef(
-  ({ value, onChange, fullscreen }: UIWCodemirrorProps, ref) => {
+  (
+    {
+      defaultValue = '',
+      fullscreen = false,
+      onDocChange,
+    }: SNDRACodemirrorProps,
+    ref,
+  ) => {
     const editorRef = useRef<HTMLDivElement | null>(null);
     const editorViewRef = useRef<EditorView | null>(null);
 
     useEffect(() => {
       if (!editorRef.current) return;
       const view = new EditorView({
-        doc: value,
+        doc: defaultValue,
         extensions: [
           lineNumbers(),
           highlightActiveLine(),
@@ -42,7 +48,7 @@ const SNDRACodemirror = forwardRef(
           vscodeDark,
           EditorView.updateListener.of((update) => {
             if (update.docChanged) {
-              onChange('');
+              onDocChange();
             }
           }),
         ],
@@ -54,22 +60,7 @@ const SNDRACodemirror = forwardRef(
       return () => {
         view.destroy();
       };
-    }, [value, onChange]);
-
-    useEffect(() => {
-      if (
-        editorViewRef.current &&
-        editorViewRef.current.state.doc.toString() !== value
-      ) {
-        editorViewRef.current.dispatch({
-          changes: {
-            from: 0,
-            to: editorViewRef.current.state.doc.length,
-            insert: value,
-          },
-        });
-      }
-    }, [value]);
+    }, [defaultValue, onDocChange]);
 
     useImperativeHandle(ref, () => ({
       getValue: () => {
@@ -77,6 +68,20 @@ const SNDRACodemirror = forwardRef(
           return editorViewRef.current.state.doc.toString();
         }
         return '';
+      },
+      setValue: (value: string) => {
+        if (
+          editorViewRef.current &&
+          editorViewRef.current.state.doc.toString() !== value
+        ) {
+          editorViewRef.current.dispatch({
+            changes: {
+              from: 0,
+              to: editorViewRef.current.state.doc.length,
+              insert: value,
+            },
+          });
+        }
       },
     }));
 

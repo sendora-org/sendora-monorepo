@@ -1,12 +1,12 @@
-import { useNativeCoinsValue } from '@/hooks/useNativeCoinsValue';
+import { EditorRefContext } from '@/constants/contexts';
 import { runWorker } from '@/libs/common';
 import { getTableData } from '@/libs/common';
 import type { TableData } from '@/libs/common';
-import { Button, Card, CardBody, Tab, Tabs } from '@heroui/react';
-import { Skeleton } from '@heroui/react';
-import { useEffect, useRef, useState } from 'react';
+import { Button, Skeleton } from '@heroui/react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import AnyTable from './any-table';
 import UploadAction from './upload-action';
+
 export default function SheetTableData({
   spreadsheetBuffer,
   sheetIndex,
@@ -21,6 +21,8 @@ export default function SheetTableData({
 
   const [recipientKey, setRecipientKey] = useState('');
   const [amountKey, setAmountKey] = useState('');
+
+  const editorRef = useContext(EditorRefContext);
 
   useEffect(() => {
     return () => {
@@ -39,7 +41,6 @@ export default function SheetTableData({
       tableDataRef.current = null;
     };
   }, [spreadsheetBuffer, sheetIndex]);
-  const { setValue } = useNativeCoinsValue();
 
   const handleClick = async () => {
     const worker = new Worker(
@@ -52,7 +53,9 @@ export default function SheetTableData({
       tableData: tableDataRef.current,
     };
     const result = await runWorker<typeof input, string>(worker, input);
-    setValue(result);
+
+    editorRef?.current?.setValue(result);
+
     onClose();
   };
   return (
