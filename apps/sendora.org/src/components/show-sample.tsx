@@ -9,12 +9,15 @@ import {
 import CodeMirror from '@uiw/react-codemirror';
 
 import { CopyText } from '@/components/copy-text';
+import { EditorRefContext } from '@/constants/contexts';
 import { vscodeDark } from '@/libs/vscodeDark';
 import { Tab, Tabs } from '@heroui/react';
+import { useContext } from 'react';
 
 export default function App({ example = '' }: { example: string }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
+  const editorRef = useContext(EditorRefContext);
   return (
     <>
       <Button size="sm" onPress={onOpen}>
@@ -27,7 +30,7 @@ export default function App({ example = '' }: { example: string }) {
         size="2xl"
       >
         <ModalContent>
-          {() => (
+          {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">Example</ModalHeader>
               <ModalBody>
@@ -42,7 +45,14 @@ export default function App({ example = '' }: { example: string }) {
 
                 <div className="absolute bottom-0 right-0">
                   {' '}
-                  <CopyText>{example}</CopyText>
+                  <CopyText
+                    aftefCopied={() => {
+                      onClose();
+                      editorRef?.current?.setValue(example);
+                    }}
+                  >
+                    {example}
+                  </CopyText>
                 </div>
               </ModalBody>
               {/* <ModalFooter>

@@ -9,6 +9,7 @@ export interface CopyTextProps extends React.HTMLAttributes<HTMLDivElement> {
   copyText?: string;
   children: string;
   show?: boolean;
+  aftefCopied?: () => void;
 }
 
 export const CopyText = memo(
@@ -19,6 +20,7 @@ export const CopyText = memo(
       children,
       copyText = 'Copy',
       show = false,
+      aftefCopied,
     } = props;
     const [copied, setCopied] = React.useState(false);
     const [copyTimeout, setCopyTimeout] = React.useState<ReturnType<
@@ -38,7 +40,8 @@ export const CopyText = memo(
       setCopyTimeout(
         setTimeout(() => {
           setCopied(false);
-        }, 3000),
+          aftefCopied?.();
+        }, 500),
       );
     };
 
