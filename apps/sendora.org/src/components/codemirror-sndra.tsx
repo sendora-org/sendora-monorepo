@@ -19,7 +19,7 @@ export interface SNDRACodemirrorRef {
 
 interface SNDRACodemirrorProps {
   defaultValue?: string;
-  onDocChange: () => void;
+  onDocChange?: () => void;
 }
 
 const SNDRACodemirror = forwardRef(
@@ -41,7 +41,7 @@ const SNDRACodemirror = forwardRef(
           vscodeDark,
           EditorView.updateListener.of((update) => {
             if (update.docChanged) {
-              onDocChange();
+              onDocChange?.();
             }
           }),
         ],

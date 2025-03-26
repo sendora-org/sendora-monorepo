@@ -2,11 +2,11 @@ import { produce } from 'immer';
 import { create } from 'zustand';
 
 //  Define Step Type
-type Step<T = unknown> = {
+export type Step<T = unknown> = {
   id: number;
   name: string;
   description: string;
-  data?: Record<string, T>;
+  data?: Record<string, T> | string | null;
 };
 
 // Define `useStep` States
@@ -22,7 +22,7 @@ type StepActions<T = unknown> = {
   nextStep: () => void;
   prevStep: () => void;
   goToStep: (index: number) => void;
-  setStepData: (stepIndex: number, newData: Record<string, T>) => void;
+  setStepData: (stepIndex: number, newData: Record<string, T> | string) => void;
   resetSteps: () => void;
 };
 
@@ -38,7 +38,7 @@ const createStepStore = () =>
           if (!state.initialized) {
             state.steps = initialSteps.map((step) => ({
               ...step,
-              data: {},
+              data: null,
             }));
             state.currentStep = 0;
             state.initialized = true;
@@ -77,10 +77,13 @@ const createStepStore = () =>
       set(
         produce((state: StepState) => {
           if (stepIndex >= 0 && stepIndex < state.steps.length) {
-            state.steps[stepIndex].data = {
-              ...state.steps[stepIndex].data,
-              ...newData,
-            };
+            if (newData instanceof Object) {
+              state.steps[stepIndex].data = {
+                ...newData,
+              };
+            } else {
+              state.steps[stepIndex].data = newData;
+            }
           }
         }),
       ),

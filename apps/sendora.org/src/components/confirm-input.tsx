@@ -12,7 +12,7 @@ import {
   formatLocalizedNumberWithSmallNumbers,
   getDecimalsScientific,
 } from '@/libs/common';
-
+import ConnectButton from './connect-button';
 // import AddAmount from './add-amount';
 // import { native_coin_input_example } from '@/constants/common';
 // import { type NFType, numberFormats } from '@/constants/common';
@@ -78,7 +78,12 @@ export const ConfirmInput = () => {
   //     console.log('deleteline', { val, value });
   //     setValue(val);
   //   };
-  return <>Coinfirm input</>;
+  return (
+    <>
+      Coinfirm input
+      <ConnectButton />
+    </>
+  );
 
   //     <Button
   //     onPress={async () => {

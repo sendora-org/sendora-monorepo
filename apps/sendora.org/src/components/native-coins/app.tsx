@@ -4,8 +4,9 @@ import type { Chain } from 'viem';
 import ConnectedAccount from '@/components/connected-account';
 import StepProgress from '@/components/step-progress';
 import { useStep } from '@/hooks/useStep';
+import type { Step } from '@/hooks/useStep';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { Completed } from './completed';
 import { Prepare } from './prepare';
 import { Processing } from './processing';
@@ -21,15 +22,18 @@ import { TestStep2 } from '@/components/test-step2';
 // import H2Title from '@/components/h2-title';
 // import H3Title from '@/components/h3-title';
 
-const stepsData = [
-  { id: 1, name: '⏱️ Prepare', description: 'prepare', Component: Prepare },
+// biome-ignore  lint/suspicious/noExplicitAny: reason
+type IStep = Step & { Component: React.ComponentType<any> };
+
+const stepsData: IStep[] = [
+  { id: 0, name: '⏱️ Prepare', description: 'prepare', Component: Prepare },
   {
-    id: 2,
+    id: 1,
     name: '🔄 Processing',
     description: 'Processing',
     Component: Processing,
   },
-  { id: 3, name: '🎉 Report', description: 'Report', Component: Completed },
+  { id: 2, name: '🎉 Report', description: 'Report', Component: Completed },
 ];
 
 type Iprops = {
@@ -40,9 +44,7 @@ export const App = ({ network }: Iprops) => {
   const { currentStep, steps, nextStep, prevStep, setStepData, resetSteps } =
     useStep('native-coins', stepsData);
 
-  const Comp = useMemo(() => {
-    return stepsData[currentStep].Component;
-  }, [currentStep]);
+  const Comp = stepsData[currentStep].Component;
 
   return (
     <>
@@ -54,38 +56,15 @@ export const App = ({ network }: Iprops) => {
         />
         <ConnectedAccount />
       </div>
-      <Comp />
-
-      <div className="mt-[500px]">------------</div>
-      <button
-        type="button"
-        onClick={() => {
-          prevStep();
-        }}
-        disabled={currentStep === 0}
-      >
-        ⬅ Prev
-      </button>
-      <button
-        type="button"
-        onClick={() => {
-          nextStep();
-        }}
-        disabled={currentStep === steps.length - 1}
-      >
-        ➡ Next
-      </button>
-
-      {/*  Store Current Step Data */}
-      <button
-        type="button"
-        onClick={() => setStepData(currentStep, { input: 'Form A Data' })}
-      >
-        save form a data
-      </button>
-      <button type="button" onClick={() => resetSteps()}>
-        resetSteps
-      </button>
+      <Comp
+        data={steps[currentStep]?.data}
+        totalSteps={steps.length}
+        currentStep={currentStep}
+        nextStep={nextStep}
+        prevStep={prevStep}
+        setStepData={setStepData}
+        resetSteps={resetSteps}
+      />
 
       <pre>{JSON.stringify(steps, null, 2)}</pre>
     </>
