@@ -119,7 +119,7 @@ export default function ShowTable({ workerService }: IProps) {
         <H3Title>Confirm</H3Title>
       </div>
       <Table
-      isKeyboardNavigationDisabled
+        isKeyboardNavigationDisabled
         isHeaderSticky
         aria-label="$SNDRA"
         // topContent={topContent}

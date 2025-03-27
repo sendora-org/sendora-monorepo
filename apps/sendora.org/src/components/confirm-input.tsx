@@ -29,7 +29,7 @@ import ShowTable from './show-table';
 export const ConfirmInput = ({
   eventSubject,
 }: { eventSubject: Subject<{ event: string }> }) => {
-  const { isConnected,chain,chainId } = useAccount();
+  const { isConnected, chain, chainId } = useAccount();
 
   const { locale } = useLocale();
   const [isDataReady, setDataReady] = useState(false);
@@ -73,7 +73,6 @@ export const ConfirmInput = ({
 
   async function testCRUD() {
     if (workerService.current) {
- 
       const initRes = await firstValueFrom(
         workerService.current.request('reset', editorRef?.current?.getValue()),
       );
@@ -84,11 +83,8 @@ export const ConfirmInput = ({
         workerService.current.request('validate', numberFormats[locale]),
       );
       console.log('Validate:', valiteRes);
-
-      
     }
   }
-
 
   console.log({ isLoading });
 
@@ -96,9 +92,9 @@ export const ConfirmInput = ({
     <>
       <ConnectButton />
 
-      {isConnected && chain?.id ===chainId&& !isDataReady && (
+      {isConnected && chain?.id === chainId && !isDataReady && (
         <Button
-        className='my-2'
+          className="my-2"
           isLoading={isLoading}
           fullWidth
           color="secondary"

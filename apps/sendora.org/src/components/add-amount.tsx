@@ -67,13 +67,13 @@ export default function AddAmount() {
         Update Amount
       </Button>
       <Modal
-      disableAnimation
-      isDismissable={false}
+        disableAnimation
+        isDismissable={false}
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         placement="center"
         shouldBlockScroll={false}
-        classNames={{ wrapper: "items-start h-auto", base: "my-auto" }}
+        classNames={{ wrapper: 'items-start h-auto', base: 'my-auto' }}
         size="md"
       >
         <ModalContent>
@@ -89,6 +89,7 @@ export default function AddAmount() {
 
                 {!isRandom && (
                   <NumberInput
+                    inputMode="decimal"
                     formatOptions={{
                       useGrouping: true,
                       minimumFractionDigits: 0,
@@ -96,9 +97,9 @@ export default function AddAmount() {
                     }}
                     fullWidth
                     isRequired
-                   classNames={{
-                    input: "text-base" 
-                   }} 
+                    classNames={{
+                      input: 'text-base inputmode-numeric',
+                    }}
                     value={fixedValue}
                     onChange={(v) => {}}
                     onValueChange={(v) => {
@@ -117,17 +118,19 @@ export default function AddAmount() {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 20,
                       }}
+                      inputMode="decimal"
                       fullWidth
                       isRequired
                       classNames={{
-                        input: "text-base" 
-                       }} 
+                        input: 'text-base',
+                      }}
                       value={minValue}
                       onValueChange={setMinValue}
                       label="Min Amount"
-                      placeholder="Enter the amount"
+                      placeholder="Enter the min amount"
                     />
                     <NumberInput
+                      inputMode="decimal"
                       formatOptions={{
                         useGrouping: true,
                         minimumFractionDigits: 0,
@@ -136,14 +139,16 @@ export default function AddAmount() {
                       fullWidth
                       isRequired
                       classNames={{
-                        input: "text-base" 
-                       }} 
+                        input: 'text-base inputmode-numeric',
+                      }}
                       value={maxValue}
                       onValueChange={setMaxValue}
                       label="Max Amount"
-                      placeholder="Enter the amount"
+                      placeholder="Enter the max amount"
                     />
                     <NumberInput
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       formatOptions={{
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0,
@@ -151,8 +156,8 @@ export default function AddAmount() {
                       fullWidth
                       isRequired
                       classNames={{
-                        input: "text-base" 
-                       }} 
+                        input: 'text-base inputmode-numeric',
+                      }}
                       value={decimals}
                       min={0}
                       onValueChange={setDecimals}
