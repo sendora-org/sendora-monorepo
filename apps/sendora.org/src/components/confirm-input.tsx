@@ -73,7 +73,7 @@ export const ConfirmInput = ({
 
   async function testCRUD() {
     if (workerService.current) {
-      // 创建数据
+ 
       const initRes = await firstValueFrom(
         workerService.current.request('reset', editorRef?.current?.getValue()),
       );
@@ -85,33 +85,10 @@ export const ConfirmInput = ({
       );
       console.log('Validate:', valiteRes);
 
-      // // 更新数据
-      // const updateRes = await firstValueFrom(
-      //   workerService.current.request('update', {
-      //     key: createRes.key,
-      //     data: { name: 'Bob' },
-      //   }),
-      // );
-      // console.log('Updated:', updateRes);
-
-      // // 读取更新后数据
-      // const readUpdated = await firstValueFrom(
-      //   workerService.current.request('read', createRes.key),
-      // );
-      // console.log('Read After Update:', readUpdated);
-
-      // // // 删除数据
-      // // const deleteRes = await firstValueFrom(
-      // //   workerService.current.request('delete', createRes.key),
-      // // );
-      // // console.log('Deleted:', deleteRes);
+      
     }
   }
 
-  // 准备数据
-  // 是否在准备中
-  // 数据是否准备好
-  // 清空数据
 
   console.log({ isLoading });
 
