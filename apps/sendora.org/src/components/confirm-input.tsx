@@ -26,6 +26,22 @@ import { useAccount } from 'wagmi';
 import ConnectButton from './connect-button';
 import MyTimer from './my-timer';
 import ShowTable from './show-table';
+import { useQueryClient } from '@tanstack/react-query';
+
+function clearCacheByPrefix(prefix:string) {
+  const queryClient = useQueryClient();
+ 
+  const allQueries = queryClient.getQueryCache().findAll();
+ 
+  allQueries.forEach((query) => {
+    const queryKey = query.queryKey;
+
+    if (Array.isArray(queryKey) && queryKey[0]?.startsWith(prefix)) {
+      queryClient.removeQueries({ queryKey });
+    }
+  });
+}
+
 export const ConfirmInput = ({
   eventSubject,
 }: { eventSubject: Subject<{ event: string }> }) => {
@@ -55,6 +71,7 @@ export const ConfirmInput = ({
   useEffect(() => {
     const subscription = eventSubject.subscribe(() => {
       setDataReady(false);
+      clearCacheByPrefix('user-input-map')
     });
 
     return () => {
