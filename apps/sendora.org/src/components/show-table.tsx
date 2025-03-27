@@ -112,7 +112,7 @@ export default function ShowTable({ workerService }: IProps) {
   console.log({ data });
 
   // console.log({selectedKeys})
-  console.log({ selectedKeys }, selectedKeys.size);
+  console.log({ selectedKeys });
   return (
     <>
       <div className="flex w-full items-center justify-between mb-2">
