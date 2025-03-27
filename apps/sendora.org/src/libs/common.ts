@@ -1,4 +1,3 @@
-
 import {
   http,
   createPublicClient,
@@ -722,10 +721,3 @@ export function delay(ms: number): Promise<boolean> {
     }, ms);
   });
 }
-
-
-
-
-
- 
-

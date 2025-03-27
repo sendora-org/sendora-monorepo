@@ -28,11 +28,11 @@ import MyTimer from './my-timer';
 import ShowTable from './show-table';
 import { useQueryClient } from '@tanstack/react-query';
 
-function clearCacheByPrefix(prefix:string) {
+function clearCacheByPrefix(prefix: string) {
   const queryClient = useQueryClient();
- 
+
   const allQueries = queryClient.getQueryCache().findAll();
- 
+
   allQueries.forEach((query) => {
     const queryKey = query.queryKey;
 
@@ -71,7 +71,7 @@ export const ConfirmInput = ({
   useEffect(() => {
     const subscription = eventSubject.subscribe(() => {
       setDataReady(false);
-      clearCacheByPrefix('user-input-map')
+      clearCacheByPrefix('user-input-map');
     });
 
     return () => {

@@ -40,7 +40,11 @@ export default () => {
                 return (
                   <Button
                     fullWidth
-                    onPress={openConnectModal}
+                    onPress={() => {
+                      // @ts-ignore
+                      window?.stonks.event('Connect Button click');
+                      openConnectModal();
+                    }}
                     type="button"
                     color="secondary"
                   >
