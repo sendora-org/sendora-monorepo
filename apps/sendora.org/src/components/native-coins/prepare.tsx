@@ -57,14 +57,6 @@ export const Prepare = ({
         >
           ➡ Next
         </button>
-
-        {/*  Store Current Step Data */}
-        <button type="button" onClick={() => {}}>
-          save form a data
-        </button>
-        <button type="button" onClick={() => resetSteps()}>
-          resetSteps
-        </button>
       </EditorRefContext.Provider>
     </>
   );
