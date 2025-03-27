@@ -15,6 +15,7 @@ import { EditorRefContext } from '@/constants/contexts';
 import { numberFormats } from '@/constants/common';
 import { useLocale } from '@/hooks/useLocale';
 import { getRandomNumber, splitText } from '@/libs/common';
+import { runWorker } from '@/libs/common';
 import { formatBigIntNumber, parseAndScaleNumber } from '@/libs/number';
 import { useContext } from 'react';
 
@@ -28,37 +29,44 @@ export default function AddAmount() {
   const [maxValue, setMaxValue] = useState(10);
   const [decimals, setDecimals] = useState(2);
 
+  const [isLoading, setLoading] = useState(false);
+
   const { decimalSeparator, thousandSeparator } = numberFormats[locale];
 
-  const updateAmount = (
+  const handleClick = async (
     isRandom = false,
     fixedValue = 0.01,
     minValue = 0.01,
     maxValue = 10,
     decimals = 2,
   ) => {
-    const value = editorRef?.current?.getValue() ?? '';
-    const setValue = editorRef?.current?.setValue;
+    try {
+      setLoading(true);
+      const value = editorRef?.current?.getValue() ?? '';
+      const setValue = editorRef?.current?.setValue;
 
-    if (!isRandom) {
-      setValue?.(
-        value
-          .split('\n')
-          .map((item) => {
-            return `${splitText(item)[0]},${formatBigIntNumber(parseAndScaleNumber(fixedValue.toString(), ',', '.'), thousandSeparator, decimalSeparator)}`;
-          })
-          .join('\n'),
+      const worker = new Worker(
+        new URL('@/web-workers/codemirror-amount-update.ts', import.meta.url),
+        { type: 'module' },
       );
-    } else {
-      setValue?.(
-        value
-          .split('\n')
-          .map((item) => {
-            return `${splitText(item)[0]},${formatBigIntNumber(parseAndScaleNumber(getRandomNumber(minValue, maxValue, decimals), ',', '.'), thousandSeparator, decimalSeparator)}`;
-          })
-          .join('\n'),
-      );
+      const input = {
+        raw: value,
+        decimalSeparator,
+        thousandSeparator,
+        isRandom,
+        fixedValue,
+        minValue,
+        maxValue,
+        decimals,
+      };
+      const result = await runWorker<typeof input, string>(worker, input);
+
+      setValue?.(result);
+    } catch (e) {
+      console.log('codemirror-amount-update=>', e);
     }
+
+    setLoading(false);
   };
 
   return (
@@ -180,9 +188,10 @@ export default function AddAmount() {
                   Close
                 </Button>
                 <Button
+                  isLoading={isLoading}
                   color="primary"
-                  onPress={() => {
-                    updateAmount(
+                  onPress={async () => {
+                    await handleClick(
                       isRandom,
                       fixedValue,
                       minValue,

@@ -1,5 +1,6 @@
 import { numberFormats } from '@/constants/common';
 import { EditorRefContext } from '@/constants/contexts';
+import useAuthStore from '@/hooks/useAuth';
 import { useLocale } from '@/hooks/useLocale';
 // import { runWorker } from '@/libs/common';
 // import { runWorker2 } from '@/libs/common';
@@ -28,31 +29,20 @@ import ConnectButton from './connect-button';
 import MyTimer from './my-timer';
 import ShowTable from './show-table';
 
-function clearCacheByPrefix(prefix: string) {
-  const queryClient = useQueryClient();
-
-  const allQueries = queryClient.getQueryCache().findAll();
-
-  for (const query of allQueries) {
-    const queryKey = query.queryKey;
-
-    if (Array.isArray(queryKey) && queryKey[0]?.startsWith(prefix)) {
-      queryClient.removeQueries({ queryKey });
-    }
-  }
-}
-
 export const ConfirmInput = ({
   eventSubject,
 }: { eventSubject: Subject<{ event: string }> }) => {
   const { isConnected, chain, chainId } = useAccount();
-
+  const { status } = useAuthStore();
   const { locale } = useLocale();
   const [isDataReady, setDataReady] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const workerService = useRef<WorkerService | null>(null);
 
   const editorRef = useContext(EditorRefContext);
+
+  const queryClient = useQueryClient();
+
   useEffect(() => {
     const worker = new Worker(
       new URL('@/web-workers/userinput-validate.ts', import.meta.url),
@@ -71,13 +61,23 @@ export const ConfirmInput = ({
   useEffect(() => {
     const subscription = eventSubject.subscribe(() => {
       setDataReady(false);
-      clearCacheByPrefix('user-input-map');
+
+      const prefix = 'user-input-map';
+
+      const allQueries = queryClient.getQueryCache().findAll();
+
+      for (const query of allQueries) {
+        const queryKey = query.queryKey;
+        if (Array.isArray(queryKey) && queryKey[0]?.startsWith(prefix)) {
+          queryClient.removeQueries({ queryKey });
+        }
+      }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [eventSubject]);
+  }, [eventSubject, queryClient]);
 
   // const reset = async (value: string) => {
   //   if (workerService.current) {
@@ -109,41 +109,44 @@ export const ConfirmInput = ({
     <>
       <ConnectButton />
 
-      {isConnected && chain?.id === chainId && !isDataReady && (
-        <Button
-          className="my-2"
-          isLoading={isLoading}
-          fullWidth
-          color="secondary"
-          onPress={async () => {
-            try {
-              console.log('continue');
-              setLoading(true);
-              await delay(1000);
-              await testCRUD();
+      {isConnected &&
+        chain?.id === chainId &&
+        status === 'authenticated' &&
+        !isDataReady && (
+          <Button
+            className="my-2"
+            isLoading={isLoading}
+            fullWidth
+            color="secondary"
+            onPress={async () => {
+              try {
+                console.log('continue');
+                setLoading(true);
+                await delay(1000);
+                await testCRUD();
+                setLoading(false);
+
+                setDataReady(true);
+
+                // @ts-ignore
+                window?.stonks.event('Prepare-Continue-Success');
+              } catch (e) {
+                console.log(e);
+                // @ts-ignore
+                window?.stonks.event('Prepare-Continue-failed', { e });
+              }
               setLoading(false);
-
-              setDataReady(true);
-
-              // @ts-ignore
-              window?.stonks.event('Prepare-Continue-Success');
-            } catch (e) {
-              console.log(e);
-              // @ts-ignore
-              window?.stonks.event('Prepare-Continue-failed', { e });
-            }
-            setLoading(false);
-          }}
-        >
-          {isLoading && (
-            <p className="flex gap-2">
-              <MyTimer />
-              Validating receipient & amount (~60s)...
-            </p>
-          )}
-          {!isLoading && 'Continue'}
-        </Button>
-      )}
+            }}
+          >
+            {isLoading && (
+              <p className="flex gap-2">
+                <MyTimer />
+                Validating receipient & amount (~60s)...
+              </p>
+            )}
+            {!isLoading && 'Continue'}
+          </Button>
+        )}
 
       {isDataReady && <ShowTable workerService={workerService.current} />}
       {/* <Button
