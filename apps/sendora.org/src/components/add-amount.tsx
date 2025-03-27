@@ -89,6 +89,7 @@ export default function AddAmount() {
 
                 {!isRandom && (
                   <NumberInput
+                    hideStepper
                     inputMode="decimal"
                     formatOptions={{
                       useGrouping: true,
@@ -98,8 +99,9 @@ export default function AddAmount() {
                     fullWidth
                     isRequired
                     classNames={{
-                      input: 'text-base inputmode-numeric',
+                      input: 'text-base',
                     }}
+                    minValue={0}
                     value={fixedValue}
                     onChange={(v) => {}}
                     onValueChange={(v) => {
@@ -113,6 +115,7 @@ export default function AddAmount() {
                 {isRandom && (
                   <div className="flex flex-col gap-2">
                     <NumberInput
+                      hideStepper
                       formatOptions={{
                         useGrouping: true,
                         minimumFractionDigits: 0,
@@ -122,14 +125,16 @@ export default function AddAmount() {
                       fullWidth
                       isRequired
                       classNames={{
-                        input: 'text-base',
+                        input: 'text-base ',
                       }}
+                      minValue={0}
                       value={minValue}
                       onValueChange={setMinValue}
                       label="Min Amount"
                       placeholder="Enter the min amount"
                     />
                     <NumberInput
+                      hideStepper
                       inputMode="decimal"
                       formatOptions={{
                         useGrouping: true,
@@ -139,14 +144,16 @@ export default function AddAmount() {
                       fullWidth
                       isRequired
                       classNames={{
-                        input: 'text-base inputmode-numeric',
+                        input: 'text-base  ',
                       }}
+                      minValue={0}
                       value={maxValue}
                       onValueChange={setMaxValue}
                       label="Max Amount"
                       placeholder="Enter the max amount"
                     />
                     <NumberInput
+                      hideStepper
                       inputMode="numeric"
                       pattern="[0-9]*"
                       formatOptions={{
@@ -156,10 +163,11 @@ export default function AddAmount() {
                       fullWidth
                       isRequired
                       classNames={{
-                        input: 'text-base inputmode-numeric',
+                        input: 'text-base  ',
                       }}
+                      minValue={0}
+                      maxValue={6}
                       value={decimals}
-                      min={0}
                       onValueChange={setDecimals}
                       label="Decimals"
                       placeholder="Enter the Decimals"
