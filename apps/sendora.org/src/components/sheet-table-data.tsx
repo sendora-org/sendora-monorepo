@@ -57,6 +57,8 @@ export default function SheetTableData({
     editorRef?.current?.setValue(result);
 
     onClose();
+    // @ts-ignore
+    window?.stonks.event('upload-insert');
   };
   return (
     <div className="flex w-full flex-col mb-4 pb-8 gap-2">

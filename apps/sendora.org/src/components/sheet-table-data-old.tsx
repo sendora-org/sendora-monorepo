@@ -52,6 +52,9 @@ export default function SheetTableData({
     const result = await runWorker<typeof input, string>(worker, input);
     setValue(result);
     onClose();
+
+    // @ts-ignore
+    window?.stonks.event('upload-insert');
   };
   return (
     <div className="flex w-full flex-col mb-4 pb-8 gap-2">

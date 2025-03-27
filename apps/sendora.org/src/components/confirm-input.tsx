@@ -18,6 +18,7 @@ import {
 import { delay } from '@/libs/common';
 import { WorkerService } from '@/libs/worker-service';
 import { Button } from '@heroui/react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { useContext } from 'react';
 import { firstValueFrom } from 'rxjs';
@@ -26,20 +27,19 @@ import { useAccount } from 'wagmi';
 import ConnectButton from './connect-button';
 import MyTimer from './my-timer';
 import ShowTable from './show-table';
-import { useQueryClient } from '@tanstack/react-query';
 
 function clearCacheByPrefix(prefix: string) {
   const queryClient = useQueryClient();
 
   const allQueries = queryClient.getQueryCache().findAll();
 
-  allQueries.forEach((query) => {
+  for (const query of allQueries) {
     const queryKey = query.queryKey;
 
     if (Array.isArray(queryKey) && queryKey[0]?.startsWith(prefix)) {
       queryClient.removeQueries({ queryKey });
     }
-  });
+  }
 }
 
 export const ConfirmInput = ({
