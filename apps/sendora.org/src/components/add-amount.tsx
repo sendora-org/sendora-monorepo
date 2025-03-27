@@ -67,10 +67,13 @@ export default function AddAmount() {
         Update Amount
       </Button>
       <Modal
+      disableAnimation
       isDismissable={false}
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-        placement="auto"
+        placement="center"
+        shouldBlockScroll={false}
+        classNames={{ wrapper: "items-start h-auto", base: "my-auto" }}
         size="md"
       >
         <ModalContent>
