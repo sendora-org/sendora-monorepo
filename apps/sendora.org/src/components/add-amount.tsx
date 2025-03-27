@@ -67,10 +67,11 @@ export default function AddAmount() {
         Update Amount
       </Button>
       <Modal
+      isDismissable={false}
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-        placement="center"
-        size="lg"
+        placement="auto"
+        size="md"
       >
         <ModalContent>
           {(onClose: () => void) => (
@@ -92,7 +93,9 @@ export default function AddAmount() {
                     }}
                     fullWidth
                     isRequired
-                    className=" "
+                   classNames={{
+                    input: "text-base" 
+                   }} 
                     value={fixedValue}
                     onChange={(v) => {}}
                     onValueChange={(v) => {
@@ -113,7 +116,9 @@ export default function AddAmount() {
                       }}
                       fullWidth
                       isRequired
-                      className=" "
+                      classNames={{
+                        input: "text-base" 
+                       }} 
                       value={minValue}
                       onValueChange={setMinValue}
                       label="Min Amount"
@@ -127,7 +132,9 @@ export default function AddAmount() {
                       }}
                       fullWidth
                       isRequired
-                      className=" "
+                      classNames={{
+                        input: "text-base" 
+                       }} 
                       value={maxValue}
                       onValueChange={setMaxValue}
                       label="Max Amount"
@@ -140,7 +147,9 @@ export default function AddAmount() {
                       }}
                       fullWidth
                       isRequired
-                      className=" "
+                      classNames={{
+                        input: "text-base" 
+                       }} 
                       value={decimals}
                       min={0}
                       onValueChange={setDecimals}

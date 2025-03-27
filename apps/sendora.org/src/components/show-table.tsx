@@ -1,101 +1,3 @@
-// import { CopyText } from '@/components/copy-text';
-// import { local2NumberFormat, numberFormats } from '@/constants/common';
-// import { useLocale } from '@/hooks/useLocale';
-// import { runWorker2 } from '@/libs/common';
-// import { emojiAvatarForAddress } from '@/libs/emojiAvatarFOrAddress';
-// import { formatBigIntNumber } from '@/libs/number';
-// import {
-//   Button,
-//   Chip,
-//   Dropdown,
-//   DropdownItem,
-//   DropdownMenu,
-//   DropdownTrigger,
-//   Input,
-//   Pagination,
-//   type SortDescriptor,
-//   Spinner,
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableColumn,
-//   TableHeader,
-//   TableRow,
-//   Tooltip,
-//   User,
-// } from '@heroui/react';
-// import { useAsyncList } from '@react-stately/data';
-
-// import { useEffect, useRef } from 'react';
-// import React, { useMemo } from 'react';
-// import useSWR from 'swr';
-// import { ChevronDownIcon } from './chevron-down-icon';
-// import { DeleteIcon } from './delete-icon';
-// import { SearchIcon } from './search-icon';
-
-// import { queryItems } from '@/libs/taffydb';
-
-// export const columns = [
-//   { name: 'No.', uid: 'id', sortable: true },
-//   { name: 'Receipient', uid: 'name', sortable: true },
-//   { name: 'Amount', uid: 'amount', sortable: true },
-//   { name: 'Address', uid: 'address' },
-//   { name: 'STATUS', uid: 'status', sortable: true },
-//   { name: 'ACTIONS', uid: 'actions' },
-// ];
-
-// export const statusOptions = [
-//   { name: 'Valid', uid: 'valid' },
-//   { name: 'Wrong Address', uid: 'wrongAddress' },
-//   { name: 'Duplicate Address', uid: 'duplicateAddress' },
-//   { name: 'Zero Amount', uid: 'zeroAmount' },
-//   { name: 'Empty Amount', uid: 'emptyAmount' },
-//   { name: 'Wrong Amount', uid: 'wrongAmount' },
-// ];
-
-// export function capitalize(s: string) {
-//   return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : '';
-// }
-
-// type SortDirection = 'ascending' | 'descending';
-// type IColor = 'success' | 'danger' | 'warning';
-// type IStatus =
-//   | 'valid'
-//   | 'wrongAddress'
-//   | 'emptyAmount'
-//   | 'wrongAmount'
-//   | 'zeroAmount'
-//   | 'duplicateAddress';
-// const statusColorMap: Record<IStatus, IColor> = {
-//   valid: 'success',
-//   wrongAddress: 'danger',
-//   emptyAmount: 'danger',
-//   wrongAmount: 'danger',
-//   zeroAmount: 'warning',
-//   duplicateAddress: 'warning',
-// };
-
-// const INITIAL_VISIBLE_COLUMNS = ['id', 'name', 'amount', 'status', 'actions'];
-
-// export type IReceipent = {
-//   id: number;
-//   name: string;
-//   status: IStatus;
-//   ensName: string;
-//   address: string;
-//   addressType: string;
-//   amount: bigint;
-//   amountRaw: string;
-// };
-// type IColumnkeys =
-//   | 'id'
-//   | 'name'
-//   | 'status'
-//   | 'ensName'
-//   | 'address'
-//   | 'addressType'
-//   | 'amount';
-
 import H3Title from './h3-title';
 
 import type { WorkerService } from '@/libs/worker-service';
@@ -139,7 +41,6 @@ export default function ShowTable({ workerService }: IProps) {
     { name: 'No.', uid: 'id', sortable: true },
     { name: 'Receipient', uid: 'name', sortable: true },
     { name: 'Amount', uid: 'amount', sortable: true },
-    { name: 'Address', uid: 'address' },
     { name: 'STATUS', uid: 'status', sortable: true },
     { name: 'ACTIONS', uid: 'actions' },
   ];
@@ -210,6 +111,8 @@ export default function ShowTable({ workerService }: IProps) {
   });
   console.log({ data });
 
+  // console.log({selectedKeys})
+  console.log({ selectedKeys }, selectedKeys.size);
   return (
     <>
       <div className="flex w-full items-center justify-between mb-2">

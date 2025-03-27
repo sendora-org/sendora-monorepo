@@ -15,7 +15,7 @@ export default function App() {
   return (
     <Dropdown>
       <DropdownTrigger>
-        <Button className="capitalize" size="sm">
+        <Button className="" size="sm">
           {locale}
         </Button>
       </DropdownTrigger>

@@ -29,7 +29,7 @@ import ShowTable from './show-table';
 export const ConfirmInput = ({
   eventSubject,
 }: { eventSubject: Subject<{ event: string }> }) => {
-  const { isConnected } = useAccount();
+  const { isConnected,chain,chainId } = useAccount();
 
   const { locale } = useLocale();
   const [isDataReady, setDataReady] = useState(false);
@@ -119,8 +119,9 @@ export const ConfirmInput = ({
     <>
       <ConnectButton />
 
-      {isConnected && !isDataReady && (
+      {isConnected && chain?.id ===chainId&& !isDataReady && (
         <Button
+        className='my-2'
           isLoading={isLoading}
           fullWidth
           color="secondary"
@@ -142,7 +143,7 @@ export const ConfirmInput = ({
           {isLoading && (
             <p className="flex gap-2">
               <MyTimer />
-              Validating format, approx. 30s...
+              Validating receipient & amount (~60s)...
             </p>
           )}
           {!isLoading && 'Continue'}
