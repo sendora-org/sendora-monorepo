@@ -22,7 +22,6 @@ export default async function Page({
   return (
     <LayoutDefault uri="callthat">
       <H1Title>Coming soon</H1Title>
-      <WebWorkerDemo1 />
     </LayoutDefault>
   );
 }

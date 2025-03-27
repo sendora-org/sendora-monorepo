@@ -120,7 +120,7 @@ export default function Component() {
               ))}
             </div>
           </div>
-          <div className="mt-8 grid grid-cols-3 md:gap-8   xl:mt-0">
+          <div className="mt-8 grid grid-cols-2 md:gap-8   xl:mt-0">
             <div>
               {renderList({
                 title: 'Services',
@@ -135,21 +135,18 @@ export default function Component() {
               })}
             </div>
 
-            <div className="">
+            {/* <div className="">
               {renderList({
                 title: 'Legal',
                 items: footerNavigation.legal,
               })}
-            </div>
+            </div> */}
           </div>
         </div>
         <Divider className="mt-16 sm:mt-20 lg:mt-24" />
         <div className="flex flex-wrap justify-between gap-2 pt-8 sm:items-center">
           <p className="text-small text-default-400">
             &copy; 2025 SENDORA Inc. All rights reserved.
-          </p>
-          <p className="text-xs text-default-400">
-            contact: garyshay@proton.me
           </p>
         </div>
       </div>
