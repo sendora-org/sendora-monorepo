@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 type IProps<T> = {
   data: T;
   currentStep: number;
@@ -17,6 +18,10 @@ export const Processing = ({
   resetSteps,
   setStepData,
 }: IProps<string>) => {
+  useEffect(() => {
+    // @ts-ignore
+    window?.stonks.event('native-coins-processing-loaded');
+  }, []);
   return (
     <>
       Processing

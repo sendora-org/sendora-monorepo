@@ -28,6 +28,9 @@ export default function App() {
         onSelectionChange={(value: SharedSelection) => {
           const selectedLocale = Array.from(value).join('') as Locale;
           setLocale(selectedLocale);
+
+          // @ts-ignore
+          window?.stonks.event('switch-locale', { locale });
         }}
       >
         <DropdownItem key="en-US">en-US : 1,234,567.89</DropdownItem>

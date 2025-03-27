@@ -11,6 +11,9 @@ export default ({ title, chainId }: { title: string; chainId: string }) => {
       <SelectNetworks
         navigate={(chainId) => {
           router.push(`/native-coins/${chainId}`);
+
+          // @ts-ignore
+          window?.stonks.event('native-coins-change-chain', { chainId });
         }}
         defaultSelectedKeys={[chainId]}
       />

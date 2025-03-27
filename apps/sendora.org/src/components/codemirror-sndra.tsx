@@ -28,6 +28,13 @@ const SNDRACodemirror = forwardRef(
     const editorRef = useRef<HTMLDivElement | null>(null);
     const editorViewRef = useRef<EditorView | null>(null);
     const { fullscreen } = useFullscreen();
+
+    useEffect(() => {
+      if (fullscreen) {
+        // @ts-ignore
+        window?.stonks.event('fullscreen-codemirror');
+      }
+    }, [fullscreen]);
     useEffect(() => {
       if (!editorRef.current) return;
       const view = new EditorView({

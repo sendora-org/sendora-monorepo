@@ -190,6 +190,8 @@ export default function AddAmount() {
                       decimals,
                     );
                     onClose();
+                    // @ts-ignore
+                    window?.stonks.event('update-amount', { isRandom });
                   }}
                 >
                   Confirm

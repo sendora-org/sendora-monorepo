@@ -8,6 +8,7 @@ type IProps<T> = {
   setStepData: (stepIndex: number, newData: Record<string, T>) => void;
 };
 
+import { useEffect } from 'react';
 export const Completed = ({
   data,
   currentStep,
@@ -17,6 +18,10 @@ export const Completed = ({
   resetSteps,
   setStepData,
 }: IProps<string>) => {
+  useEffect(() => {
+    // @ts-ignore
+    window?.stonks.event('native-coins-completed-loaded');
+  }, []);
   return (
     <>
       Completed

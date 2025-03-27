@@ -12,12 +12,19 @@ import { CopyText } from '@/components/copy-text';
 import { EditorRefContext } from '@/constants/contexts';
 import { vscodeDark } from '@/libs/vscodeDark';
 import { Tab, Tabs } from '@heroui/react';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 
 export default function App({ example = '' }: { example: string }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const editorRef = useContext(EditorRefContext);
+
+  useEffect(() => {
+    if (isOpen) {
+      // @ts-ignore
+      window?.stonks.event('show-sample');
+    }
+  }, [isOpen]);
   return (
     <>
       <Button size="sm" onPress={onOpen}>

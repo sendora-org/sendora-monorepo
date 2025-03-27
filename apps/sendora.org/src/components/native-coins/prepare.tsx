@@ -1,7 +1,7 @@
 import UserInput from '@/components/user-input';
 import { native_coin_input_example } from '@/constants/common';
 import { EditorRefContext } from '@/constants/contexts';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import type { SNDRACodemirrorRef } from '../codemirror-sndra';
 type IProps<T> = {
   data: T;
@@ -23,6 +23,11 @@ export const Prepare = ({
   setStepData,
 }: IProps<string>) => {
   const editorRef = useRef<SNDRACodemirrorRef | null>(null);
+
+  useEffect(() => {
+    // @ts-ignore
+    window?.stonks.event('native-coins-prepare-loaded');
+  }, []);
   return (
     <>
       <EditorRefContext.Provider value={editorRef}>
