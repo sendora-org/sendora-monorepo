@@ -14,7 +14,7 @@ export default ({ symbol = 'ETH' }: { symbol: string }) => {
   const { codes, addCode, selectedCode, setCode, removeCode, clearCodes } =
     useCurrencyStore();
   return (
-    <div className="flex flex-col sm:flex-row w-full gap-2 my-2 justify-between h-[48px]">
+    <div className="flex flex-col sm:flex-row w-full gap-2 my-2 justify-between h-[96px] sm:h-[48px]">
       <div className="flex items-center">
         <Switch
           isSelected={isSelected}

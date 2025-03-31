@@ -17,7 +17,19 @@ export default function App() {
   const { codes, addCode, selectedCode, setCode, removeCode, clearCodes } =
     useCurrencyStore();
 
-  const builtinsCurrencies = ['USD', 'EUR', 'JPY', 'GBP', 'CNY', 'RUB'];
+  const builtinsCurrencies = [
+    'USD',
+    'EUR',
+    'JPY',
+    'GBP',
+    'CNY',
+    'RUB',
+    'KRW',
+    'CAD',
+    'SGD',
+    'HKD',
+    'CHF',
+  ];
 
   const [input, setInput] = useState('');
 
@@ -47,6 +59,7 @@ export default function App() {
           </Button>
         </DropdownTrigger>
         <DropdownMenu
+          classNames={{ base: 'overflow-y-auto max-h-[550px]' }}
           bottomContent={
             <div className="flex flex-col gap-2">
               {' '}
