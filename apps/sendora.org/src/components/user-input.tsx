@@ -16,11 +16,16 @@ import SNDRACodemirror from './codemirror-sndra';
 import { ConfirmInput } from './confirm-input';
 
 import { forwardRef } from 'react';
+import InputExchangeRate from './input-exchange-rate';
 const SNDRACodemirrorMemo = memo(SNDRACodemirror);
 const eventSubject = new Subject<{ event: string }>();
 export default forwardRef(
   (
-    { defaultValue = '', example }: { defaultValue: string; example: IExample },
+    {
+      defaultValue = '',
+      example,
+      tokenSymbol = 'ETH',
+    }: { defaultValue: string; tokenSymbol: string; example: IExample },
     ref,
   ) => {
     console.log(`user input render ${new Date().toISOString()}`);
@@ -64,6 +69,7 @@ export default forwardRef(
             </ButtonGroup>
           </div>
         </div>
+        <InputExchangeRate symbol={tokenSymbol} />
         <ConfirmInput eventSubject={eventSubject} />
       </>
     );

@@ -2,11 +2,13 @@ import UserInput from '@/components/user-input';
 import { native_coin_input_example } from '@/constants/common';
 import { EditorRefContext } from '@/constants/contexts';
 import { useEffect, useRef } from 'react';
+import type { Chain } from 'viem';
 import type { SNDRACodemirrorRef } from '../codemirror-sndra';
 type IProps<T> = {
   data: T;
   currentStep: number;
   totalSteps: number;
+  network: Chain;
   nextStep: () => void;
   prevStep: () => void;
   resetSteps: () => void;
@@ -17,6 +19,7 @@ export const Prepare = ({
   data,
   currentStep,
   totalSteps,
+  network,
   nextStep,
   prevStep,
   resetSteps,
@@ -32,6 +35,7 @@ export const Prepare = ({
     <>
       <EditorRefContext.Provider value={editorRef}>
         <UserInput
+          tokenSymbol={network?.nativeCurrency?.symbol}
           example={native_coin_input_example}
           defaultValue={data ?? ''}
           ref={editorRef}

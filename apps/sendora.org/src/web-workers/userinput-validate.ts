@@ -1,4 +1,4 @@
-import { flattenArray } from '@/libs/common';
+import { delay, flattenArray } from '@/libs/common';
 import {
   isZero,
   removeNumberNoise,
@@ -49,13 +49,14 @@ self.onmessage = async ({
     case 'validate': {
       // console.log('validate', { payload }, store.getIdIndex());
       const { thousandSeparator, decimalSeparator } = payload;
-      const chunks = chunk(store.getIdIndex(), 1000);
-      // console.log([chunks]);
+      const chunks = chunk(store.getIdIndex(), 20000);
 
       const { results } = await PromisePool.withConcurrency(1)
         .for(chunks)
         // biome-ignore  lint/suspicious/noExplicitAny: reason
         .process(async (_chunk: any) => {
+          await delay(100);
+
           const newchunk = _chunk.map((id: number) => {
             const item = store.get(id);
             const arr = splitByEthereumAddress(item?.raw ?? '');
@@ -148,6 +149,7 @@ self.onmessage = async ({
               return item.ensName;
             });
 
+          console.log('before send base eth req');
           const ethAddrs = await queryAddressFromENS('.eth', ensOnEth);
           const baseAddrs = await queryAddressFromENS(
             '.base.eth',

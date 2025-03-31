@@ -40,6 +40,7 @@
     "lodash.countby": "^4.6.0",
     "lodash.orderby": "^4.6.0",
     "lodash.sortby": "^4.7.0",
+    "lodash.union": "^4.6.0",
     "nanoid": "^5.1.5",
     "next": "15.2.3",
     "ox": "^0.6.10",

@@ -18,7 +18,7 @@ export const networks: NetworkInfo[] = [
     symbol: 'ETH',
     avatar: '/chain-logo/evm_1.png',
     chainId: '1',
-    rpcURL: 'https://eth.llamarpc.com',
+    rpcURL: 'https://1rpc.io/eth',
     explorerURL: 'https://etherscan.io',
   },
   {
@@ -26,7 +26,7 @@ export const networks: NetworkInfo[] = [
     symbol: 'ETH',
     avatar: '/chain-logo/evm_8453.png',
     chainId: '8453',
-    rpcURL: 'https://base.llamarpc.com',
+    rpcURL: 'https://mainnet.base.org',
     explorerURL: 'https://basescan.org',
   },
   {
@@ -34,7 +34,7 @@ export const networks: NetworkInfo[] = [
     symbol: 'ETH',
     avatar: '/chain-logo/evm_42161.png',
     chainId: '42161',
-    rpcURL: 'https://arbitrum.llamarpc.com',
+    rpcURL: 'https://arb1.arbitrum.io/rpc',
     explorerURL: 'https://arbiscan.io',
   },
 
@@ -60,7 +60,7 @@ export const networks: NetworkInfo[] = [
     symbol: 'BNB',
     avatar: '/chain-logo/evm_56.png',
     chainId: '56',
-    rpcURL: 'https://binance.llamarpc.com',
+    rpcURL: 'https://bsc-dataseed4.bnbchain.org',
     explorerURL: 'https://bscscan.com',
   },
   {

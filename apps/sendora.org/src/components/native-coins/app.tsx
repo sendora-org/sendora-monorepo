@@ -55,6 +55,7 @@ export const App = ({ network }: Iprops) => {
         <ConnectedAccount />
       </div>
       <Comp
+        network={network}
         data={steps[currentStep]?.data}
         totalSteps={steps.length}
         currentStep={currentStep}

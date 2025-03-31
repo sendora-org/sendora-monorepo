@@ -1,3 +1,4 @@
+import { findNetwork, networks } from '@/constants/config';
 import {
   http,
   createPublicClient,
@@ -11,6 +12,7 @@ import { arbitrum, base, bsc, mainnet } from 'viem/chains';
 import { normalize, packetToBytes } from 'viem/ens';
 
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import { composeViemChain } from './wagmi';
 export const getVisitorId = async () => {
   const fpPromise = FingerprintJS.load();
   const fp = await fpPromise;
@@ -634,9 +636,14 @@ export const queryAddressFromENS = async (ensType: string, names: string[]) => {
     },
   };
 
+  const network =
+    findNetwork('chainId', registerMap[ensType].network.id.toString(10)) ??
+    null;
+
   const publicClient = createPublicClient({
     chain: registerMap[ensType].network,
-    transport: http(),
+
+    transport: network ? http(network.rpcURL) : http(),
   });
   const queryName = (name: string) => {
     const readContractParameters = {
@@ -651,6 +658,7 @@ export const queryAddressFromENS = async (ensType: string, names: string[]) => {
 
   const results = await publicClient.multicall({
     contracts: names.map((name) => queryName(name)),
+    batchSize: 0,
   });
 
   return results.map((result, index) => ({
