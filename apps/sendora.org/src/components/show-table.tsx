@@ -130,7 +130,7 @@ export default function ShowTable({
   console.log({ selectedKeys });
   return (
     <>
-      <div className="flex w-full items-center justify-between mb-2">
+      <div className="flex w-full items-center justify-between my-2">
         <H3Title>Confirm</H3Title>
       </div>
       <Table

@@ -37,13 +37,13 @@ export const ShowTableTopContent = memo(
     console.log({ statusFilter });
     return (
       <div className="flex flex-col gap-4">
-        <header className="mb-6 flex w-full items-center justify-between ">
+        {/* <header className="mb-6 flex w-full items-center justify-between ">
           <div className="flex flex-col ">
             <h1 className="text-xl font-bold text-default-500 lg:text-2xl">
               Confirm
             </h1>
           </div>
-        </header>
+        </header> */}
         <div className="flex justify-between gap-3 items-end">
           <Input
             isClearable
