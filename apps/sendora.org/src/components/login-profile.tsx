@@ -61,7 +61,7 @@ export default function LoginProfile({
   const { logout } = useAuthStore.getState();
 
   console.log({ chainId });
-  const chain = findNetwork('chainId', chainId.toString());
+  const chain = findNetwork('chainId', (chainId ?? 1).toString());
   return (
     <Dropdown
       showArrow
