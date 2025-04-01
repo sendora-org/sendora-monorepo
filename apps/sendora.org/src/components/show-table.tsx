@@ -124,10 +124,7 @@ export default function ShowTable({
 
     placeholderData: keepPreviousData,
   });
-  console.log({ data });
 
-  // console.log({selectedKeys})
-  console.log({ selectedKeys });
   return (
     <>
       <div className="flex w-full items-center justify-between my-2">
@@ -145,14 +142,16 @@ export default function ShowTable({
             statusFilter={statusFilter}
             setStatusFilter={setStatusFilter}
             selectedKeys={selectedKeys}
-            totalRecords={data?.total ?? 0}
+            // biome-ignore  lint/suspicious/noExplicitAny: reason
+            totalRecords={(data as any)?.total ?? 0}
           />
         }
         // page, totalPages, setPage
         bottomContent={
           <ShowTableBottomContent
             page={page}
-            totalPages={data?.totalPages ?? 1}
+            // biome-ignore  lint/suspicious/noExplicitAny: reason
+            totalPages={(data as any)?.totalPages ?? 1}
             setPage={setPage}
             toggle={toggle}
             fullscreen={fullscreen}
