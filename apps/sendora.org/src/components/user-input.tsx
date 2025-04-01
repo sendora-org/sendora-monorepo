@@ -9,7 +9,7 @@ import { useLocale } from '@/hooks/useLocale';
 import { Button, ButtonGroup } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { useFullscreen } from '@mantine/hooks';
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { Subject } from 'rxjs';
 import AddAmount from './add-amount';
 import SNDRACodemirror from './codemirror-sndra';
@@ -39,6 +39,10 @@ export default forwardRef(
       console.log('onDocChange');
       eventSubject.next({ event: 'onDocChange' });
     }, []);
+
+    useEffect(() => {
+      eventSubject.next({ event: 'onDocChange' });
+    }, [rate, isToggle])
 
     return (
       <>
