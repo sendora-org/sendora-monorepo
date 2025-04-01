@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import type React from 'react';
 
 import { Switch } from '@heroui/react';
 
@@ -9,22 +9,33 @@ import { NumberInput } from '@heroui/react';
 import { TooltipNotice } from './tooltip-notice';
 import { TooltipQuestion } from './tooltip-question';
 
-export default ({ symbol = 'ETH' }: { symbol: string }) => {
-  const [isSelected, setIsSelected] = React.useState(false);
+export default ({
+  symbol = 'ETH',
+  isToggle,
+  setToggle,
+  rate,
+  setRate,
+}: {
+  symbol: string;
+  isToggle: boolean;
+  setToggle: React.Dispatch<React.SetStateAction<boolean>>;
+  rate: number;
+  setRate: React.Dispatch<React.SetStateAction<number>>;
+}) => {
   const { codes, addCode, selectedCode, setCode, removeCode, clearCodes } =
     useCurrencyStore();
   return (
     <div className="flex flex-col sm:flex-row w-full gap-2 my-2 justify-between h-[96px] sm:h-[48px]">
       <div className="flex items-center">
         <Switch
-          isSelected={isSelected}
-          onValueChange={setIsSelected}
+          isSelected={isToggle}
+          onValueChange={setToggle}
           aria-label="exchange rate"
         >
-          Pricing Currency: {isSelected ? selectedCode : symbol}
+          Pricing Currency: {isToggle ? selectedCode : symbol}
         </Switch>
 
-        {!isSelected && (
+        {!isToggle && (
           <TooltipQuestion>
             <p className=" w-max-[250px]">
               If you want to calculate the amount of{' '}
@@ -34,7 +45,7 @@ export default ({ symbol = 'ETH' }: { symbol: string }) => {
           </TooltipQuestion>
         )}
 
-        {isSelected && (
+        {isToggle && (
           <TooltipQuestion>
             <p className=" w-max-[250px]">
               {' '}
@@ -46,9 +57,23 @@ export default ({ symbol = 'ETH' }: { symbol: string }) => {
         )}
       </div>
 
-      {isSelected && (
+      {isToggle && (
         <NumberInput
           hideStepper
+          formatOptions={{
+            useGrouping: true,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 20,
+          }}
+          isRequired
+          classNames={{
+            input: 'text-base ',
+          }}
+          minValue={0}
+          value={rate / 10 ** 18}
+          onValueChange={(v) => {
+            setRate(Math.ceil(v * 10 ** 18));
+          }}
           inputMode="decimal"
           size="sm"
           className="w-full sm:w-96"

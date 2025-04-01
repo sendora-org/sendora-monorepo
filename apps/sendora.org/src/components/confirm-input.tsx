@@ -31,7 +31,17 @@ import ShowTable from './show-table';
 
 export const ConfirmInput = ({
   eventSubject,
-}: { eventSubject: Subject<{ event: string }> }) => {
+  isToggle,
+  tokenSymbol,
+  currency,
+  rate,
+}: {
+  eventSubject: Subject<{ event: string }>;
+  isToggle: boolean;
+  tokenSymbol: string;
+  currency: string;
+  rate: number;
+}) => {
   const { isConnected, chain, chainId } = useAccount();
   const { status } = useAuthStore();
   const { locale } = useLocale();
@@ -148,7 +158,15 @@ export const ConfirmInput = ({
           </Button>
         )}
 
-      {isDataReady && <ShowTable workerService={workerService.current} />}
+      {isDataReady && (
+        <ShowTable
+          workerService={workerService.current}
+          isToggle={isToggle}
+          rate={rate}
+          tokenSymbol={tokenSymbol}
+          currency={currency}
+        />
+      )}
       {/* <Button
         onPress={() => {
           setLoading(false);

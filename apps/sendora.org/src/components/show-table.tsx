@@ -22,6 +22,10 @@ type SortDirection = 'ascending' | 'descending';
 type IProps = {
   //   deleteLine: (line: number[]) => void;
   workerService: WorkerService | null;
+  isToggle: boolean;
+  tokenSymbol: string;
+  currency: string;
+  rate: number;
 };
 type IColumnkeys =
   | 'id'
@@ -33,7 +37,13 @@ type IColumnkeys =
   | 'amount'
   | 'actions';
 
-export default function ShowTable({ workerService }: IProps) {
+export default function ShowTable({
+  workerService,
+  isToggle,
+  tokenSymbol,
+  currency,
+  rate,
+}: IProps) {
   const { setLocale, locale } = useLocale();
   const { decimalSeparator, thousandSeparator } = numberFormats[locale];
 
@@ -164,6 +174,10 @@ export default function ShowTable({ workerService }: IProps) {
                 {(columnKey) => (
                   <TableCell>
                     <ShowTableCell
+                      isToggle={isToggle}
+                      rate={rate}
+                      tokenSymbol={tokenSymbol}
+                      currency={currency}
                       thousandSeparator={thousandSeparator}
                       decimalSeparator={decimalSeparator}
                       receipient={item}

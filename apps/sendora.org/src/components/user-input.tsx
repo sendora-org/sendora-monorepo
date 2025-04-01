@@ -3,8 +3,8 @@ import DecimalSeparatorSwitch from '@/components/decimal-separator-switch';
 import H3Title from '@/components/h3-title';
 import ShowSample from '@/components/show-sample';
 import UploadSpreadsheet from '@/components/upload-spreadsheet';
-
 import type { IExample } from '@/constants/common';
+import { useCurrencyStore } from '@/hooks/useCurrencyStore';
 import { useLocale } from '@/hooks/useLocale';
 import { Button, ButtonGroup } from '@heroui/react';
 import { Icon } from '@iconify/react';
@@ -31,7 +31,10 @@ export default forwardRef(
     console.log(`user input render ${new Date().toISOString()}`);
     const { toggle, fullscreen } = useFullscreen();
     const { locale } = useLocale();
-
+    const [isToggle, setToggle] = useState(false);
+    const [rate, setRate] = useState(0);
+    const { codes, addCode, selectedCode, setCode, removeCode, clearCodes } =
+      useCurrencyStore();
     const onDocChange = useCallback(() => {
       console.log('onDocChange');
       eventSubject.next({ event: 'onDocChange' });
@@ -69,8 +72,20 @@ export default forwardRef(
             </ButtonGroup>
           </div>
         </div>
-        <InputExchangeRate symbol={tokenSymbol} />
-        <ConfirmInput eventSubject={eventSubject} />
+        <InputExchangeRate
+          symbol={tokenSymbol}
+          isToggle={isToggle}
+          setToggle={setToggle}
+          rate={rate}
+          setRate={setRate}
+        />
+        <ConfirmInput
+          eventSubject={eventSubject}
+          isToggle={isToggle}
+          tokenSymbol={tokenSymbol}
+          currency={selectedCode}
+          rate={rate}
+        />
       </>
     );
   },

@@ -48,6 +48,10 @@ type IProps = {
   columnKey: IColumnkeys;
   thousandSeparator: string;
   decimalSeparator: string;
+  isToggle: boolean;
+  tokenSymbol: string;
+  currency: string;
+  rate: number;
 };
 
 export const ShowTableCell = ({
@@ -55,6 +59,10 @@ export const ShowTableCell = ({
   columnKey,
   thousandSeparator,
   decimalSeparator,
+  isToggle,
+  tokenSymbol,
+  currency,
+  rate,
 }: IProps) => {
   let cellValue = null;
   if (columnKey !== 'actions') {
@@ -89,24 +97,44 @@ export const ShowTableCell = ({
       return (
         <div className="flex flex-col">
           <p className="text-bold text-small capitalize">
-            {receipient.status === 'valid' &&
-              formatBigIntNumber(
+            {(receipient.status === 'valid' ||
+              receipient.status === 'duplicateAddress') &&
+              isToggle &&
+              rate > 0 &&
+              `${formatBigIntNumber(
                 cellValue as bigint,
                 thousandSeparator,
                 decimalSeparator,
-              )}
+              )} ${currency}`}
 
-            {receipient.status !== 'valid' && receipient.amountRaw}
-          </p>
-          <p className="text-bold text-tiny capitalize text-default-400">
-            {receipient.status === 'valid' &&
-              formatBigIntNumber(
-                receipient.amount as bigint,
+            {(receipient.status === 'valid' ||
+              receipient.status === 'duplicateAddress') &&
+              !isToggle &&
+              `${formatBigIntNumber(
+                cellValue as bigint,
                 thousandSeparator,
                 decimalSeparator,
-              )}
+              )} ${tokenSymbol}`}
+            {receipient.status !== 'valid' &&
+              receipient.status !== 'duplicateAddress' &&
+              receipient.amountRaw}
+          </p>
+          <p className="text-bold text-tiny capitalize text-default-400">
+            {(receipient.status === 'valid' ||
+              receipient.status === 'duplicateAddress') &&
+              isToggle &&
+              rate > 0 &&
+              `${formatBigIntNumber(
+                // biome-ignore lint/style/noNonNullAssertion: reason
+                ((BigInt(cellValue!) * BigInt(10 ** 18)) /
+                  BigInt(rate)) as bigint,
+                thousandSeparator,
+                decimalSeparator,
+              )} ${tokenSymbol}`}
 
-            {receipient.status !== 'valid' && receipient.amountRaw}
+            {receipient.status !== 'valid' &&
+              receipient.status !== 'duplicateAddress' &&
+              receipient.amountRaw}
           </p>
         </div>
       );
