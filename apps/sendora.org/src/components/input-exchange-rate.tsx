@@ -49,6 +49,7 @@ export default ({ symbol = 'ETH' }: { symbol: string }) => {
       {isSelected && (
         <NumberInput
           hideStepper
+          inputMode="decimal"
           size="sm"
           className="w-full sm:w-96"
           placeholder="0.00"

@@ -7,7 +7,18 @@ import {
   DropdownMenu,
   DropdownTrigger,
   Input,
+  NumberInput,
 } from '@heroui/react';
+import {
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  useDisclosure,
+} from '@heroui/react';
+import { Radio, RadioGroup } from '@heroui/react';
+
 // @ts-ignore
 import union from 'lodash/union';
 import React, { useState } from 'react';
@@ -16,6 +27,7 @@ import { ChevronDownIcon } from './chevron-down-icon';
 export default function App() {
   const { codes, addCode, selectedCode, setCode, removeCode, clearCodes } =
     useCurrencyStore();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const builtinsCurrencies = [
     'USD',
@@ -49,7 +61,60 @@ export default function App() {
     // d
     <ButtonGroup variant="light">
       <div className=" text-default-400  ">{selectedCode}</div>
-      <Dropdown
+
+      <Button isIconOnly className="text-default-400 " onPress={onOpen}>
+        <ChevronDownIcon />
+      </Button>
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        scrollBehavior="inside"
+        className="max-h-[500px]"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalBody>
+                <RadioGroup
+                  label="Select your currency"
+                  value={selectedCode}
+                  onValueChange={setCode}
+                >
+                  {union(builtinsCurrencies, codes).map((key: string) => {
+                    return (
+                      <Radio className="max-w-[100%]" key={key} value={key}>
+                        {key}
+                      </Radio>
+                    );
+                  })}
+                </RadioGroup>
+              </ModalBody>
+
+              <ModalFooter>
+                <Input
+                  classNames={{
+                    input: 'uppercase text-base',
+                  }}
+                  value={input}
+                  onValueChange={setInput}
+                  variant="bordered"
+                  label=""
+                  labelPlacement="outside"
+                  placeholder="your currency"
+                />
+                <Button
+                  onPress={handleAdd}
+                  className="rounded-lg"
+                  variant="solid"
+                >
+                  Add
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+      {/* <Dropdown
         placement="bottom-end"
         className="bg-default-100 text-default-400 data-[hover=true]:bg-default-100"
       >
@@ -59,29 +124,13 @@ export default function App() {
           </Button>
         </DropdownTrigger>
         <DropdownMenu
-          classNames={{ base: 'overflow-y-auto max-h-[550px]' }}
+          classNames={{ base: 'overflow-y-auto max-h-[300px]' }}
           bottomContent={
             <div className="flex flex-col gap-2">
-              {' '}
-              <Input
-                classNames={{
-                  input: 'uppercase',
-                }}
-                value={input}
-                onValueChange={setInput}
-                variant="bordered"
-                label=""
-                labelPlacement="outside"
-                placeholder="your currency"
-                type="tet"
-              />
-              <Button
-                onPress={handleAdd}
-                className="rounded-lg"
-                variant="solid"
-              >
-                Add
-              </Button>
+
+
+
+           
             </div>
           }
           disallowEmptySelection
@@ -93,11 +142,9 @@ export default function App() {
             setCode(Array.from(v).join(''));
           }}
         >
-          {union(builtinsCurrencies, codes).map((key: string) => {
-            return <DropdownItem key={key}>{key}</DropdownItem>;
-          })}
+     
         </DropdownMenu>
-      </Dropdown>
+      </Dropdown> */}
     </ButtonGroup>
   );
 }
