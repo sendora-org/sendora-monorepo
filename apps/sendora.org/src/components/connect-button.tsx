@@ -1,8 +1,9 @@
 'use client';
+import useAuthStore from '@/hooks/useAuth';
 import { Button } from '@heroui/react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-
 export default () => {
+  const { loginAddress, logout } = useAuthStore();
   return (
     <ConnectButton.Custom>
       {({

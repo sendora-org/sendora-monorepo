@@ -13,7 +13,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type React from 'react';
 import { useEffect } from 'react';
 import type { Config } from 'wagmi';
-import { WagmiProvider } from 'wagmi';
+import { WagmiProvider, useAccount } from 'wagmi';
 import { base } from 'wagmi/chains';
 
 const queryClient = new QueryClient();
@@ -22,7 +22,8 @@ export const SIWEProvider = ({
   children,
   chain,
 }: { children: React.ReactNode; chain: Chain }) => {
-  const { status } = useAuthStore();
+  const { status, loginAddress, logout } = useAuthStore();
+
   return (
     <WagmiProvider config={getConfig(chain, 'SIWE')}>
       <QueryClientProvider client={queryClient}>
@@ -35,10 +36,25 @@ export const SIWEProvider = ({
             theme={darkTheme({ accentColor: '#7b3fe4' })}
             modalSize="compact"
           >
-            {children}
+            <Wrapper>{children}</Wrapper>
           </RainbowKitProvider>
         </RainbowKitAuthenticationProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );
+};
+
+export const Wrapper = ({ children }: { children: React.ReactNode }) => {
+  const { status, loginAddress, logout } = useAuthStore();
+
+  const { address } = useAccount();
+
+  useEffect(() => {
+    if (status === 'authenticated' && address) {
+      if (loginAddress.toLowerCase() !== address.toLowerCase()) {
+        logout();
+      }
+    }
+  }, [status, address, loginAddress, logout]);
+  return <>{children}</>;
 };

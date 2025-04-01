@@ -90,10 +90,7 @@ const useAuthStore = create<AuthState>((set) => ({
         try {
           const result = localStorage.getItem('authStatus');
           const { address, message, signature } = JSON.parse(result ?? '');
-          const { nonce, chainId } = Siwe.parseMessage(message);
-
-          const visitId = await getVisitorId();
-          console.log('meta', { nonce, visitId });
+          const { chainId } = Siwe.parseMessage(message);
 
           const network =
             findNetwork('chainId', String(chainId)) ?? networks[0];
@@ -108,11 +105,9 @@ const useAuthStore = create<AuthState>((set) => ({
             signature,
           });
 
-          if (nonce === visitId && valid) {
+          if (valid) {
             console.log('ooookk');
-            // set({ status: 'authenticated', loginAddress: address });
           } else {
-            console.log('failedddddd', { nonce, visitId, valid });
             set({ status: 'unauthenticated' });
           }
         } catch (error) {
