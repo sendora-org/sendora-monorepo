@@ -41,8 +41,10 @@ export default forwardRef(
     }, []);
 
     useEffect(() => {
-      eventSubject.next({ event: 'onDocChange' });
-    }, [rate, isToggle])
+      if (isToggle && rate > 0) {
+        eventSubject.next({ event: 'onDocChange' });
+      }
+    }, [isToggle, rate]);
 
     return (
       <>

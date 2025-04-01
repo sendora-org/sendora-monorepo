@@ -25,7 +25,7 @@ export function capitalize(s: string) {
 
 export const ShowTableTopContent = memo(
   ({
-    searchKeys,
+    searchKey,
     onClear,
     onSearchChange,
     statusFilter,
@@ -34,6 +34,7 @@ export const ShowTableTopContent = memo(
     totalRecords,
     // biome-ignore  lint/suspicious/noExplicitAny: reason
   }: any) => {
+    console.log({ statusFilter });
     return (
       <div className="flex flex-col gap-4">
         <header className="mb-6 flex w-full items-center justify-between ">
@@ -49,7 +50,7 @@ export const ShowTableTopContent = memo(
             className="w-full sm:max-w-[44%]"
             placeholder="Search by receipient ..."
             startContent={<SearchIcon />}
-            value={searchKeys}
+            value={searchKey}
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
@@ -69,9 +70,13 @@ export const ShowTableTopContent = memo(
                 aria-label="Table Columns"
                 closeOnSelect={false}
                 selectedKeys={statusFilter}
-                selectionMode="multiple"
+                selectionMode="single"
                 onSelectionChange={setStatusFilter}
               >
+                <DropdownItem key={'all'} className="capitalize">
+                  {capitalize('ALL')}
+                </DropdownItem>
+
                 {statusOptions.map((status) => (
                   <DropdownItem key={status.uid} className="capitalize">
                     {capitalize(status.name)}

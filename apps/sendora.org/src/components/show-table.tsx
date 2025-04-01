@@ -12,10 +12,13 @@ import {
   TableHeader,
   TableRow,
 } from '@heroui/react';
+import { useFullscreen } from '@mantine/hooks';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { firstValueFrom } from 'rxjs';
+import { ShowTableBottomContent } from './show-table-bottom';
 import { ShowTableCell } from './show-table-cell';
+import { ShowTableTopContent } from './show-table-top';
 type Key = string | number;
 type Selection = 'all' | Set<Key>;
 type SortDirection = 'ascending' | 'descending';
@@ -55,11 +58,13 @@ export default function ShowTable({
     { name: 'ACTIONS', uid: 'actions' },
   ];
 
+  const { toggle, fullscreen } = useFullscreen();
+
   // Table Select
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
 
   // Table Status Select
-  const [statusFilter, setStatusFilter] = useState<Selection>('all');
+  const [statusFilter, setStatusFilter] = useState<Selection>(new Set(['all']));
 
   // Page
   const pageSize = 100;
@@ -95,7 +100,7 @@ export default function ShowTable({
       'user-input-map',
       sortDescriptor,
       filterField,
-      filterKey,
+      statusFilter,
       searchKey,
       page,
       pageSize,
@@ -109,7 +114,7 @@ export default function ShowTable({
           sortField: sortDescriptor.column,
           sortOrder: sortDescriptor.direction === 'ascending' ? 'asc' : 'desc',
           filterField,
-          filterKey,
+          filterKey: Array.from(statusFilter).join(''),
           searchKey,
           searchFields: ['name', 'address'],
           page,
@@ -132,13 +137,32 @@ export default function ShowTable({
         isKeyboardNavigationDisabled
         isHeaderSticky
         aria-label="$SNDRA"
-        // topContent={topContent}
-        // bottomContent={bottomContent}
+        topContent={
+          <ShowTableTopContent
+            searchKeys={searchKey}
+            onClear={onClear}
+            onSearchChange={onSearchChange}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            selectedKeys={selectedKeys}
+            totalRecords={data?.total ?? 0}
+          />
+        }
+        // page, totalPages, setPage
+        bottomContent={
+          <ShowTableBottomContent
+            page={page}
+            totalPages={data?.totalPages ?? 1}
+            setPage={setPage}
+            toggle={toggle}
+            fullscreen={fullscreen}
+          />
+        }
         bottomContentPlacement="outside"
         topContentPlacement="outside"
         classNames={{
           base: 'relative ',
-          wrapper: 'max-h-[382px] relative',
+          wrapper: fullscreen ? '100vh   relative' : 'max-h-[382px] relative',
           // ${isFetching ? ' overflow-hidden' : ''}
           loadingWrapper:
             'absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-50',

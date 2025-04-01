@@ -55,22 +55,27 @@ export class DataManager<T extends Item> {
     options: {
       sortField?: keyof T;
       sortOrder?: 'asc' | 'desc';
-      filter?: (item: T) => boolean;
+      filterField?: string;
+      filterKey: string;
       searchKey?: string;
       searchFields?: (keyof T)[];
       page?: number;
       pageSize?: number;
-    } = {},
+    } = {
+      filterKey: '',
+    },
   ): {
     items: T[];
     total: number;
+    totalPages: number;
   } {
     console.log({ options });
 
     const {
       sortField,
       sortOrder = 'asc',
-      filter,
+      filterField,
+      filterKey,
       searchKey,
       searchFields,
       page = 1,
@@ -81,11 +86,23 @@ export class DataManager<T extends Item> {
     let ids = [...this.idIndex];
 
     // Fiter
-    if (filter || (searchKey && searchFields)) {
+    if (filterField && filterKey) {
       ids = ids.filter((id) => {
         // biome-ignore lint/style/noNonNullAssertion: reason
         const item = this.dataMap.get(id)!;
-        if (filter && !filter(item)) return false;
+        if (filterKey === 'all') {
+          return true;
+        }
+        return item[filterField] === filterKey;
+      });
+    }
+
+    // Search
+    if (searchKey && searchFields) {
+      ids = ids.filter((id) => {
+        // biome-ignore lint/style/noNonNullAssertion: reason
+        const item = this.dataMap.get(id)!;
+
         if (searchKey && searchFields) {
           const searchLower = searchKey.toLowerCase();
           return searchFields.some((field) =>
@@ -122,7 +139,8 @@ export class DataManager<T extends Item> {
     // biome-ignore lint/style/noNonNullAssertion: reason
     const items = paginatedIds.map((id) => this.dataMap.get(id)!);
 
-    return { items, total };
+    const totalPages = Math.ceil(total / pageSize);
+    return { items, total, totalPages };
   }
 
   get(id: number): T | undefined {
