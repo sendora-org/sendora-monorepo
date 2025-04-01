@@ -115,26 +115,16 @@ export const menuItems = [
     uri: 'erc20-tokens',
     url: '/erc20-tokens/1',
   },
-  {
-    name: 'Stablecoins',
-    uri: 'stablecoins',
-    url: '/stablecoins/1',
-  },
-  // {
-  //   name: 'NFT Transfers',
-  //   uri: 'nft-transfers',
-  //   url: '/nft-transfers/1',
-  // },
-  {
-    name: 'Portfolio',
-    uri: 'portfolio',
-    url: '/portfolio',
-  },
 
   {
     name: 'Callthat',
     uri: 'callthat',
     url: '/callthat/1',
+  },
+  {
+    name: 'Portfolio',
+    uri: 'portfolio',
+    url: '/portfolio',
   },
 ];
 
