@@ -3,8 +3,8 @@ import { Button, ButtonGroup } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { memo } from 'react';
 
-// biome-ignore  lint/suspicious/noExplicitAny: reason
 export const ShowTableBottomContent = memo(
+  // biome-ignore  lint/suspicious/noExplicitAny: reason
   ({ page, totalPages, setPage, toggle, fullscreen }: any) => {
     return (
       <div className="py-2 px-2 flex justify-between items-center">

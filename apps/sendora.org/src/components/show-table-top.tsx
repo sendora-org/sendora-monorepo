@@ -11,6 +11,7 @@ import { ChevronDownIcon } from './chevron-down-icon';
 import { SearchIcon } from './search-icon';
 
 export const statusOptions = [
+  { name: 'ALL', uid: 'all' },
   { name: 'Valid', uid: 'valid' },
   { name: 'Wrong Address', uid: 'wrongAddress' },
   { name: 'Duplicate Address', uid: 'duplicateAddress' },
@@ -37,13 +38,6 @@ export const ShowTableTopContent = memo(
     console.log({ statusFilter });
     return (
       <div className="flex flex-col gap-4">
-        {/* <header className="mb-6 flex w-full items-center justify-between ">
-          <div className="flex flex-col ">
-            <h1 className="text-xl font-bold text-default-500 lg:text-2xl">
-              Confirm
-            </h1>
-          </div>
-        </header> */}
         <div className="flex justify-between gap-3 items-end">
           <Input
             isClearable
@@ -72,16 +66,15 @@ export const ShowTableTopContent = memo(
                 selectedKeys={statusFilter}
                 selectionMode="single"
                 onSelectionChange={setStatusFilter}
+                items={statusOptions}
               >
-                <DropdownItem key={'all'} className="capitalize">
-                  {capitalize('ALL')}
-                </DropdownItem>
-
-                {statusOptions.map((status) => (
-                  <DropdownItem key={status.uid} className="capitalize">
-                    {capitalize(status.name)}
-                  </DropdownItem>
-                ))}
+                {(status) => {
+                  return (
+                    <DropdownItem key={status.uid} className="capitalize">
+                      {capitalize(status.name)}
+                    </DropdownItem>
+                  );
+                }}
               </DropdownMenu>
             </Dropdown>
           </div>
