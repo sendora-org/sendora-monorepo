@@ -55,6 +55,7 @@ export const SignIn = () => {
                 if (authenticationStatus === 'authenticated') {
                   return (
                     <LoginProfile
+                      chainId={chain?.id ?? 1}
                       address={loginAddress}
                       displayName={shortAddress(loginAddress)}
                     />

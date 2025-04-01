@@ -1,5 +1,7 @@
+import { findNetwork, networks } from '@/constants/config';
 import useAuthStore from '@/hooks/useAuth';
 import { emojiAvatarForAddress } from '@/libs/emojiAvatarFOrAddress';
+import { composeViemChain } from '@/libs/wagmi';
 import {
   Avatar,
   Button,
@@ -11,7 +13,7 @@ import {
   User,
 } from '@heroui/react';
 import type { Hex } from 'viem';
-import { base } from 'wagmi/chains';
+import { type Chain, base } from 'wagmi/chains';
 import ETHBalance from './eth-balance';
 // export const PlusIcon = (props) => {
 //   return (
@@ -54,8 +56,12 @@ export const EmojiIcon = ({ address }: { address: string }) => {
 export default function LoginProfile({
   address,
   displayName,
-}: { address: string; displayName: string }) {
+  chainId,
+}: { address: string; displayName: string; chainId?: number }) {
   const { logout } = useAuthStore.getState();
+
+  console.log({ chainId });
+  const chain = findNetwork('chainId', chainId.toString());
   return (
     <Dropdown
       showArrow
@@ -114,7 +120,12 @@ export default function LoginProfile({
                 name: 'text-default-600',
                 description: 'text-default-500',
               }}
-              description={<ETHBalance address={address as Hex} chain={base} />}
+              description={
+                <ETHBalance
+                  address={address as Hex}
+                  chain={chain ? composeViemChain(chain) : base}
+                />
+              }
               name={displayName}
             />
           </DropdownItem>

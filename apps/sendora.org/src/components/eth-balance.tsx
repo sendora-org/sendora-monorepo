@@ -19,7 +19,6 @@ const fetchBalance = async ({
 const ETHBalance = ({
   address,
   chain,
-  suffix = 'ETH',
 }: { address: Hex; chain: Chain; suffix?: string }) => {
   const { data: balance, error } = useSWR({ address, chain }, fetchBalance, {
     refreshInterval: 10000,
@@ -32,7 +31,7 @@ const ETHBalance = ({
 
   return (
     <>
-      {balance} {suffix}
+      {balance} {chain.nativeCurrency.symbol}
     </>
   );
 };
