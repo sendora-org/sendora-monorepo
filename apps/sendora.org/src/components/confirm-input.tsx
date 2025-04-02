@@ -1,3 +1,5 @@
+import H3Title from '@/components/h3-title';
+import H4Title from '@/components/h4-title';
 import { numberFormats } from '@/constants/common';
 import { EditorRefContext } from '@/constants/contexts';
 import useAuthStore from '@/hooks/useAuth';
@@ -12,8 +14,6 @@ import { useLocale } from '@/hooks/useLocale';
 // import { useNativeCoinsValue } from '@/hooks/useNativeCoinsValue';
 // import { getRandomNumber } from '@/libs/common';
 import { splitText } from '@/libs/common';
-import H3Title from '@/components/h3-title';
-import H4Title from '@/components/h4-title';
 import {
   formatLocalizedNumberWithSmallNumbers,
   getDecimalsScientific,
@@ -172,50 +172,51 @@ export const ConfirmInput = ({
         />
       )}
 
-
-
       {/* gap-0 brightne2ss-50 grayscale sm:bg-[url("/ads/ivars-utinans-DYqYgOrj-2M-unsplash.jpg")] bg-cover bg-center */}
       <H3Title>Receipt</H3Title>
-      <div className='flex md:flex-row flex-col items-start w-full justify-between'>
-
+      <div className="flex md:flex-row flex-col items-start w-full justify-between">
         <Abcfc />
 
         <dl className="flex flex-col gap-4 py-4 w-full md:w-[350px]">
-
-          <H4Title><span className='font-bold'> Others</span></H4Title>
+          <H4Title>
+            <span className="font-bold"> Others</span>
+          </H4Title>
           <div className="flex justify-between">
             <dt className="text-small text-default-300">Created at</dt>
-            <dd className="text-small font-semibold text-default-500">25/3/2025 18:14</dd>
+            <dd className="text-small font-semibold text-default-500">
+              25/3/2025 18:14
+            </dd>
           </div>
 
           <div className="flex justify-between">
             <dt className="text-small text-default-300">Receipt ID</dt>
-            <dd className="text-small font-semibold text-default-500">V1StGXR8_Z5jdHi6B-myT</dd>
+            <dd className="text-small font-semibold text-default-500">
+              V1StGXR8_Z5jdHi6B-myT
+            </dd>
           </div>
 
           <div className="flex justify-between">
-            <dt className="text-small text-default-300">       Merkle Root</dt>
-            <dd className="text-small font-semibold text-default-500">9b0fc92260312ce...6d53295d85f992</dd>
+            <dt className="text-small text-default-300"> Merkle Root</dt>
+            <dd className="text-small font-semibold text-default-500">
+              9b0fc92260312ce...6d53295d85f992
+            </dd>
           </div>
-
 
           <div className="flex justify-between">
             <dt className="text-small text-default-300">Created by</dt>
-            <dd className="text-small font-semibold text-default-500">0x1345f...770ddab52ef16f2bf17</dd>
+            <dd className="text-small font-semibold text-default-500">
+              0x1345f...770ddab52ef16f2bf17
+            </dd>
           </div>
-
 
           <div className="flex justify-between">
             <dt className="text-small text-default-300">Funds from</dt>
-            <dd className="text-small font-semibold text-default-500">0x1345f...770ddab52ef16f2bf17</dd>
+            <dd className="text-small font-semibold text-default-500">
+              0x1345f...770ddab52ef16f2bf17
+            </dd>
           </div>
-
-
         </dl>
-
-
       </div>
-
     </>
   );
 };

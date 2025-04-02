@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import type React from 'react';
+import { useEffect, useState } from 'react';
 
 interface TypewriterTipsProps {
   tips: string[];
@@ -12,7 +13,7 @@ const TypewriterTips: React.FC<TypewriterTipsProps> = ({
   pauseDuration = 2000, // Default to 2 seconds pause
 }) => {
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
-  const [currentText, setCurrentText] = useState("");
+  const [currentText, setCurrentText] = useState('');
   const [charIndex, setCharIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
@@ -31,22 +32,29 @@ const TypewriterTips: React.FC<TypewriterTipsProps> = ({
           setCharIndex(charIndex + 1);
         }, typingSpeed);
         return () => clearTimeout(timeout);
-      } else {
-        // Tip is fully typed, switch to pause mode
-        setIsTyping(false);
       }
+      // Tip is fully typed, switch to pause mode
+      setIsTyping(false);
     } else {
       // Handle pause after typing is complete
       const pauseTimeout = setTimeout(() => {
         // Reset for the next tip
-        setCurrentText("");
+        setCurrentText('');
         setCharIndex(0);
         setCurrentTipIndex((prev) => (prev + 1) % tips.length);
         setIsTyping(true); // Start typing the next tip
       }, pauseDuration);
       return () => clearTimeout(pauseTimeout);
     }
-  }, [charIndex, isTyping, isPaused, currentTipIndex, tips, typingSpeed, pauseDuration]);
+  }, [
+    charIndex,
+    isTyping,
+    isPaused,
+    currentTipIndex,
+    tips,
+    typingSpeed,
+    pauseDuration,
+  ]);
 
   // Pause typing on mouse hover, resume on mouse leave
   const handleMouseEnter = () => {
