@@ -7,7 +7,7 @@ export const ShowTableBottomContent = memo(
   // biome-ignore  lint/suspicious/noExplicitAny: reason
   ({ page, totalPages, setPage, toggle, fullscreen }: any) => {
     return (
-      <div className="py-2 px-2 flex justify-between items-center">
+      <div className="py-2 px-0 flex justify-between items-center ">
         <Pagination
           isCompact
           showControls
@@ -16,6 +16,10 @@ export const ShowTableBottomContent = memo(
           page={page}
           total={totalPages}
           onChange={setPage}
+          classNames={{
+            base: 'px-0',
+            item: 'text-xs',
+          }}
         />
         <ButtonGroup className="gap-1">
           <Button isIconOnly size="sm" onPress={toggle}>

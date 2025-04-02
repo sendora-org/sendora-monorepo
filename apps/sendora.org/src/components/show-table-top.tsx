@@ -38,10 +38,10 @@ export const ShowTableTopContent = memo(
     console.log({ statusFilter });
     return (
       <div className="flex flex-col gap-4">
-        <div className="flex justify-between gap-3 items-end">
+        <div className="flex flex-row fnlex-col justify-between gap-3 sm:items-end items-end">
           <Input
             isClearable
-            className="w-full sm:max-w-[44%]"
+            className="w-full sm:max-w-[40%]"
             placeholder="Search by receipient ..."
             startContent={<SearchIcon />}
             value={searchKey}
@@ -49,9 +49,9 @@ export const ShowTableTopContent = memo(
             onValueChange={onSearchChange}
           />
 
-          <div className="flex gap-3">
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
+          <div className="flex gap-3   ">
+            <Dropdown placement="bottom-end">
+              <DropdownTrigger className="flex">
                 <Button
                   endContent={<ChevronDownIcon className="text-small" />}
                   variant="flat"
@@ -80,13 +80,14 @@ export const ShowTableTopContent = memo(
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <span className="w-[30%] text-small text-default-400">
+          <span className="w-[60%] text-sm text-default-400">
             {selectedKeys === 'all'
               ? `${totalRecords} of ${totalRecords} selected`
               : `${selectedKeys.size} of ${totalRecords} selected`}
           </span>
           {selectedKeys === 'all' ? (
             <Button
+              size="sm"
               color="danger"
               onPress={() => {
                 console.log(
@@ -98,8 +99,7 @@ export const ShowTableTopContent = memo(
                 // deleteLine(filteredItems.map(({ id }) => Number(id)));
               }}
             >
-              {' '}
-              Delete selected items.
+              Delete selected
             </Button>
           ) : selectedKeys?.size >= 1 ? (
             <Button
@@ -112,7 +112,7 @@ export const ShowTableTopContent = memo(
               }}
               color="danger"
             >
-              Delete selected items.
+              Delete selected
             </Button>
           ) : (
             <></>

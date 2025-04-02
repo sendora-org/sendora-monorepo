@@ -56,26 +56,34 @@ export const EmojiIcon = ({ address }: { address: string }) => {
 export default function LoginProfile({
   address,
   displayName,
+  ensName,
   chainId,
-}: { address: string; displayName: string; chainId?: number }) {
+}: {
+  address: string;
+  displayName: string;
+  ensName?: string;
+  chainId?: number;
+}) {
   const { logout } = useAuthStore.getState();
 
-  console.log({ chainId });
+  console.log({ ensName });
   const chain = findNetwork('chainId', (chainId ?? 1).toString());
   return (
     <Dropdown
       showArrow
       classNames={{
-        base: 'before:bg-default-200', // change arrow background
+        base: 'before:bg-default-200 ', // change arrow background
         content: 'p-0 border-small border-divider bg-background',
       }}
       radius="sm"
     >
       <DropdownTrigger>
         <Button
+          className="scale-75 sm:scale-100"
           startContent={
             <Avatar
               size="sm"
+              src={`https://euc.li/${ensName}`}
               showFallback
               fallback={<EmojiIcon address={address} />}
             />
@@ -88,7 +96,7 @@ export default function LoginProfile({
       </DropdownTrigger>
       <DropdownMenu
         aria-label="Custom item styles"
-        className="p-3"
+        className="p-2"
         disabledKeys={['profile']}
         itemClasses={{
           base: [

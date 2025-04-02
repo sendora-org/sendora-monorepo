@@ -167,27 +167,6 @@ export const ConfirmInput = ({
           currency={currency}
         />
       )}
-      {/* <Button
-        onPress={() => {
-          setLoading(false);
-        }}
-      >
-        click
-      </Button>
-
-      <Button
-        onPress={async () => {
-          if (workerService.current) {
-            // 获取所有数据
-            const allData = await firstValueFrom(
-              workerService.current.request('getAll'),
-            );
-            console.log('All Data:', allData);
-          }
-        }}
-      >
-        query
-      </Button> */}
     </>
   );
 };

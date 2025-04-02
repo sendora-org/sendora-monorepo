@@ -144,6 +144,8 @@ export default function ShowTable({
             selectedKeys={selectedKeys}
             // biome-ignore  lint/suspicious/noExplicitAny: reason
             totalRecords={(data as any)?.total ?? 0}
+            thousandSeparator={thousandSeparator}
+            decimalSeparator={decimalSeparator}
           />
         }
         // page, totalPages, setPage

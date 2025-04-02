@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 import { menuItems } from '@/constants/config';
 import {
+  Chip,
   Navbar as HeroUINavbar,
   // Link,
   NavbarBrand,
@@ -35,7 +36,7 @@ const Navbar = ({ uri = 'home', classNames = {}, ...props }) => {
         isMenuOpen={isMenuOpen}
         onMenuOpenChange={setIsMenuOpen}
       >
-        <div className="flex  items-center gap-8">
+        <div className="flex  items-center gap-0 sm:gap-4">
           <NavbarBrand className="sm:px-0 px-0">
             <div className="rounded-full  text-background">
               <SendoraICon size={32} className="rounded-md" />
@@ -43,6 +44,18 @@ const Navbar = ({ uri = 'home', classNames = {}, ...props }) => {
             <span className="ml-2 text-2xl  font-medium text-default-700">
               SENDORA
             </span>
+
+            <Chip
+              size="sm"
+              radius="sm"
+              color="danger"
+              className="h-6 scale-75"
+              classNames={{
+                content: 'text-black font-bold p-0.5',
+              }}
+            >
+              ALPHA
+            </Chip>
           </NavbarBrand>
 
           <NavbarContent justify="start">
@@ -63,7 +76,7 @@ const Navbar = ({ uri = 'home', classNames = {}, ...props }) => {
         </div>
 
         <NavbarContent className="flex md:flex" justify="end">
-          <NavbarItem className="ml-2 !flex gap-2">
+          <NavbarItem className="ml-1 !flex gap-1">
             <SignIn />
           </NavbarItem>
         </NavbarContent>
