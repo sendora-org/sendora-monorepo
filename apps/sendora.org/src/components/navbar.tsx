@@ -28,7 +28,7 @@ const Navbar = ({ uri = 'home', classNames = {}, ...props }) => {
           base: cn('border-default-100 bg-transparent', {
             'bg-default-200/50 dark:bg-default-100/50': isMenuOpen,
           }),
-          wrapper: '  sm:px-6 px-2 max-w-[1280px] ',
+          wrapper: '  sm:px-6 px-2 max-w-[1024px] ',
           item: 'hidden md:flex',
           ...classNames,
         }}
