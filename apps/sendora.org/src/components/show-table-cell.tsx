@@ -52,6 +52,7 @@ type IProps = {
   tokenSymbol: string;
   currency: string;
   rate: number;
+  deleteLines: (ids: number[]) => void;
 };
 
 export const ShowTableCell = ({
@@ -63,6 +64,7 @@ export const ShowTableCell = ({
   tokenSymbol,
   currency,
   rate,
+  deleteLines,
 }: IProps) => {
   let cellValue = null;
   if (columnKey !== 'actions') {
@@ -152,22 +154,14 @@ export const ShowTableCell = ({
     case 'actions':
       return (
         <div className="relative flex items-center gap-4">
-          {/* <Tooltip content="Edit receipient">
-                <Button
-                  isIconOnly
-                  className="text-lg text-primary-400 cursor-pointer valid:opacity-50"
-                >
-                  <EditIcon />
-                </Button>
-              </Tooltip> */}
-          <Tooltip color="danger" content="Delete receipient">
+          <Tooltip color="danger" content="Delete">
             <Button
               isIconOnly
               size="sm"
               className="text-md text-danger cursor-pointer valid:opacity-50"
-              onClick={() => {
+              onPress={() => {
                 console.log('delete');
-                // deleteLine([receipient.id]);
+                deleteLines([receipient.id]);
               }}
             >
               <DeleteIcon />

@@ -298,8 +298,6 @@ self.onmessage = async ({
     }
 
     case 'query': {
-      console.log('query', { payload });
-      console.log('query', result);
       result = store.query(payload) || null;
       break;
     }
@@ -307,10 +305,16 @@ self.onmessage = async ({
       store.update(payload.id, payload.data);
       break;
     }
-    case 'delete': {
-      store.delete(payload);
+    case 'deleteBatchByOptions': {
+      store.deleteBatchByOptions(payload);
       break;
     }
+
+    case 'deleteBatchByIds': {
+      store.deleteBatchByIds(payload);
+      break;
+    }
+
     case 'getAll': {
       console.log('getALL');
       result = store.getAll();

@@ -95,35 +95,58 @@ export default function ShowTable({
 
   const filterField = 'status';
   const filterKey = 'all';
-  const { status, data, error, isFetching, isPlaceholderData } = useQuery({
-    queryKey: [
-      'user-input-map',
-      sortDescriptor,
-      filterField,
-      statusFilter,
-      searchKey,
-      page,
-      pageSize,
-    ],
-    // cacheTime: 0,
-    staleTime: 0,
-    queryFn: () =>
-      firstValueFrom(
+  const { status, data, error, isFetching, isPlaceholderData, refetch } =
+    useQuery({
+      queryKey: [
+        'user-input-map',
+        sortDescriptor,
+        filterField,
+        statusFilter,
+        searchKey,
+        page,
+        pageSize,
+      ],
+      // cacheTime: 0,
+      staleTime: 0,
+      queryFn: () =>
+        firstValueFrom(
+          // biome-ignore lint/style/noNonNullAssertion: reason
+          workerService?.request('query', {
+            sortField: sortDescriptor.column,
+            sortOrder:
+              sortDescriptor.direction === 'ascending' ? 'asc' : 'desc',
+            filterField,
+            filterKey: Array.from(statusFilter).join(''),
+            searchKey,
+            searchFields: ['name', 'address'],
+            page,
+            pageSize,
+          })!,
+        ),
+
+      placeholderData: keepPreviousData,
+    });
+
+  const deleteLines = async (ids: number[]) => {
+    console.log('before', ids);
+    if (ids.length >= 1) {
+      const results = await firstValueFrom(
         // biome-ignore lint/style/noNonNullAssertion: reason
-        workerService?.request('query', {
-          sortField: sortDescriptor.column,
-          sortOrder: sortDescriptor.direction === 'ascending' ? 'asc' : 'desc',
+        workerService?.request('deleteBatchByIds', ids)!,
+      );
+    } else {
+      const results = await firstValueFrom(
+        // biome-ignore lint/style/noNonNullAssertion: reason
+        workerService?.request('deleteBatchByOptions', {
           filterField,
           filterKey: Array.from(statusFilter).join(''),
           searchKey,
           searchFields: ['name', 'address'],
-          page,
-          pageSize,
         })!,
-      ),
-
-    placeholderData: keepPreviousData,
-  });
+      );
+    }
+    refetch();
+  };
 
   return (
     <>
@@ -146,6 +169,7 @@ export default function ShowTable({
             totalRecords={(data as any)?.total ?? 0}
             thousandSeparator={thousandSeparator}
             decimalSeparator={decimalSeparator}
+            deleteLines={deleteLines}
           />
         }
         // page, totalPages, setPage
@@ -199,6 +223,7 @@ export default function ShowTable({
                 {(columnKey) => (
                   <TableCell>
                     <ShowTableCell
+                      deleteLines={deleteLines}
                       isToggle={isToggle}
                       rate={rate}
                       tokenSymbol={tokenSymbol}

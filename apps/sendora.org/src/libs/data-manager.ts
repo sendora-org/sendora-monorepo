@@ -36,6 +36,67 @@ export class DataManager<T extends Item> {
     return success;
   }
 
+  deleteBatchByIds(ids: number[]): boolean[] {
+    console.log({ ids });
+    const results: boolean[] = [];
+
+    for (const id of ids) {
+      const success = this.dataMap.delete(id);
+      if (success) {
+        const index = this.idIndex.indexOf(id);
+        if (index !== -1) {
+          this.idIndex.splice(index, 1);
+        }
+      }
+      results.push(success);
+    }
+
+    console.log({ results });
+    return results;
+  }
+
+  deleteBatchByOptions(options: {
+    filterField?: string;
+    filterKey: string;
+    searchKey?: string;
+    searchFields?: (keyof T)[];
+  }) {
+    const { filterField, filterKey, searchKey, searchFields } = options;
+
+    //
+    let ids = [...this.idIndex];
+
+    // Fiter
+    if (filterField && filterKey) {
+      ids = ids.filter((id) => {
+        // biome-ignore lint/style/noNonNullAssertion: reason
+        const item = this.dataMap.get(id)!;
+        if (filterKey === 'all') {
+          return true;
+        }
+        return item[filterField] === filterKey;
+      });
+    }
+
+    // Search
+    if (searchKey && searchFields) {
+      ids = ids.filter((id) => {
+        // biome-ignore lint/style/noNonNullAssertion: reason
+        const item = this.dataMap.get(id)!;
+
+        if (searchKey && searchFields) {
+          const searchLower = searchKey.toLowerCase();
+          return searchFields.some((field) =>
+            String(item[field]).toLowerCase().includes(searchLower),
+          );
+        }
+        return true;
+      });
+    }
+
+    return this.deleteBatchByIds(ids);
+  }
+
   update(id: number, data: Partial<T>): boolean {
     const existingItem = this.dataMap.get(id);
     if (!existingItem) return false;

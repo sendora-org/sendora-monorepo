@@ -17,7 +17,7 @@ export const ShowTableBottomContent = memo(
           total={totalPages}
           onChange={setPage}
           classNames={{
-            base: 'px-0',
+            base: 'px-2',
             item: 'text-xs',
           }}
         />

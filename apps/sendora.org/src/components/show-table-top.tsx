@@ -33,6 +33,7 @@ export const ShowTableTopContent = memo(
     setStatusFilter,
     selectedKeys,
     totalRecords,
+    deleteLines,
     // biome-ignore  lint/suspicious/noExplicitAny: reason
   }: any) => {
     console.log({ statusFilter });
@@ -90,13 +91,8 @@ export const ShowTableTopContent = memo(
               size="sm"
               color="danger"
               onPress={() => {
-                console.log(
-                  11111,
-                  'all',
-                  selectedKeys,
-                  // filteredItems.map(({ id }) => id),
-                );
-                // deleteLine(filteredItems.map(({ id }) => Number(id)));
+                console.log({ selectedKeys });
+                deleteLines([]);
               }}
             >
               Delete selected
@@ -104,11 +100,9 @@ export const ShowTableTopContent = memo(
           ) : selectedKeys?.size >= 1 ? (
             <Button
               onPress={() => {
-                //   console.log(
-                //     11111,
-                //     selectedKeys,
-                //   );
-                //   deleteLine(Array.from(selectedKeys).map((id) => Number(id)));
+                console.log(11111, selectedKeys);
+
+                deleteLines(Array.from(selectedKeys).map((id) => Number(id)));
               }}
               color="danger"
             >
