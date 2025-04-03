@@ -112,6 +112,8 @@ contract Subscription is ETHPriceFinder {
     {
         uint256 priceUSD = DEFAULT_SUBSCRIPTION_PRICE * 10 ** 8;
         uint256 ethPrice = getETHPrice();
+        require(ethPrice > 0, "ETH price cannot be zero");
+
         totalUSD = priceUSD;
         totalETH = (totalUSD / ethPrice) * 10 ** 18;
     }
@@ -126,10 +128,10 @@ contract Subscription is ETHPriceFinder {
         address recipient,
         address referrer
     ) public view returns (address) {
-        if (INFT(SENDORA_NFT).balanceOf(referrer) >= 1) return referrer; // NFT holder
-        if (isKOL[referrer]) return referrer; // Registered KOL
         if (subscribers[recipient].createdAt != 0)
             return subscribers[recipient].referrer; // Existing referrer
+        if (INFT(SENDORA_NFT).balanceOf(referrer) >= 1) return referrer; // NFT holder
+        if (isKOL[referrer]) return referrer; // Registered KOL
         if (subscribers[referrer].createdAt != 0) return referrer; // New referrer with subscription
         return address(0);
     }
