@@ -4,3 +4,6 @@
 [submodule "apps/sendora-contracts/lib/openzeppelin-contracts"]
 	path = apps/sendora-contracts/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "apps/sendora-contracts/lib/safe-contracts"]
+	path = apps/sendora-contracts/lib/safe-contracts
+	url = https://github.com/safe-global/safe-contracts
