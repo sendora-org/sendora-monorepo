@@ -32,11 +32,8 @@ contract Subscription is ETHPriceFinder {
     // Events for tracking subscription actions
     event SubscriptionPurchased(address indexed recipient, address referrer);
     event SubscriptionRenewed(address indexed subscriber, uint256 newExpiry);
-    event SubscriptionCreated(
-        address indexed subscriber,
-        uint256 expiry,
-        address referrer
-    );
+    event SubscriptionCreated(address indexed subscriber, uint256 expiry);
+    event KOLRegistered(address indexed subscriber);
 
     // Modifier to restrict access to owner-only functions
     modifier onlyOwner() {
@@ -45,7 +42,7 @@ contract Subscription is ETHPriceFinder {
     }
 
     // Constructor to initialize fee collector and owner addresses
-    constructor(address _feeCollector, address _owner) payable {
+    constructor(address _feeCollector, address _owner) {
         feeCollector = _feeCollector;
         owner = _owner;
     }
@@ -58,6 +55,13 @@ contract Subscription is ETHPriceFinder {
      */
     function registerKOL(address kolAddress) external onlyOwner {
         isKOL[kolAddress] = true;
+
+        emit KOLRegistered(kolAddress);
+    }
+
+    function setFeeCollector(address _newFeeCollector) external onlyOwner {
+        require(_newFeeCollector != address(0), "Invalid address");
+        feeCollector = _newFeeCollector;
     }
 
     /**
@@ -71,16 +75,14 @@ contract Subscription is ETHPriceFinder {
     ) public payable {
         (, uint256 totalETH) = calculateSubscriptionPrice();
         require(msg.value >= totalETH, "Insufficient ETH sent");
-        addOrRenewSubscription(recipient, referrer);
 
         // Determine valid referrer and calculate reward
         address validReferrer = getValidReferrer(recipient, referrer);
         uint256 referralRewardETH = 0;
         uint256 ethPrice = getETHPrice();
         if (validReferrer != address(0)) {
-            referralRewardETH =
-                ((REFERRAL_REWARD * 10 ** 8) / ethPrice) *
-                10 ** 18;
+            referralRewardETH = ((REFERRAL_REWARD * 10 ** 8 * 10 ** 18) /
+                ethPrice);
         }
 
         // Send referral reward if applicable
@@ -97,7 +99,8 @@ contract Subscription is ETHPriceFinder {
         }("");
         require(feeSuccess, "Fee transfer failed");
 
-        emit SubscriptionPurchased(recipient, referrer);
+        addOrRenewSubscription(recipient, validReferrer);
+        emit SubscriptionPurchased(recipient, validReferrer);
     }
 
     /**
@@ -115,7 +118,7 @@ contract Subscription is ETHPriceFinder {
         require(ethPrice > 0, "ETH price cannot be zero");
 
         totalUSD = priceUSD;
-        totalETH = (totalUSD / ethPrice) * 10 ** 18;
+        totalETH = ((totalUSD * 10 ** 18) / ethPrice);
     }
 
     /**
@@ -155,7 +158,7 @@ contract Subscription is ETHPriceFinder {
                 createdAt: block.timestamp
             });
             subscriberCount += 1;
-            emit SubscriptionCreated(user, newExpiry, referrer);
+            emit SubscriptionCreated(user, newExpiry);
         }
     }
 
