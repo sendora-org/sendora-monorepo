@@ -1,38 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
-
 import "./ETHPriceFinder.sol";
-import {ISwapRouter} from "./interfaces/ISwapRouter.sol";
-import {IWETH} from "./interfaces/IWETH.sol";
 
-// ERC20 token interface for token transfers and balance checks
-interface IERC20 {
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) external returns (bool);
-
-    function transfer(
-        address recipient,
-        uint256 amount
-    ) external returns (bool);
-
-    function balanceOf(address account) external view returns (uint256);
-}
-
-// NFT interface for querying total supply, ownership, and balance
 interface INFT {
-    function totalSupply() external view returns (uint256);
-
-    function ownerOf(uint256 id) external view returns (address);
-
     function balanceOf(address account) external view returns (uint256);
-}
-
-// NFT staking interface to retrieve random staker
-interface INFTStaking {
-    function getRandomStaker() external view returns (address);
 }
 
 contract Subscription is ETHPriceFinder {
@@ -44,21 +15,12 @@ contract Subscription is ETHPriceFinder {
     }
 
     // Constants for pricing (in USD, scaled to 10^8 for precision)
-    uint256 public constant DEFAULT_SUBSCRIPTION_PRICE = 8; // 800 USD, temporarily 8 for testing
+    uint256 public constant DEFAULT_SUBSCRIPTION_PRICE = 6; // 600 USD, temporarily 6 for testing
     uint256 public constant REFERRAL_REWARD = 2; // 200 USD, temporarily 2 for testing
-    uint256 public constant AIRDROP_AMOUNT = 2; // 200 USD, temporarily 2 for testing
 
     // Token and contract addresses
-    address public constant SNDRA_TOKEN =
-        0xb7e943C2582f76Ef220d081468CeC97ccdaDc3Ee;
-    address public constant WETH_TOKEN =
-        0x4200000000000000000000000000000000000006;
-    address public constant SWAP_ROUTER =
-        0x2626664c2603336E57B271c5C0b26F421741e481;
     address public constant SENDORA_NFT =
         0x442F2FF8e3a8bCb983fe47efd5AF9993A71594da;
-    address public constant NFT_STAKING =
-        0x57038da0F566E9dD26A4702bac86a658359D2AE6;
 
     // Contract state variables
     address public feeCollector; // Address to collect subscription fees
@@ -102,14 +64,10 @@ contract Subscription is ETHPriceFinder {
      * @notice Purchases a subscription for a recipient with an optional referrer
      * @param recipient The address to receive the subscription
      * @param referrer The address of the referrer (if any)
-     * @param amountOutMinimum Minimum amount of tokens expected from swap
-     * @param sqrtPriceLimitX96 Price limit for the swap (Uniswap V3)
      */
     function purchaseSubscription(
         address recipient,
-        address referrer,
-        uint256 amountOutMinimum,
-        uint160 sqrtPriceLimitX96
+        address referrer
     ) public payable {
         (, uint256 totalETH) = calculateSubscriptionPrice();
         require(msg.value >= totalETH, "Insufficient ETH sent");
@@ -124,35 +82,6 @@ contract Subscription is ETHPriceFinder {
                 ((REFERRAL_REWARD * 10 ** 8) / ethPrice) *
                 10 ** 18;
         }
-
-        // Calculate airdrop amount in ETH and perform swap to SNDRA
-        uint256 airdropETH = ((AIRDROP_AMOUNT * 2 * 10 ** 8) / ethPrice) *
-            10 ** 18;
-        IWETH(WETH_TOKEN).deposit{value: airdropETH}();
-        IWETH(WETH_TOKEN).approve(SWAP_ROUTER, airdropETH);
-
-        ISwapRouter.ExactInputSingleParams memory params = ISwapRouter
-            .ExactInputSingleParams({
-                tokenIn: WETH_TOKEN,
-                tokenOut: SNDRA_TOKEN,
-                fee: 1000, // Uniswap pool fee (0.1%)
-                recipient: address(this),
-                amountIn: airdropETH,
-                amountOutMinimum: amountOutMinimum,
-                sqrtPriceLimitX96: sqrtPriceLimitX96
-            });
-
-        // Execute swap from WETH to SNDRA
-        ISwapRouter(SWAP_ROUTER).exactInputSingle(params);
-
-        // Distribute SNDRA airdrop
-        uint256 sndraBalance = IERC20(SNDRA_TOKEN).balanceOf(address(this));
-        uint256 halfSndra = sndraBalance / 2;
-
-        uint256 random = generateRandomNumber();
-        distributeAirdropToNFTOwner(random, halfSndra, SENDORA_NFT);
-
-        distributeAirdropToStaker(halfSndra, NFT_STAKING);
 
         // Send referral reward if applicable
         if (validReferrer != address(0)) {
@@ -169,46 +98,6 @@ contract Subscription is ETHPriceFinder {
         require(feeSuccess, "Fee transfer failed");
 
         emit SubscriptionPurchased(recipient, referrer);
-    }
-
-    /**
-     * @notice Distributes SNDRA airdrop to a random NFT owner
-     * @param random Random number for selecting recipient
-     * @param amount Amount of SNDRA to distribute
-     * @param nftContract Address of the NFT contract
-     */
-    function distributeAirdropToNFTOwner(
-        uint256 random,
-        uint256 amount,
-        address nftContract
-    ) public {
-        uint256 totalSupply = INFT(nftContract).totalSupply();
-        uint256 tokenId = (random % totalSupply) + 1;
-        address recipient = INFT(nftContract).ownerOf(tokenId);
-
-        if (totalSupply == 0) {
-            IERC20(SNDRA_TOKEN).transfer(feeCollector, amount);
-        } else {
-            IERC20(SNDRA_TOKEN).transfer(recipient, amount);
-        }
-    }
-
-    /**
-     * @notice Distributes SNDRA airdrop to a random NFT staker
-     * @param amount Amount of SNDRA to distribute
-     * @param stakingContract Address of the staking contract
-     */
-    function distributeAirdropToStaker(
-        uint256 amount,
-        address stakingContract
-    ) public {
-        address recipient = INFTStaking(stakingContract).getRandomStaker();
-
-        if (recipient == address(0)) {
-            IERC20(SNDRA_TOKEN).transfer(feeCollector, amount);
-        } else {
-            IERC20(SNDRA_TOKEN).transfer(recipient, amount);
-        }
     }
 
     /**
@@ -295,22 +184,5 @@ contract Subscription is ETHPriceFinder {
             subscriber.referrer,
             subscriber.createdAt
         );
-    }
-
-    /**
-     * @notice Generates a pseudo-random number based on blockchain data
-     * @return Random number
-     */
-    function generateRandomNumber() private view returns (uint256) {
-        return
-            uint256(
-                keccak256(
-                    abi.encodePacked(
-                        block.timestamp,
-                        msg.sender,
-                        subscriberCount
-                    )
-                )
-            );
     }
 }
