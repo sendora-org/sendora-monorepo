@@ -1,3 +1,6 @@
 [submodule "apps/counter/lib/forge-std"]
 	path = apps/counter/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "apps/sendora-contracts/lib/openzeppelin-contracts"]
+	path = apps/sendora-contracts/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
