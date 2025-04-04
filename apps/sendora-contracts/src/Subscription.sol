@@ -6,12 +6,32 @@ interface INFT {
     function balanceOf(address account) external view returns (uint256);
 }
 
+interface IERC20 {
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) external returns (bool);
+
+    function transfer(
+        address recipient,
+        uint256 amount
+    ) external returns (bool);
+
+    function balanceOf(address account) external view returns (uint256);
+}
+
 contract Subscription is ETHPriceFinder {
     // Struct to store subscriber details
     struct Subscriber {
         uint256 expiry; // Subscription expiry timestamp
         address referrer; // Address of the referrer
         uint256 createdAt; // Subscription creation timestamp
+    }
+
+    struct Lock {
+        uint256 unlockTime;
+        bool isLocked;
     }
 
     // Constants for pricing (in USD, scaled to 10^8 for precision)
@@ -21,7 +41,8 @@ contract Subscription is ETHPriceFinder {
     // Token and contract addresses
     address public constant SENDORA_NFT =
         0x442F2FF8e3a8bCb983fe47efd5AF9993A71594da;
-
+    address public constant SNDRA = 0xb7e943C2582f76Ef220d081468CeC97ccdaDc3Ee;
+    uint256 public constant LOCK_AMOUNT = 1_000_000 * 10 ** 18;
     // Contract state variables
     address public feeCollector; // Address to collect subscription fees
     address public owner; // Contract owner address
@@ -29,11 +50,17 @@ contract Subscription is ETHPriceFinder {
     uint256 public subscriberCount; // Total number of subscribers
     mapping(address => bool) public isKOL; // Mapping to track Key Opinion Leaders (KOLs)
 
+    mapping(address => Lock) public locks;
+
     // Events for tracking subscription actions
     event SubscriptionPurchased(address indexed recipient, address referrer);
     event SubscriptionRenewed(address indexed subscriber, uint256 newExpiry);
     event SubscriptionCreated(address indexed subscriber, uint256 expiry);
     event KOLRegistered(address indexed subscriber);
+
+    event Locked(address indexed user, uint256 amount, uint256 unlockTime);
+
+    event Unlocked(address indexed user, uint256 amount);
 
     // Modifier to restrict access to owner-only functions
     modifier onlyOwner() {
@@ -189,5 +216,42 @@ contract Subscription is ETHPriceFinder {
             subscriber.referrer,
             subscriber.createdAt
         );
+    }
+
+    /**
+     * @dev Locks a fixed amount of tokens (LOCK_AMOUNT) for the caller for 1 year.
+     *      The tokens are transferred from the caller to this contract.
+     *      A subscription is added or renewed for the caller.
+     */
+    function lock() public {
+        require(!locks[msg.sender].isLocked, "Already locked");
+        uint256 unlockTime = block.timestamp + (1 * 365 days);
+        require(
+            IERC20(SNDRA).transferFrom(msg.sender, address(this), LOCK_AMOUNT),
+            "Token transfer failed"
+        );
+        locks[msg.sender] = Lock({unlockTime: unlockTime, isLocked: true});
+        addOrRenewSubscription(msg.sender, address(0));
+        emit Locked(msg.sender, LOCK_AMOUNT, unlockTime);
+    }
+
+    /**
+     * @dev Unlocks and transfers the locked tokens back to the caller.
+     *      Can only be called after the unlock time has passed.
+     */
+    function unlock() public {
+        Lock memory userLock = locks[msg.sender];
+        require(userLock.isLocked, "No locked tokens found");
+        require(
+            block.timestamp >= userLock.unlockTime,
+            "Tokens are still locked"
+        );
+        delete locks[msg.sender];
+
+        require(
+            IERC20(SNDRA).transfer(msg.sender, LOCK_AMOUNT),
+            "Token transfer failed"
+        );
+        emit Unlocked(msg.sender, LOCK_AMOUNT);
     }
 }
