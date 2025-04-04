@@ -17,8 +17,6 @@ interface IERC20 {
         address recipient,
         uint256 amount
     ) external returns (bool);
-
-    function balanceOf(address account) external view returns (uint256);
 }
 
 contract Subscription is ETHPriceFinder {
@@ -45,7 +43,6 @@ contract Subscription is ETHPriceFinder {
     uint256 public constant LOCK_AMOUNT = 1_000_000 * 10 ** 18;
     // Contract state variables
     address public feeCollector; // Address to collect subscription fees
-    address public owner; // Contract owner address
     mapping(address => Subscriber) public subscribers; // Mapping of subscriber details
     uint256 public subscriberCount; // Total number of subscribers
     mapping(address => bool) public isKOL; // Mapping to track Key Opinion Leaders (KOLs)
@@ -64,14 +61,15 @@ contract Subscription is ETHPriceFinder {
 
     // Modifier to restrict access to owner-only functions
     modifier onlyOwner() {
-        require(msg.sender == owner, "Only owner can perform this action");
+        require(
+            msg.sender == feeCollector,
+            "Only owner can perform this action"
+        );
         _;
     }
 
-    // Constructor to initialize fee collector and owner addresses
-    constructor(address _feeCollector, address _owner) {
+    constructor(address _feeCollector) {
         feeCollector = _feeCollector;
-        owner = _owner;
     }
 
     /**
@@ -98,6 +96,10 @@ contract Subscription is ETHPriceFinder {
         (, uint256 totalETH) = calculateSubscriptionPrice();
         require(msg.value >= totalETH, "Insufficient ETH sent");
 
+        require(
+            recipient != referrer,
+            "The recipient and the referrer cannot be the same."
+        );
         // Determine valid referrer and calculate reward
         address validReferrer = getValidReferrer(recipient, referrer);
         uint256 referralRewardETH = 0;
@@ -171,6 +173,10 @@ contract Subscription is ETHPriceFinder {
 
         if (subscribers[user].createdAt != 0) {
             newExpiry = subscribers[user].expiry + 365 days;
+            if (subscribers[user].expiry < block.timestamp) {
+                newExpiry = block.timestamp + 365 days;
+            }
+
             subscribers[user].expiry = newExpiry;
             emit SubscriptionRenewed(user, newExpiry);
         } else {
@@ -213,6 +219,26 @@ contract Subscription is ETHPriceFinder {
         );
     }
 
+    function safeTransfer(
+        address _token,
+        address _to,
+        uint256 _amount
+    ) internal {
+        (bool success, bytes memory data) = _token.call(
+            abi.encodeWithSignature(
+                "transferFrom(address,address,uint256)",
+                msg.sender,
+                _to,
+                _amount
+            )
+        );
+
+        require(
+            success && (data.length == 0 || abi.decode(data, (bool))),
+            "Transfer failed"
+        );
+    }
+
     /**
      * @dev Locks a fixed amount of tokens (LOCK_AMOUNT) for the caller for 1 year.
      *      The tokens are transferred from the caller to this contract.
@@ -221,10 +247,7 @@ contract Subscription is ETHPriceFinder {
     function lock() public {
         require(!locks[msg.sender].isLocked, "Already locked");
         uint256 unlockTime = block.timestamp + (1 * 365 days);
-        require(
-            IERC20(SNDRA).transferFrom(msg.sender, address(this), LOCK_AMOUNT),
-            "Token transfer failed"
-        );
+        safeTransfer(SNDRA, address(this), LOCK_AMOUNT);
         locks[msg.sender] = Lock({unlockTime: unlockTime, isLocked: true});
         addOrRenewSubscription(msg.sender, address(0));
         emit Locked(msg.sender, LOCK_AMOUNT, unlockTime);
