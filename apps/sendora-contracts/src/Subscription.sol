@@ -86,11 +86,6 @@ contract Subscription is ETHPriceFinder {
         emit KOLRegistered(kolAddress);
     }
 
-    function setFeeCollector(address _newFeeCollector) external onlyOwner {
-        require(_newFeeCollector != address(0), "Invalid address");
-        feeCollector = _newFeeCollector;
-    }
-
     /**
      * @notice Purchases a subscription for a recipient with an optional referrer
      * @param recipient The address to receive the subscription

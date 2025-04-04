@@ -23,6 +23,7 @@ contract MerkleMultiSend {
     );
 
     address public feeCollector;
+    address public owner; // Contract owner address
 
     constructor(address _feeCollector) {
         feeCollector = _feeCollector;
@@ -65,12 +66,8 @@ contract MerkleMultiSend {
         _validateMerkleOperation(uuid, merkleRoot, proof, recipients, amounts);
 
         uint256 len = recipients.length;
-        IERC20 token = IERC20(tokenAddress);
         for (uint256 i = 0; i < len; i++) {
-            require(
-                token.transferFrom(msg.sender, recipients[i], amounts[i]),
-                "ERC20 transfer failed"
-            );
+            safeTransfer(tokenAddress, recipients[i], amounts[i]);
         }
 
         uint256 fee = msg.value;
@@ -109,6 +106,21 @@ contract MerkleMultiSend {
         bytes32[] calldata proof
     ) external pure returns (bytes32) {
         return keccak256(abi.encodePacked(uuid, merkleRoot, proof));
+    }
+
+    function safeTransfer(
+        address _token,
+        address _to,
+        uint256 _amount
+    ) internal {
+        (bool success, bytes memory data) = _token.call(
+            abi.encodeWithSignature("transfer(address,uint256)", _to, _amount)
+        );
+
+        require(
+            success && (data.length == 0 || abi.decode(data, (bool))),
+            "Transfer failed"
+        );
     }
 
     function _validateMerkleOperation(
