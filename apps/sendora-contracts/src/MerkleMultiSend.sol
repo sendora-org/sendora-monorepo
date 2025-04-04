@@ -11,6 +11,7 @@ contract MerkleMultiSend {
         address indexed referrer,
         uint256 referralRewardETH,
         address tokenAddress,
+        bytes32 taskId,
         bytes32 merkleRoot,
         uint256 totalRecipients
     );
@@ -18,6 +19,7 @@ contract MerkleMultiSend {
     event MultisendETHExecuted(
         address indexed referrer,
         uint256 referralRewardETH,
+        bytes32 taskId,
         bytes32 merkleRoot,
         uint256 totalRecipients
     );
@@ -29,15 +31,22 @@ contract MerkleMultiSend {
         feeCollector = _feeCollector;
     }
 
+    // Function to send ETH to multiple recipients using a Merkle proof for validation
     function multisendETH(
-        bytes32 uuid,
+        bytes32 taskId,
         bytes32 merkleRoot,
         address[] calldata recipients,
         uint256[] calldata amounts,
         bytes32[] calldata proof,
         address referrer
     ) external payable {
-        _validateMerkleOperation(uuid, merkleRoot, proof, recipients, amounts);
+        _validateMerkleOperation(
+            taskId,
+            merkleRoot,
+            proof,
+            recipients,
+            amounts
+        );
 
         uint256 totalAmount = 0;
         uint256 len = recipients.length;
@@ -51,19 +60,26 @@ contract MerkleMultiSend {
         uint256 fee = msg.value - totalAmount;
         distributeFee(referrer, fee);
 
-        emit MultisendETHExecuted(referrer, fee / 2, merkleRoot, len);
+        emit MultisendETHExecuted(referrer, fee / 2, taskId, merkleRoot, len);
     }
 
+    // Function to send ERC20 Token to multiple recipients using a Merkle proof for validation
     function multisendERC20(
-        bytes32 uuid,
+        bytes32 taskId,
         bytes32 merkleRoot,
         address[] calldata recipients,
         uint256[] calldata amounts,
-        address tokenAddress,
         bytes32[] calldata proof,
-        address referrer
+        address referrer,
+        address tokenAddress
     ) external payable {
-        _validateMerkleOperation(uuid, merkleRoot, proof, recipients, amounts);
+        _validateMerkleOperation(
+            taskId,
+            merkleRoot,
+            proof,
+            recipients,
+            amounts
+        );
 
         uint256 len = recipients.length;
         for (uint256 i = 0; i < len; i++) {
@@ -77,6 +93,7 @@ contract MerkleMultiSend {
             referrer,
             fee / 2,
             tokenAddress,
+            taskId,
             merkleRoot,
             len
         );
@@ -101,11 +118,11 @@ contract MerkleMultiSend {
     }
 
     function computeOperationId(
-        bytes32 uuid,
+        bytes32 taskId,
         bytes32 merkleRoot,
         bytes32[] calldata proof
     ) external pure returns (bytes32) {
-        return keccak256(abi.encodePacked(uuid, merkleRoot, proof));
+        return keccak256(abi.encodePacked(taskId, merkleRoot, proof));
     }
 
     function safeTransfer(
@@ -114,7 +131,12 @@ contract MerkleMultiSend {
         uint256 _amount
     ) internal {
         (bool success, bytes memory data) = _token.call(
-            abi.encodeWithSignature("transfer(address,uint256)", _to, _amount)
+            abi.encodeWithSignature(
+                "transferFrom(address,address,uint256)",
+                msg.sender,
+                _to,
+                _amount
+            )
         );
 
         require(
@@ -124,13 +146,13 @@ contract MerkleMultiSend {
     }
 
     function _validateMerkleOperation(
-        bytes32 uuid,
+        bytes32 taskId,
         bytes32 merkleRoot,
         bytes32[] calldata proof,
         address[] calldata recipients,
         uint256[] calldata amounts
     ) internal {
-        bytes32 operationId = keccak256(abi.encode(uuid, merkleRoot, proof));
+        bytes32 operationId = keccak256(abi.encode(taskId, merkleRoot, proof));
         require(!executed[operationId], "Operation already executed");
 
         uint256 len = recipients.length;
