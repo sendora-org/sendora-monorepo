@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
-import "@safe-global/safe-contracts/contracts/common/Enum.sol";
-import "@safe-global/safe-contracts/contracts/Safe.sol";
+import "safe-contracts/contracts/common/Enum.sol";
+import "safe-contracts/contracts/Safe.sol";
 
 contract SessionKeyModule {
     //   Session type hash for EIP-712 signature
@@ -94,17 +94,6 @@ contract SessionKeyModule {
         require(!sessions[_sessionKey].active, "Session already exists");
         require(_policies.length > 0, "Must specify at least one policy");
 
-        //  Check if offsets in paramRules are unique
-        for (uint256 i = 0; i < _policies.length; i++) {
-            mapping(uint256 => bool) memory offsetUsed;
-            for (uint256 j = 0; j < _policies[i].paramRules.length; j++) {
-                uint256 offset = _policies[i].paramRules[j].offset;
-                require(!offsetUsed[offset], "Duplicate offset in param rules");
-                offsetUsed[offset] = true;
-                require(offset % 32 == 0, "Offset must be multiple of 32");
-            }
-        }
-
         bytes32 policiesHash = keccak256(abi.encode(_policies));
         bytes32 sessionData = keccak256(
             abi.encode(
@@ -130,8 +119,18 @@ contract SessionKeyModule {
         session.sessionKey = _sessionKey;
         session.validUntil = _validUntil;
         session.active = true;
+
         for (uint256 i = 0; i < _policies.length; i++) {
-            session.policies.push(_policies[i]);
+            CallPolicy memory policyMemory = _policies[i];
+            session.policies.push();  
+            CallPolicy storage policyStorage = session.policies[i];
+            policyStorage.target = policyMemory.target;
+            policyStorage.functionSelector = policyMemory.functionSelector;
+            policyStorage.valueLimit = policyMemory.valueLimit;
+
+            for (uint256 j = 0; j < policyMemory.paramRules.length; j++) {
+                policyStorage.paramRules.push(policyMemory.paramRules[j]);
+            }
         }
 
         emit SessionCreated(_sessionKey, _validUntil);
