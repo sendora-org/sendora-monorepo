@@ -9,8 +9,24 @@ export const Abcfc = () => {
       </H4Title>
 
       <div className="flex justify-between">
+        <dt className="text-small text-default-300">Network</dt>
+        <dd className="text-small font-semibold text-default-500">Mainnet</dd>
+      </div>
+
+      <div className="flex justify-between">
         <dt className="text-small text-default-300">Token</dt>
         <dd className="text-small font-semibold text-default-500">ETH</dd>
+      </div>
+      <div className="flex justify-between">
+        <dt className="text-small text-default-300">Pricint Currency</dt>
+        <dd className="text-small font-semibold text-default-500">CNY</dd>
+      </div>
+
+      <div className="flex justify-between">
+        <dt className="text-small text-default-300">Rate</dt>
+        <dd className="text-small font-semibold text-default-500">
+          1ETH = 1000 CNY
+        </dd>
       </div>
 
       <div className="flex justify-between">
@@ -51,26 +67,8 @@ export const Abcfc = () => {
         <dt className="text-small text-default-300">Fee</dt>
         <dd className="text-small font-semibold text-default-500">0.001 BNB</dd>
       </div>
+
       <Divider />
-
-      <H4Title>
-        {' '}
-        <span className="font-bold">Balance Change</span>
-      </H4Title>
-
-      <div className="flex justify-between">
-        <dt className="text-small text-default-300">Current ETH balance</dt>
-        <dd className="text-small font-semibold text-default-500">1 ETH</dd>
-      </div>
-      <div className="flex justify-between">
-        <dt className="text-small text-default-300">ETH Decrease</dt>
-        <dd className="text-small font-semibold text-default-500">
-          {' '}
-          - 0.001 ETH
-        </dd>
-      </div>
-
-      {/* <Divider /> */}
     </dl>
   );
 };
