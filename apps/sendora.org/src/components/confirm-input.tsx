@@ -28,6 +28,7 @@ import { firstValueFrom } from 'rxjs';
 import type { Subject } from 'rxjs';
 import { useAccount } from 'wagmi';
 import { Abcfc } from './abcfc';
+import { ConfirmReceipt } from './confirm-receipt';
 import ConnectButton from './connect-button';
 import MyTimer from './my-timer';
 import { ReceiptCost } from './receipt-cost';
@@ -48,8 +49,8 @@ export const ConfirmInput = ({
   currency: string;
   rate: number;
 }) => {
-  const { isConnected, chain, chainId } = useAccount();
-  const { status } = useAuthStore();
+  const { isConnected, chain, chainId, address } = useAccount();
+  const { status, loginAddress } = useAuthStore();
   const { locale } = useLocale();
   const [isDataReady, setDataReady] = useState(false);
   const [isLoading, setLoading] = useState(false);
@@ -165,23 +166,26 @@ export const ConfirmInput = ({
         )}
 
       {isDataReady && (
-        <ShowTable
-          workerService={workerService.current}
-          isToggle={isToggle}
-          rate={rate}
-          tokenSymbol={tokenSymbol}
-          currency={currency}
-        />
+        <>
+          <ShowTable
+            workerService={workerService.current}
+            isToggle={isToggle}
+            rate={rate}
+            tokenSymbol={tokenSymbol}
+            currency={currency}
+          />
+          <ConfirmReceipt
+            isToggle
+            workerService={workerService.current}
+            currency={currency}
+            rate={rate}
+            tokenSymbol={tokenSymbol}
+            loginAddress={address}
+            chainId={chainId}
+            eventSubject={eventSubject}
+          />
+        </>
       )}
-
-      {/* gap-0 brightne2ss-50 grayscale sm:bg-[url("/ads/ivars-utinans-DYqYgOrj-2M-unsplash.jpg")] bg-cover bg-center */}
-      {/* <H3Title>Receipt</H3Title> */}
-      <div className="flex md:flex-row flex-col items-start w-full justify-between">
-        {/* <Abcfc /> */}
-
-        {/* <ReceiptOverview /> */}
-        {/* <ReceiptCost /> */}
-      </div>
     </>
   );
 };

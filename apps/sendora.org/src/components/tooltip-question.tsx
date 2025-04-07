@@ -17,7 +17,7 @@ export interface TooltipQuestionProps
 
 export const TooltipQuestion = memo(
   forwardRef<HTMLDivElement, TooltipQuestionProps>((props, forwardedRef) => {
-    const { className, children, iconClassName } = props;
+    const { className, children, iconClassName = 'h-[24px] w-[24px]' } = props;
     const [isOpen, setIsOpen] = useState(false);
     return (
       <div
@@ -37,10 +37,7 @@ export const TooltipQuestion = memo(
             variant="light"
             onPress={() => setIsOpen((prev) => !prev)}
           >
-            <Icon
-              icon="ep:question-filled"
-              className={clsx('h-[24px] w-[24px]', iconClassName)}
-            />
+            <Icon icon="ep:question-filled" className={clsx(iconClassName)} />
           </Button>
         </Tooltip>
       </div>

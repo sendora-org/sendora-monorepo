@@ -32,7 +32,7 @@ export default forwardRef(
     const { toggle, fullscreen } = useFullscreen();
     const { locale } = useLocale();
     const [isToggle, setToggle] = useState(false);
-    const [rate, setRate] = useState(0);
+    const [rate, setRate] = useState(BigInt(10 ** 18));
     const { codes, addCode, selectedCode, setCode, removeCode, clearCodes } =
       useCurrencyStore();
     const onDocChange = useCallback(() => {

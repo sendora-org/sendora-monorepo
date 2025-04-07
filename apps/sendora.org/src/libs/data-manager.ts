@@ -111,7 +111,31 @@ export class DataManager<T extends Item> {
       this.idIndex.push(item.id);
     }
   }
+  count() {
+    let ids = [...this.idIndex];
 
+
+    ids = ids.filter((id) => {
+      // biome-ignore lint/style/noNonNullAssertion: reason
+      const item = this.dataMap.get(id)!;
+      console.log(id, item);
+      return item.status === 'valid' || item.status === 'duplicateAddress';
+    });
+
+    let totalAmount = 0n;
+    for (const id of ids) {
+      // biome-ignore lint/style/noNonNullAssertion: reason
+      const item = this.dataMap.get(id)!;
+      totalAmount = item.amount + totalAmount;
+    }
+
+    const recipients = ids.length;
+
+    return {
+      totalAmount,
+      recipients,
+    };
+  }
   query(
     options: {
       sortField?: keyof T;
@@ -123,8 +147,8 @@ export class DataManager<T extends Item> {
       page?: number;
       pageSize?: number;
     } = {
-      filterKey: '',
-    },
+        filterKey: '',
+      },
   ): {
     items: T[];
     total: number;

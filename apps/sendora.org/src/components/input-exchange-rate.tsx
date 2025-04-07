@@ -4,11 +4,13 @@ import type React from 'react';
 import { Switch } from '@heroui/react';
 
 import UpdatePricingCurrency from '@/components/update-pricing-currency';
+import { numberFormats } from '@/constants/common';
 import { useCurrencyStore } from '@/hooks/useCurrencyStore';
+import { useLocale } from '@/hooks/useLocale';
+import { formatBigIntNumber } from '@/libs/number';
 import { NumberInput } from '@heroui/react';
 import { TooltipNotice } from './tooltip-notice';
 import { TooltipQuestion } from './tooltip-question';
-
 export default ({
   symbol = 'ETH',
   isToggle,
@@ -19,11 +21,15 @@ export default ({
   symbol: string;
   isToggle: boolean;
   setToggle: React.Dispatch<React.SetStateAction<boolean>>;
-  rate: number;
-  setRate: React.Dispatch<React.SetStateAction<number>>;
+  rate: bigint;
+  setRate: React.Dispatch<React.SetStateAction<bigint>>;
 }) => {
   const { codes, addCode, selectedCode, setCode, removeCode, clearCodes } =
     useCurrencyStore();
+
+  const { locale } = useLocale();
+  const { decimalSeparator, thousandSeparator, hdLng } = numberFormats[locale];
+
   return (
     <div className="flex flex-col sm:flex-row w-full gap-2 my-2 justify-between h-[96px] sm:h-[48px]">
       <div className="flex items-center">
@@ -70,9 +76,9 @@ export default ({
             input: 'text-base ',
           }}
           minValue={0}
-          value={rate / 10 ** 18}
+          value={formatBigIntNumber(rate, thousandSeparator, decimalSeparator)}
           onValueChange={(v) => {
-            setRate(Math.ceil(v * 10 ** 18));
+            setRate(BigInt(Math.ceil(v * 10 ** 18)));
           }}
           inputMode="decimal"
           size="sm"

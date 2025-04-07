@@ -1,19 +1,18 @@
-import H3Title from '@/components/h3-title';
 import H4Title from '@/components/h4-title';
 import { numberFormats } from '@/constants/common';
+import { discountedPriceTips } from '@/constants/common';
+import { findNetwork } from '@/constants/config';
 import { useLocale } from '@/hooks/useLocale';
 import { formatWei } from '@/libs/common';
 import { formatBigIntNumber } from '@/libs/number';
 import { Divider } from '@heroui/react';
-import { Button } from '@heroui/react';
 // @ts-ignore
 import humanizeDuration from 'humanize-duration';
-import { CustomAlert } from './custom-alert';
 import { SubscribePrompt } from './subscribe-prompt';
+import { TooltipNotice } from './tooltip-notice';
 import { TooltipQuestion } from './tooltip-question';
 
 type IProps = {
-  transactions: number;
   estimatedMilliseconds: number;
   gasPrice: string;
   gasLimit: string;
@@ -21,10 +20,14 @@ type IProps = {
   totalFee: string;
   gasTokenSymbol: string;
   ETHDecreaseAmount: string;
+  chainId: number;
+  isValidSubscription: boolean;
+  isPromoOrEvent: boolean;
+  promoOrEventPrice: number;
+  discountedPriceTip: string;
 };
 
 export const ReceiptCost = ({
-  transactions = 1,
   estimatedMilliseconds = 1000 * 0,
   gasPrice = '1',
   gasTokenSymbol = 'ETH',
@@ -32,48 +35,37 @@ export const ReceiptCost = ({
   totalFee = '0',
   ETHDecreaseAmount = '0',
   gasLimit = '0',
+  chainId = 1,
+  isValidSubscription = true,
+  isPromoOrEvent = true,
+  promoOrEventPrice = 0,
+  discountedPriceTip = discountedPriceTips[0],
 }: IProps) => {
   const { locale } = useLocale();
   const { decimalSeparator, thousandSeparator, hdLng } = numberFormats[locale];
 
+  const network = findNetwork('chainId', chainId.toString(10)) ?? null;
+
   return (
-    <dl className="flex flex-col gap-4 py-4 w-full md:w-[350px]">
+    <dl className="flex flex-col gap-2 py-4 w-full md:w-[350px]">
       <H4Title>
         <span className="font-bold">Transaction Cost </span>
       </H4Title>
 
-      <div className="flex justify-between">
-        <dt className="text-small text-default-300 flex items-center ">
-          Transactions{' '}
-          <TooltipQuestion iconClassName="h-[16px] w-[16px]">
-            <p className=" w-max-[250px]">
-              Up to 100 recipients per transaction
-            </p>
-          </TooltipQuestion>
-        </dt>
-        <dd className="text-small font-semibold text-default-500">
-          {formatBigIntNumber(
-            BigInt(transactions) * BigInt(10 ** 18),
-            thousandSeparator,
-            decimalSeparator,
-          )}
-        </dd>
-      </div>
-
-      <div className="flex justify-between">
+      <div className="flex justify-between min-h-[28px] items-center">
         <dt className="text-small text-default-300">Estimated time</dt>
         <dd className="text-small font-semibold text-default-500">
           {humanizeDuration(estimatedMilliseconds, { language: hdLng })}
         </dd>
       </div>
-      <div className="flex justify-between">
+      <div className="flex justify-between min-h-[28px] items-center">
         <dt className="text-small text-default-300">Gas Price</dt>
         <dd className="text-small font-semibold text-default-500">
           {formatWei(gasPrice)}
         </dd>
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between min-h-[28px] items-center">
         <dt className="text-small text-default-300">Gas Limit</dt>
         <dd className="text-small font-semibold text-default-500">
           {formatBigIntNumber(
@@ -84,10 +76,10 @@ export const ReceiptCost = ({
         </dd>
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between min-h-[28px] items-center">
         <dt className="text-small text-default-300 flex items-center">
           Network Fee/Tx{' '}
-          <TooltipQuestion iconClassName="h-[16px] w-[16px]">
+          <TooltipQuestion iconClassName="h-[14px] w-[14px]">
             <p className=" w-max-[250px]">
               The network fee for a transaction, paid to miners, is Gas Price ×
               Gas Limit.
@@ -105,30 +97,41 @@ export const ReceiptCost = ({
         </dd>
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between min-h-[28px] items-center">
         <dt className="text-small text-default-300 flex items-center">
           Tool Fee/Tx{' '}
-          <TooltipQuestion iconClassName="h-[16px] w-[16px]">
+          <TooltipQuestion iconClassName="h-[14px] w-[14px]">
             <p className=" w-max-[250px]">
               The Tool fee for a transaction, paid to sendora.org.
             </p>
           </TooltipQuestion>
         </dt>
-        <dd className="text-small font-semibold text-default-500">
-          {' '}
-          {formatBigIntNumber(
-            BigInt(networkCost) as bigint,
-            thousandSeparator,
-            decimalSeparator,
-          )}{' '}
-          {gasTokenSymbol}
-        </dd>
+
+        {(isValidSubscription || isPromoOrEvent) && (
+          <div className="flex items-center">
+            <dd className="text-small font-semibold text-default-500 line-through">
+              {network?.toolFeePerUse} {gasTokenSymbol}
+            </dd>
+
+            <TooltipNotice>{discountedPriceTip}</TooltipNotice>
+
+            <dd className="text-small font-semibold text-default-500 ">
+              {promoOrEventPrice} {gasTokenSymbol}
+            </dd>
+          </div>
+        )}
+
+        {!isValidSubscription && !isPromoOrEvent && (
+          <dd className="text-small font-semibold text-default-500 line-through">
+            {network?.toolFeePerUse} {gasTokenSymbol}
+          </dd>
+        )}
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between min-h-[28px] items-center">
         <dt className="text-small text-default-300 flex items-center">
           Total Fee{' '}
-          <TooltipQuestion iconClassName="h-[16px] w-[16px]">
+          <TooltipQuestion iconClassName="h-[14px] w-[14px]">
             <p className=" w-max-[250px]">
               Total Fee = (Network Fee per Transaction + Tool Fee per
               Transaction) × Number of Transactions
@@ -147,12 +150,12 @@ export const ReceiptCost = ({
         </dd>
       </div>
 
-      <SubscribePrompt />
+      {!isValidSubscription && <SubscribePrompt />}
 
-      <div className="flex justify-between">
+      <div className="flex justify-between min-h-[28px] items-center">
         <dt className="text-small text-default-300 flex items-center">
           {gasTokenSymbol} Balance Reduction
-          <TooltipQuestion iconClassName="h-[16px] w-[16px]">
+          <TooltipQuestion iconClassName="h-[14px] w-[14px]">
             <p className=" w-max-[250px]">
               {gasTokenSymbol} Balance Reduction = Total Fee + {gasTokenSymbol}{' '}
               Amount to Send

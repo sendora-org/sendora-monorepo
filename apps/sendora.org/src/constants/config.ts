@@ -8,6 +8,7 @@ export const NetworkInfoType = Type.Object({
   chainId: Type.String(),
   rpcURL: Type.String(),
   explorerURL: Type.String(),
+  toolFeePerUse: Type.Number(),
 });
 
 export type NetworkInfo = Static<typeof NetworkInfoType>;
@@ -20,6 +21,7 @@ export const networks: NetworkInfo[] = [
     chainId: '1',
     rpcURL: 'https://1rpc.io/eth',
     explorerURL: 'https://etherscan.io',
+    toolFeePerUse: 0.02,
   },
   {
     name: 'Base',
@@ -28,6 +30,7 @@ export const networks: NetworkInfo[] = [
     chainId: '8453',
     rpcURL: 'https://mainnet.base.org',
     explorerURL: 'https://basescan.org',
+    toolFeePerUse: 0.02,
   },
   {
     name: 'Arbitrum',
@@ -36,6 +39,7 @@ export const networks: NetworkInfo[] = [
     chainId: '42161',
     rpcURL: 'https://arb1.arbitrum.io/rpc',
     explorerURL: 'https://arbiscan.io',
+    toolFeePerUse: 0.02,
   },
 
   {
@@ -45,6 +49,7 @@ export const networks: NetworkInfo[] = [
     chainId: '2741',
     rpcURL: 'https://api.mainnet.abs.xyz',
     explorerURL: 'https://abscan.org',
+    toolFeePerUse: 0.02,
   },
 
   {
@@ -54,6 +59,7 @@ export const networks: NetworkInfo[] = [
     chainId: '10',
     rpcURL: 'https://optimism.llamarpc.com',
     explorerURL: 'https://optimistic.etherscan.io',
+    toolFeePerUse: 0.02,
   },
   {
     name: 'BNB Chain',
@@ -62,6 +68,7 @@ export const networks: NetworkInfo[] = [
     chainId: '56',
     rpcURL: 'https://bsc-dataseed4.bnbchain.org',
     explorerURL: 'https://bscscan.com',
+    toolFeePerUse: 0.05,
   },
   {
     name: 'Kaia Mainnet',
@@ -70,6 +77,7 @@ export const networks: NetworkInfo[] = [
     chainId: '8217',
     rpcURL: 'https://public-en.node.kaia.io',
     explorerURL: 'https://kaiascan.io',
+    toolFeePerUse: 300,
   },
   {
     name: 'Berachain',
@@ -78,6 +86,7 @@ export const networks: NetworkInfo[] = [
     chainId: '80094',
     rpcURL: 'https://rpc.berachain.com',
     explorerURL: 'https://berascan.com',
+    toolFeePerUse: 5,
   },
 
   {
@@ -87,6 +96,7 @@ export const networks: NetworkInfo[] = [
     chainId: '137',
     rpcURL: 'https://polygon.llamarpc.com',
     explorerURL: 'https://polygonscan.com',
+    toolFeePerUse: 150,
   },
   {
     name: 'Avalanche',
@@ -95,6 +105,7 @@ export const networks: NetworkInfo[] = [
     chainId: '43114',
     rpcURL: 'https://avalanche.drpc.org',
     explorerURL: 'https://snowtrace.io',
+    toolFeePerUse: 2,
   },
 ];
 

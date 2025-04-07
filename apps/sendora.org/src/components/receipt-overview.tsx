@@ -3,47 +3,52 @@ import { numberFormats } from '@/constants/common';
 import { useLocale } from '@/hooks/useLocale';
 import { formatBigIntNumber } from '@/libs/number';
 import { Divider } from '@heroui/react';
+import { TooltipQuestion } from './tooltip-question';
 
 type IProps = {
   network: string;
   tokenSymbol: string;
   pricingCurrency: string;
-  rate: string;
-  totalAmount: string;
+  rate: bigint;
+  totalAmount: bigint;
   recipients: number;
+  transactions: number;
+  gasTokenSymbol: string;
 };
 
 export const ReceiptOverview = ({
   network = 'Ethereum',
   tokenSymbol = 'ETH',
   pricingCurrency = 'ETH',
-  rate = '1000000000000000000',
-  totalAmount = '0',
+  rate = 1000000000000000000n,
+  totalAmount = 0n,
   recipients = 0,
+  transactions = 1,
+  gasTokenSymbol = 'ETH',
 }: IProps) => {
   const { locale } = useLocale();
   const { decimalSeparator, thousandSeparator } = numberFormats[locale];
 
   return (
-    <dl className="flex flex-col gap-4 py-4 w-full md:w-[350px]">
+    <dl className="flex flex-col gap-2 py-4 w-full md:w-[350px]">
       <H4Title>
         <span className="font-bold">Overview</span>
       </H4Title>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center min-h-[28px]">
         <dt className="text-small text-default-300">Network</dt>
         <dd className="text-small font-semibold text-default-500">{network}</dd>
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center min-h-[28px]">
         <dt className="text-small text-default-300">Token</dt>
         <dd className="text-small font-semibold text-default-500">
           {tokenSymbol}
         </dd>
       </div>
 
-      {!(tokenSymbol === pricingCurrency && rate === '1000000000000000000') && (
-        <div className="flex justify-between">
+      {!(tokenSymbol === pricingCurrency && rate === 1000000000000000000n) && (
+        <div className="flex justify-between items-center min-h-[28px]">
           <dt className="text-small text-default-300">Pricing Currency</dt>
           <dd className="text-small font-semibold text-default-500">
             {pricingCurrency}
@@ -51,11 +56,11 @@ export const ReceiptOverview = ({
         </div>
       )}
 
-      {!(tokenSymbol === pricingCurrency && rate === '1000000000000000000') && (
-        <div className="flex justify-between">
+      {!(tokenSymbol === pricingCurrency && rate === 1000000000000000000n) && (
+        <div className="flex justify-between items-center min-h-[28px]">
           <dt className="text-small text-default-300">Rate</dt>
           <dd className="text-small font-semibold text-default-500">
-            1ETH ={' '}
+            1 {gasTokenSymbol} ={' '}
             {formatBigIntNumber(
               BigInt(rate) as bigint,
               thousandSeparator,
@@ -66,8 +71,8 @@ export const ReceiptOverview = ({
         </div>
       )}
 
-      {!(tokenSymbol === pricingCurrency && rate === '1000000000000000000') && (
-        <div className="flex justify-between">
+      {!(tokenSymbol === pricingCurrency && rate === 1000000000000000000n) && (
+        <div className="flex justify-between items-center min-h-[28px]">
           <dt className="text-small text-default-300">
             Total amount in {pricingCurrency}
           </dt>
@@ -82,27 +87,70 @@ export const ReceiptOverview = ({
         </div>
       )}
 
-      <div className="flex justify-between">
-        <dt className="text-small text-default-300">
-          {tokenSymbol} Amount to Send
-        </dt>
-        <dd className="text-small font-semibold text-default-500">
-          {formatBigIntNumber(
-            (BigInt(totalAmount) as bigint) / BigInt(rate),
-            thousandSeparator,
-            decimalSeparator,
-          )}{' '}
-          {tokenSymbol}
-        </dd>
-      </div>
+      {!(
+        (tokenSymbol === pricingCurrency && rate === 1000000000000000000n) ||
+        rate === 0n
+      ) && (
+          <div className="flex justify-between items-center min-h-[28px]">
+            <dt className="text-small text-default-300">
+              {tokenSymbol} Amount to Send
+            </dt>
+            <dd className="text-small font-semibold text-default-500">
+              {formatBigIntNumber(
+                ((BigInt(totalAmount) as bigint) * BigInt(10 ** 18)) /
+                BigInt(rate),
+                thousandSeparator,
+                decimalSeparator,
+              )}{' '}
+              {tokenSymbol}
+            </dd>
+          </div>
+        )}
 
-      <div className="flex justify-between">
+      {((tokenSymbol === pricingCurrency && rate === 1000000000000000000n) ||
+        rate === 0n) && (
+          <div className="flex justify-between items-center min-h-[28px]">
+            <dt className="text-small text-default-300">
+              {tokenSymbol} Amount to Send
+            </dt>
+            <dd className="text-small font-semibold text-default-500">
+              {formatBigIntNumber(
+                BigInt(totalAmount) as bigint,
+                thousandSeparator,
+                decimalSeparator,
+              )}{' '}
+              {tokenSymbol}
+            </dd>
+          </div>
+        )}
+
+      <div className="flex justify-between items-center min-h-[28px]">
         <dt className="text-small text-default-300">Recipients</dt>
         <dd className="text-small font-semibold text-default-500">
           {formatBigIntNumber(
-            BigInt(recipients) * BigInt(10 ** 18),
+            BigInt(recipients * 10 ** 18),
             thousandSeparator,
             decimalSeparator,
+            0
+          )}
+        </dd>
+      </div>
+
+      <div className="flex justify-between items-center min-h-[28px] items-center">
+        <dt className="text-small text-default-300 flex items-center ">
+          Transactions{' '}
+          <TooltipQuestion iconClassName="h-[16px] w-[16px]">
+            <p className=" w-max-[250px]">
+              Up to 100 recipients per transaction
+            </p>
+          </TooltipQuestion>
+        </dt>
+        <dd className="text-small font-semibold text-default-500">
+          {formatBigIntNumber(
+            BigInt(transactions) * BigInt(10 ** 18),
+            thousandSeparator,
+            decimalSeparator,
+            0
           )}
         </dd>
       </div>

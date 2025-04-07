@@ -56,8 +56,20 @@ export function formatBigIntNumber(
   decimalSeparator = '.',
   precision = 18,
 ): string {
-  if (precision < 1 || precision > 18) {
-    throw new Error('Precision must be between 1 and 18');
+  if (precision < 0 || precision > 18) {
+    throw new Error('Precision must be between 0 and 18');
+  }
+
+  // Special case for precision = 0: round up to integer
+  if (precision === 0) {
+    // If value is negative, we need to handle it separately
+    const isNegative = value < 0n;
+    const absValue = isNegative ? -value : value;
+    // Add 0.5 (which is 10^17 in our 18-decimal system) and truncate decimals
+    const rounded = absValue + 5n * 10n ** 17n;
+    let integerPart = (rounded / 10n ** 18n).toString();
+    if (isNegative) integerPart = '-' + integerPart;
+    return integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
   }
 
   // 1. Convert `bigint` to a string and pad it with 18 decimal places.

@@ -94,3 +94,8 @@ sendora.eth,0.1
 sendora.base.eth,0.006`,
   },
 };
+
+export const discountedPriceTips = [
+  'As a valued subscriber, you can avoid the tool fee.',
+  'During the Beta testing period, you can avoid the tool fee.',
+];
