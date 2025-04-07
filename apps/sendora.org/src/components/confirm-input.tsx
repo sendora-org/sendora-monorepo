@@ -47,7 +47,7 @@ export const ConfirmInput = ({
   isToggle: boolean;
   tokenSymbol: string;
   currency: string;
-  rate: number;
+  rate: bigint;
 }) => {
   const { isConnected, chain, chainId, address } = useAccount();
   const { status, loginAddress } = useAuthStore();
