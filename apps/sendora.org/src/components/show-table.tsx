@@ -28,7 +28,7 @@ type IProps = {
   isToggle: boolean;
   tokenSymbol: string;
   currency: string;
-  rate: number;
+  rate: bigint;
 };
 type IColumnkeys =
   | 'id'

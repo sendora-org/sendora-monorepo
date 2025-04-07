@@ -51,7 +51,7 @@ type IProps = {
   isToggle: boolean;
   tokenSymbol: string;
   currency: string;
-  rate: number;
+  rate: bigint;
   deleteLines: (ids: number[]) => void;
 };
 
@@ -102,7 +102,7 @@ export const ShowTableCell = ({
             {(receipient.status === 'valid' ||
               receipient.status === 'duplicateAddress') &&
               isToggle &&
-              rate > 0 &&
+              rate > 0n &&
               `${formatBigIntNumber(
                 cellValue as bigint,
                 thousandSeparator,
@@ -125,7 +125,7 @@ export const ShowTableCell = ({
             {(receipient.status === 'valid' ||
               receipient.status === 'duplicateAddress') &&
               isToggle &&
-              rate > 0 &&
+              rate > 0n &&
               `${formatBigIntNumber(
                 // biome-ignore lint/style/noNonNullAssertion: reason
                 ((BigInt(cellValue!) * BigInt(10 ** 18)) /
