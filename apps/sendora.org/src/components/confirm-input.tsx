@@ -175,12 +175,12 @@ export const ConfirmInput = ({
       )}
 
       {/* gap-0 brightne2ss-50 grayscale sm:bg-[url("/ads/ivars-utinans-DYqYgOrj-2M-unsplash.jpg")] bg-cover bg-center */}
-      <H3Title>Receipt</H3Title>
+      {/* <H3Title>Receipt</H3Title> */}
       <div className="flex md:flex-row flex-col items-start w-full justify-between">
         {/* <Abcfc /> */}
 
-        <ReceiptOverview />
-        <ReceiptCost />
+        {/* <ReceiptOverview /> */}
+        {/* <ReceiptCost /> */}
       </div>
     </>
   );
