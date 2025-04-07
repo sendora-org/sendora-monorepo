@@ -26,7 +26,7 @@ export const ReceiptOverview = ({
   recipients = 0,
   transactions = 1,
   gasTokenSymbol = 'ETH',
-  isTogglePricingCurrency
+  isTogglePricingCurrency,
 }: IProps) => {
   const { locale } = useLocale();
   const { decimalSeparator, thousandSeparator } = numberFormats[locale];
@@ -97,7 +97,7 @@ export const ReceiptOverview = ({
           <dd className="text-small font-semibold text-default-500">
             {formatBigIntNumber(
               ((BigInt(totalAmount) as bigint) * BigInt(10 ** 18)) /
-              BigInt(rate),
+                BigInt(rate),
               thousandSeparator,
               decimalSeparator,
             )}{' '}

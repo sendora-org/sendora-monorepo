@@ -104,7 +104,7 @@ export const ConfirmReceipt = ({
     }
     return tokenSymbol;
   }, [isToggle, currency, rate, tokenSymbol]);
-  console.log({ network ,isToggle});
+  console.log({ network, isToggle });
 
   const transactions = useMemo(() => {
     return Math.ceil(recipients / 100);
@@ -138,7 +138,9 @@ export const ConfirmReceipt = ({
               const result = await testCRUD();
 
               if (result) {
+                // @ts-ignore
                 setTotalAmount(result.totalAmount);
+                // @ts-ignore
                 setRecipients(result.recipients);
               }
               setLoading(false);

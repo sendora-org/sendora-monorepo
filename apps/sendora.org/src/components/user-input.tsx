@@ -46,7 +46,7 @@ export default forwardRef(
       }
     }, [isToggle, rate]);
 
-    console.log({isToggle})
+    console.log({ isToggle });
 
     return (
       <>

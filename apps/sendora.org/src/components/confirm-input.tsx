@@ -60,7 +60,7 @@ export const ConfirmInput = ({
 
   const queryClient = useQueryClient();
 
-  console.log(111,{isToggle})
+  console.log(111, { isToggle });
 
   useEffect(() => {
     const worker = new Worker(
