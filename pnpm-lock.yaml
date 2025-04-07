@@ -139,6 +139,9 @@ importers:
       framer-motion:
         specifier: ^12.4.11
         version: 12.4.11(react-dom@19.0.0)(react@19.0.0)
+      humanize-duration:
+        specifier: ^3.32.1
+        version: 3.32.1
       idb-keyval:
         specifier: ^6.2.1
         version: 6.2.1
@@ -8586,6 +8589,10 @@ packages:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
     engines: {node: '>=10.17.0'}
     dev: true
+
+  /humanize-duration@3.32.1:
+    resolution: {integrity: sha512-inh5wue5XdfObhu/IGEMiA1nUXigSGcaKNemcbLRKa7jXYGDZXr3LoT9pTIzq2hPEbld7w/qv9h+ikWGz8fL1g==}
+    dev: false
 
   /i18next@23.16.8:
     resolution: {integrity: sha512-06r/TitrM88Mg5FdUXAKL96dJMzgqLE5dv3ryBAra4KCwD9mJ4ndOTS95ZuymIGoE+2hzfdaMak2X11/es7ZWg==}

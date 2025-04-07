@@ -1,13 +1,14 @@
 import { Button, Tooltip } from '@heroui/react';
 import { cn } from '@heroui/react';
 import { Icon } from '@iconify/react';
+import clsx from 'clsx';
 import type React from 'react';
 import { forwardRef, memo, useState } from 'react';
-
 export interface TooltipQuestionProps
   extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
   textClassName?: string;
+  iconClassName?: string;
   copyText?: string;
   children: React.ReactNode;
   show?: boolean;
@@ -16,7 +17,7 @@ export interface TooltipQuestionProps
 
 export const TooltipQuestion = memo(
   forwardRef<HTMLDivElement, TooltipQuestionProps>((props, forwardedRef) => {
-    const { className, children } = props;
+    const { className, children, iconClassName } = props;
     const [isOpen, setIsOpen] = useState(false);
     return (
       <div
@@ -36,7 +37,10 @@ export const TooltipQuestion = memo(
             variant="light"
             onPress={() => setIsOpen((prev) => !prev)}
           >
-            <Icon icon="ep:question-filled" className="h-[24px] w-[24px]" />
+            <Icon
+              icon="ep:question-filled"
+              className={clsx('h-[24px] w-[24px]', iconClassName)}
+            />
           </Button>
         </Tooltip>
       </div>

@@ -34,6 +34,7 @@
     "decimal.js": "^10.5.0",
     "fast-sort": "^3.4.1",
     "framer-motion": "^12.4.11",
+    "humanize-duration": "^3.32.1",
     "idb-keyval": "^6.2.1",
     "immer": "^10.1.1",
     "lodash.chunk": "^4.2.0",

@@ -1,9 +1,10 @@
 export type Locale = 'en-US' | 'de-DE' | 'fr-FR' | 'de-CH';
-
+export type HDLng = 'en' | 'de' | 'fr';
 export type LocaleInfo = {
   decimalSeparator: '.' | ',';
   thousandSeparator: '' | '.' | ',' | `'` | ' ';
   locale: Locale;
+  hdLng: HDLng;
 };
 
 export const numberFormats: Record<Locale, LocaleInfo> = {
@@ -11,24 +12,28 @@ export const numberFormats: Record<Locale, LocaleInfo> = {
     decimalSeparator: '.',
     thousandSeparator: ',',
     locale: 'en-US',
+    hdLng: 'en',
   },
 
   'de-DE': {
     decimalSeparator: ',',
     thousandSeparator: '.',
     locale: 'de-DE',
+    hdLng: 'de',
   },
 
   'fr-FR': {
     decimalSeparator: ',',
     thousandSeparator: ' ',
     locale: 'fr-FR',
+    hdLng: 'fr',
   },
 
   'de-CH': {
     decimalSeparator: '.',
     thousandSeparator: `'`,
     locale: 'de-CH',
+    hdLng: 'de',
   },
 };
 

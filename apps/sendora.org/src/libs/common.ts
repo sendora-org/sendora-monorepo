@@ -729,3 +729,32 @@ export function delay(ms: number): Promise<boolean> {
     }, ms);
   });
 }
+
+export function formatWei(wei: string | number): string {
+  const weiNum = BigInt(wei);
+  if (weiNum < 0 || Number.isNaN(Number(wei))) {
+    return 'Invalid input';
+  }
+
+  const units = [
+    { name: 'wei', power: 0n, threshold: 0n },
+    { name: 'Kwei', power: 3n, threshold: 1000n }, // 10^3
+    { name: 'Mwei', power: 6n, threshold: 1000n * 10n ** 3n }, // 10^6
+    { name: 'Gwei', power: 9n, threshold: 1000n * 10n ** 6n }, // 10^9
+    { name: 'Szabo', power: 12n, threshold: 1000n * 10n ** 9n }, // 10^12
+    { name: 'Finney', power: 15n, threshold: 1000n * 10n ** 12n }, // 10^15
+    { name: 'Ether', power: 18n, threshold: 1000n * 10n ** 15n }, // 10^18
+  ];
+
+  for (let i = units.length - 1; i >= 0; i--) {
+    const unit = units[i];
+    if (weiNum >= unit.threshold || (i === 0 && weiNum < 1000n)) {
+      const value = Number(weiNum) / Number(10n ** unit.power);
+
+      const formattedValue = Number.isInteger(value) ? value : value.toFixed(2);
+      return `${formattedValue} ${unit.name}`;
+    }
+  }
+
+  return `${weiNum} wei`;
+}
