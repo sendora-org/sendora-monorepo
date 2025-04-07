@@ -123,7 +123,14 @@ export const ReceiptOverview = ({
       )}
 
       <div className="flex justify-between items-center min-h-[28px]">
-        <dt className="text-small text-default-300">Recipients</dt>
+        <dt className="text-small text-default-300 flex items-center">
+          Recipients{' '}
+          <TooltipQuestion iconClassName="h-[16px] w-[16px]">
+            <p className=" w-max-[250px]">
+              Only process rows with a status of valid or duplicateAddress.
+            </p>
+          </TooltipQuestion>
+        </dt>
         <dd className="text-small font-semibold text-default-500">
           {formatBigIntNumber(
             BigInt(recipients * 10 ** 18),
