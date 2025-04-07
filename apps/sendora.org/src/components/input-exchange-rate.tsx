@@ -76,7 +76,7 @@ export default ({
             input: 'text-base ',
           }}
           minValue={0}
-          value={formatBigIntNumber(rate, thousandSeparator, decimalSeparator)}
+          value={Number(rate / BigInt(10 ** 18))}
           onValueChange={(v) => {
             setRate(BigInt(Math.ceil(v * 10 ** 18)));
           }}
