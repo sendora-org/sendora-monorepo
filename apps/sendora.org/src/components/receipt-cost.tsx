@@ -2,18 +2,21 @@ import H3Title from '@/components/h3-title';
 import H4Title from '@/components/h4-title';
 import { numberFormats } from '@/constants/common';
 import { useLocale } from '@/hooks/useLocale';
+import { formatWei } from '@/libs/common';
 import { formatBigIntNumber } from '@/libs/number';
 import { Divider } from '@heroui/react';
-import { TooltipQuestion } from './tooltip-question';
-
-import { formatWei } from '@/libs/common';
+import { Button } from '@heroui/react';
 // @ts-ignore
 import humanizeDuration from 'humanize-duration';
+import { CustomAlert } from './custom-alert';
+import { SubscribePrompt } from './subscribe-prompt';
+import { TooltipQuestion } from './tooltip-question';
 
 type IProps = {
   transactions: number;
   estimatedMilliseconds: number;
   gasPrice: string;
+  gasLimit: string;
   networkCost: string;
   totalFee: string;
   gasTokenSymbol: string;
@@ -28,6 +31,7 @@ export const ReceiptCost = ({
   networkCost = '0',
   totalFee = '0',
   ETHDecreaseAmount = '0',
+  gasLimit = '0',
 }: IProps) => {
   const { locale } = useLocale();
   const { decimalSeparator, thousandSeparator, hdLng } = numberFormats[locale];
@@ -70,12 +74,43 @@ export const ReceiptCost = ({
       </div>
 
       <div className="flex justify-between">
+        <dt className="text-small text-default-300">Gas Limit</dt>
+        <dd className="text-small font-semibold text-default-500">
+          {formatBigIntNumber(
+            BigInt(gasLimit) * BigInt(10 ** 18),
+            thousandSeparator,
+            decimalSeparator,
+          )}
+        </dd>
+      </div>
+
+      <div className="flex justify-between">
         <dt className="text-small text-default-300 flex items-center">
           Network Fee/Tx{' '}
           <TooltipQuestion iconClassName="h-[16px] w-[16px]">
             <p className=" w-max-[250px]">
               The network fee for a transaction, paid to miners, is Gas Price ×
               Gas Limit.
+            </p>
+          </TooltipQuestion>
+        </dt>
+        <dd className="text-small font-semibold text-default-500">
+          {' '}
+          {formatBigIntNumber(
+            BigInt(networkCost) as bigint,
+            thousandSeparator,
+            decimalSeparator,
+          )}{' '}
+          {gasTokenSymbol}
+        </dd>
+      </div>
+
+      <div className="flex justify-between">
+        <dt className="text-small text-default-300 flex items-center">
+          Tool Fee/Tx{' '}
+          <TooltipQuestion iconClassName="h-[16px] w-[16px]">
+            <p className=" w-max-[250px]">
+              The Tool fee for a transaction, paid to sendora.org.
             </p>
           </TooltipQuestion>
         </dt>
@@ -100,6 +135,7 @@ export const ReceiptCost = ({
             </p>
           </TooltipQuestion>
         </dt>
+
         <dd className="text-small font-semibold text-default-500">
           {' '}
           {formatBigIntNumber(
@@ -110,6 +146,9 @@ export const ReceiptCost = ({
           {gasTokenSymbol}
         </dd>
       </div>
+
+      <SubscribePrompt />
+
       <div className="flex justify-between">
         <dt className="text-small text-default-300 flex items-center">
           {gasTokenSymbol} Balance Reduction
