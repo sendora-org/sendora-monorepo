@@ -60,6 +60,8 @@ export const ConfirmInput = ({
 
   const queryClient = useQueryClient();
 
+  console.log(111,{isToggle})
+
   useEffect(() => {
     const worker = new Worker(
       new URL('@/web-workers/userinput-validate.ts', import.meta.url),
@@ -175,7 +177,7 @@ export const ConfirmInput = ({
             currency={currency}
           />
           <ConfirmReceipt
-            isToggle
+            isToggle={isToggle}
             workerService={workerService.current}
             currency={currency}
             rate={rate}

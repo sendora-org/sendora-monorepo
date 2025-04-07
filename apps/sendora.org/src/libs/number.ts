@@ -68,7 +68,7 @@ export function formatBigIntNumber(
     // Add 0.5 (which is 10^17 in our 18-decimal system) and truncate decimals
     const rounded = absValue + 5n * 10n ** 17n;
     let integerPart = (rounded / 10n ** 18n).toString();
-    if (isNegative) integerPart = '-' + integerPart;
+    if (isNegative) integerPart = `-${integerPart}`;
     return integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
   }
 

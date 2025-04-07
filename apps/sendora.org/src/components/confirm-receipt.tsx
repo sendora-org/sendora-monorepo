@@ -42,7 +42,7 @@ export const ConfirmReceipt = ({
   isToggle: boolean;
   tokenSymbol: string;
   currency: string;
-  rate: number;
+  rate: bigint;
 }) => {
   const { locale } = useLocale();
   const [isDataReady, setDataReady] = useState(false);
@@ -104,7 +104,7 @@ export const ConfirmReceipt = ({
     }
     return tokenSymbol;
   }, [isToggle, currency, rate, tokenSymbol]);
-  console.log({ network });
+  console.log({ network ,isToggle});
 
   const transactions = useMemo(() => {
     return Math.ceil(recipients / 100);
@@ -172,16 +172,17 @@ export const ConfirmReceipt = ({
           </div>
           <div className="flex md:flex-row flex-col items-start w-full justify-between">
             <ReceiptOverview
+              isTogglePricingCurrency={isToggle}
               network={network}
               tokenSymbol={tokenSymbol}
               pricingCurrency={pricingCurrency}
               gasTokenSymbol={gasTokenSymbol}
-              rate={rate ?? 10 ** 18}
+              rate={rate}
               totalAmount={totalAmount}
               recipients={recipients}
               transactions={transactions}
             />
-            <ReceiptCost />
+            {/* <ReceiptCost /> */}
           </div>
         </>
       )}

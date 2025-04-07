@@ -46,6 +46,8 @@ export default forwardRef(
       }
     }, [isToggle, rate]);
 
+    console.log({isToggle})
+
     return (
       <>
         <div className="w-full relative mb-12">

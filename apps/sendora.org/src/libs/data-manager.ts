@@ -114,7 +114,6 @@ export class DataManager<T extends Item> {
   count() {
     let ids = [...this.idIndex];
 
-
     ids = ids.filter((id) => {
       // biome-ignore lint/style/noNonNullAssertion: reason
       const item = this.dataMap.get(id)!;
@@ -147,8 +146,8 @@ export class DataManager<T extends Item> {
       page?: number;
       pageSize?: number;
     } = {
-        filterKey: '',
-      },
+      filterKey: '',
+    },
   ): {
     items: T[];
     total: number;
