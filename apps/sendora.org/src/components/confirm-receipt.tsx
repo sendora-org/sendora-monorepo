@@ -1,6 +1,7 @@
 import H3Title from '@/components/h3-title';
 import H4Title from '@/components/h4-title';
 import { numberFormats } from '@/constants/common';
+import { MAX_RPC_REQUESTS_PER_SECOND } from '@/constants/common';
 import { findNetwork, networks } from '@/constants/config';
 import { EditorRefContext } from '@/constants/contexts';
 import useAuthStore from '@/hooks/useAuth';
@@ -180,7 +181,10 @@ export const ConfirmReceipt = ({
         txnsPerBlock,
         quarterBlockGasLimit,
       });
-      return estimatedBlocks * blockTime;
+      return (
+        estimatedBlocks * blockTime +
+        BigInt((transactions * 1000) / MAX_RPC_REQUESTS_PER_SECOND)
+      );
     }
 
     return 0n;

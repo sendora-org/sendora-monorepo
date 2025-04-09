@@ -99,3 +99,5 @@ export const discountedPriceTips = [
   'As a valued subscriber, you can avoid the tool fee.',
   'During the Beta testing period, you can avoid the tool fee.',
 ];
+
+export const MAX_RPC_REQUESTS_PER_SECOND = 3;
