@@ -166,7 +166,7 @@ export const ConfirmReceipt = ({
       const blockTime = network?.blockTime;
       const halfBlockGasLimit = (network?.blockGasLimit * 50n) / 100n;
 
-      console.log({ halfBlockGasLimit }, network?.blockGasLimit, gasLimit)
+      console.log({ halfBlockGasLimit }, network?.blockGasLimit, gasLimit);
       const txnsPerBlock = halfBlockGasLimit / gasLimit;
       const estimatedBlocks = BigInt(transactions) / txnsPerBlock + 3n;
 
