@@ -165,25 +165,26 @@ export const ConfirmReceipt = ({
       // biome-ignore lint/style/noNonNullAssertion: reason
       const network = findNetwork('chainId', chainId?.toString(10) ?? '1')!;
       const blockTime = network?.blockTime;
-      let quarterBlockGasLimit = (network?.blockGasLimit * 25n) / 100n;
+      let myBlockGasLimit = (network?.blockGasLimit * 40n) / 100n;
 
-      if (quarterBlockGasLimit < gasLimit) {
-        quarterBlockGasLimit = gasLimit;
+      if (myBlockGasLimit < gasLimit) {
+        myBlockGasLimit = gasLimit;
       }
 
-      console.log({ quarterBlockGasLimit }, network?.blockGasLimit, gasLimit);
-      const txnsPerBlock = quarterBlockGasLimit / gasLimit;
+      console.log({ myBlockGasLimit }, network?.blockGasLimit, gasLimit);
+      const txnsPerBlock = myBlockGasLimit / gasLimit;
       const estimatedBlocks = BigInt(transactions) / txnsPerBlock + 3n;
 
       console.log('gasLimit', {
         estimatedBlocks,
         transactions,
         txnsPerBlock,
-        quarterBlockGasLimit,
-      });
+        myBlockGasLimit,
+
+      }, estimatedBlocks * blockTime);
       return (
         estimatedBlocks * blockTime +
-        BigInt(Math.ceil((transactions * 1000) / MAX_RPC_REQUESTS_PER_SECOND))
+        BigInt(Math.ceil((transactions) / MAX_RPC_REQUESTS_PER_SECOND) * 1000)
       );
     }
 
