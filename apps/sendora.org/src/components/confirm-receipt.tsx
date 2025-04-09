@@ -175,16 +175,19 @@ export const ConfirmReceipt = ({
       const txnsPerBlock = myBlockGasLimit / gasLimit;
       const estimatedBlocks = BigInt(transactions) / txnsPerBlock + 3n;
 
-      console.log('gasLimit', {
-        estimatedBlocks,
-        transactions,
-        txnsPerBlock,
-        myBlockGasLimit,
-
-      }, estimatedBlocks * blockTime);
+      console.log(
+        'gasLimit',
+        {
+          estimatedBlocks,
+          transactions,
+          txnsPerBlock,
+          myBlockGasLimit,
+        },
+        estimatedBlocks * blockTime,
+      );
       return (
         estimatedBlocks * blockTime +
-        BigInt(Math.ceil((transactions) / MAX_RPC_REQUESTS_PER_SECOND) * 1000)
+        BigInt(Math.ceil(transactions / MAX_RPC_REQUESTS_PER_SECOND) * 1000)
       );
     }
 
