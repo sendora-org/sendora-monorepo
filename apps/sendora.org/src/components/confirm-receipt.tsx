@@ -183,7 +183,7 @@ export const ConfirmReceipt = ({
       });
       return (
         estimatedBlocks * blockTime +
-        BigInt((transactions * 1000) / MAX_RPC_REQUESTS_PER_SECOND)
+        BigInt(Math.ceil((transactions * 1000) / MAX_RPC_REQUESTS_PER_SECOND))
       );
     }
 

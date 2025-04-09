@@ -20,7 +20,6 @@ export class DataManager<T extends Item> {
     this.dataMap.clear();
     this.idIndex = [];
 
-    console.log('reset', data.length);
     for (const item of data) {
       this.dataMap.set(item.id, item);
       this.idIndex.push(item.id);
@@ -37,7 +36,6 @@ export class DataManager<T extends Item> {
   }
 
   deleteBatchByIds(ids: number[]): boolean[] {
-    console.log({ ids });
     const results: boolean[] = [];
 
     for (const id of ids) {
@@ -51,7 +49,6 @@ export class DataManager<T extends Item> {
       results.push(success);
     }
 
-    console.log({ results });
     return results;
   }
 
@@ -117,7 +114,7 @@ export class DataManager<T extends Item> {
     ids = ids.filter((id) => {
       // biome-ignore lint/style/noNonNullAssertion: reason
       const item = this.dataMap.get(id)!;
-      console.log(id, item);
+
       return item.status === 'valid' || item.status === 'duplicateAddress';
     });
 
@@ -153,8 +150,6 @@ export class DataManager<T extends Item> {
     total: number;
     totalPages: number;
   } {
-    console.log({ options });
-
     const {
       sortField,
       sortOrder = 'asc',
@@ -232,7 +227,7 @@ export class DataManager<T extends Item> {
   }
   getAll(): T[] {
     const ids = [...this.idIndex];
-    console.log(this.dataMap);
+
     // biome-ignore lint/style/noNonNullAssertion: reason
     return ids.map((id) => this.dataMap.get(id)!);
   }
