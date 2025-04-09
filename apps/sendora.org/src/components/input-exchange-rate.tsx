@@ -76,7 +76,7 @@ export default ({
             input: 'text-base ',
           }}
           minValue={0}
-          value={ Number(rate) / 10 ** 18}
+          value={Number(rate) / 10 ** 18}
           onValueChange={(v) => {
             setRate(BigInt(Math.ceil(v * 10 ** 18)));
           }}

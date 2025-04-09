@@ -25,7 +25,13 @@ export default forwardRef(
       defaultValue = '',
       example,
       tokenSymbol = 'ETH',
-    }: { defaultValue: string; tokenSymbol: string; example: IExample },
+      tokenType = 'native',
+    }: {
+      defaultValue: string;
+      tokenSymbol: string;
+      example: IExample;
+      tokenType: string;
+    },
     ref,
   ) => {
     console.log(`user input render ${new Date().toISOString()}`);
@@ -88,6 +94,7 @@ export default forwardRef(
           setRate={setRate}
         />
         <ConfirmInput
+          tokenType={tokenType}
           eventSubject={eventSubject}
           isToggle={isToggle}
           tokenSymbol={tokenSymbol}

@@ -1,6 +1,6 @@
 'use client';
 import { type NetworkInfo, networks } from '@/constants/config';
-import { Avatar, Select, SelectItem } from '@heroui/react';
+import { Avatar, Select, SelectItem, SelectSection } from '@heroui/react';
 import { clsx } from 'clsx';
 
 export default function SelectNetworks({
@@ -10,6 +10,13 @@ export default function SelectNetworks({
     console.log(chainId);
   },
 }) {
+  // const pinned = networks.filter((network) => { return !network.isTestnet && network.isPopular })
+  const mainnets = networks.filter((network) => {
+    return !network.isTestnet && network.isPopular;
+  });
+  const testnets = networks.filter((network) => {
+    return network.isTestnet;
+  });
   return (
     <Select
       disallowEmptySelection
@@ -25,47 +32,81 @@ export default function SelectNetworks({
         base: clsx('max-w-xs', classes),
         trigger: 'h-8',
       }}
-      items={networks}
+      // items={networks}
       labelPlacement="outside"
       placeholder="Select a network"
       // @ts-ignore
       renderValue={(
         items: { key: string | number | undefined; data: NetworkInfo }[],
       ) => {
+        console.log(items);
         return items.map(
           (item: { key: string | number | undefined; data: NetworkInfo }) => (
             <div key={item.key} className="flex items-center gap-2">
               <Avatar
-                alt={item.data.name}
+                alt={item?.data?.name}
                 className="w-4 h-4 text-tiny sm:w-6 sm:h-6 flex-shrink-0"
-                src={item.data.avatar}
+                src={item?.data?.avatar}
               />
               <div className="flex flex-col  ">
-                <span className="text-default-600">{item.data.name} </span>
+                <span className="text-default-600">{item?.data?.name} </span>
               </div>
             </div>
           ),
         );
       }}
     >
-      {(network) => (
-        <SelectItem
-          aria-label="@sendora"
-          key={network.chainId}
-          textValue={network.name as string}
-        >
-          <div className="flex gap-2 items-center">
-            <Avatar
-              alt={network.name as string}
-              className="w-4 h-4 text-tiny sm:w-6 sm:h-6 flex-shrink-0"
-              src={network.avatar}
-            />
-            <div className="flex flex-col">
-              <span className="text-small">{network.name}</span>
-            </div>
-          </div>
-        </SelectItem>
-      )}
+      <SelectSection showDivider title="Popular" items={mainnets}>
+        {(network) => {
+          if (!network.isTestnet) {
+            return (
+              <SelectItem
+                aria-label="@sendora"
+                key={network.chainId}
+                textValue={network.name as string}
+              >
+                <div className="flex gap-2 items-center">
+                  <Avatar
+                    alt={network.name as string}
+                    className="w-4 h-4 text-tiny sm:w-6 sm:h-6 flex-shrink-0"
+                    src={network.avatar}
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-small">{network.name}</span>
+                  </div>
+                </div>
+              </SelectItem>
+            );
+          }
+          return null;
+        }}
+      </SelectSection>
+      <SelectSection showDivider title="Testnest" items={testnets}>
+        {(network) => {
+          if (network.isTestnet) {
+            return (
+              <SelectItem
+                aria-label="@sendora"
+                key={network.chainId}
+                textValue={network.name as string}
+              >
+                <div className="flex gap-2 items-center">
+                  <Avatar
+                    alt={network.name as string}
+                    className="w-4 h-4 text-tiny sm:w-6 sm:h-6 flex-shrink-0"
+                    src={network.avatar}
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-small">{network.name}</span>
+                  </div>
+                </div>
+              </SelectItem>
+            );
+          }
+          return null;
+          // return <SelectItem aria-label="@sendora" key={network.chainId} textValue={ } />;
+        }}
+      </SelectSection>
     </Select>
   );
 }

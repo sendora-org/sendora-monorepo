@@ -5,7 +5,7 @@ import { findNetwork, networks } from '@/constants/config';
 import { EditorRefContext } from '@/constants/contexts';
 import useAuthStore from '@/hooks/useAuth';
 import { useLocale } from '@/hooks/useLocale';
-import { delay } from '@/libs/common';
+import { delay, getGasPrice } from '@/libs/common';
 import type { WorkerService } from '@/libs/worker-service';
 import { Button, Divider, Image } from '@heroui/react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -14,6 +14,7 @@ import { useContext } from 'react';
 import { firstValueFrom } from 'rxjs';
 import type { Subject } from 'rxjs';
 import type { Hex } from 'viem';
+import { parseEther } from 'viem';
 import { useAccount } from 'wagmi';
 import { Abcfc } from './abcfc';
 import ConnectButton from './connect-button';
@@ -33,6 +34,7 @@ export const ConfirmReceipt = ({
   tokenSymbol,
   currency,
   rate,
+  tokenType,
 }: {
   workerService: WorkerService | null;
   eventSubject: Subject<{ event: string }>;
@@ -43,12 +45,14 @@ export const ConfirmReceipt = ({
   tokenSymbol: string;
   currency: string;
   rate: bigint;
+  tokenType: string;
 }) => {
   const { locale } = useLocale();
   const [isDataReady, setDataReady] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0n);
   const [recipients, setRecipients] = useState(0);
+  const [gasPrice, setGasPrice] = useState(0n);
 
   const [isError, setError] = useState(false);
   const editorRef = useContext(EditorRefContext);
@@ -109,6 +113,72 @@ export const ConfirmReceipt = ({
   const transactions = useMemo(() => {
     return Math.ceil(recipients / 100);
   }, [recipients]);
+
+  const gasLimit = useMemo(() => {
+    const network = findNetwork('chainId', chainId?.toString(10) ?? '1');
+    let gas = 100_000n;
+    if (tokenType === 'native') {
+      gas = network?.gasUsedForEthTransfer ?? 100_000n;
+    }
+
+    if (tokenType === 'erc20') {
+      gas = network?.gasUsedForERC20Transfer ?? 100_000n;
+    }
+
+    if (transactions > 1) {
+      gas = gas * 100n;
+    } else {
+      gas = gas * BigInt(recipients);
+    }
+
+    return gas + (gas * 3n) / 10n;
+  }, [chainId, transactions, tokenType, recipients]);
+
+  const networkCost = useMemo(() => {
+    return gasPrice * gasLimit;
+  }, [gasLimit, gasPrice]);
+
+  const totalFee = useMemo(() => {
+    const network = findNetwork('chainId', chainId?.toString(10) ?? '1');
+
+    // todos
+    // isValidSubscription
+    // isPromoOrEvent
+    const toolFee = parseEther(String(network?.toolFeePerUse) ?? '0');
+    return (networkCost + toolFee) * BigInt(transactions);
+  }, [networkCost, transactions, chainId]);
+
+  const ETHBalanceREduction = useMemo(() => {
+    let reduction = totalFee;
+
+    if (tokenType === 'native') {
+      reduction = totalFee + totalAmount;
+    }
+
+    return reduction;
+  }, [totalFee, tokenType, totalAmount]);
+
+  const estimatedMilliseconds = useMemo(() => {
+    console.log({ gasLimit });
+    if (gasLimit > 0n) {
+      // biome-ignore lint/style/noNonNullAssertion: reason
+      const network = findNetwork('chainId', chainId?.toString(10) ?? '1')!;
+      const blockTime = network?.blockTime;
+      const halfBlockGasLimit = (network?.blockGasLimit * 50n) / 100n;
+      const txnsPerBlock = halfBlockGasLimit / gasLimit;
+      const estimatedBlocks = BigInt(transactions) / txnsPerBlock + 3n;
+
+      console.log('gasLimit', {
+        estimatedBlocks,
+        transactions,
+        txnsPerBlock,
+        halfBlockGasLimit,
+      });
+      return estimatedBlocks * blockTime;
+    }
+
+    return 0n;
+  }, [transactions, chainId, gasLimit]);
   return (
     <>
       {!isDataReady && (
@@ -137,11 +207,15 @@ export const ConfirmReceipt = ({
               await delay(1000);
               const result = await testCRUD();
 
+              // biome-ignore lint/style/noNonNullAssertion: reason
+              const gasPrice = await getGasPrice(chainId!);
+
               if (result) {
                 // @ts-ignore
                 setTotalAmount(result.totalAmount);
                 // @ts-ignore
                 setRecipients(result.recipients);
+                setGasPrice(gasPrice);
               }
               setLoading(false);
 
@@ -184,7 +258,19 @@ export const ConfirmReceipt = ({
               recipients={recipients}
               transactions={transactions}
             />
-            {/* <ReceiptCost /> */}
+            <ReceiptCost
+              // biome-ignore lint/style/noNonNullAssertion: reason
+              chainId={chainId!}
+              gasTokenSymbol={gasTokenSymbol}
+              gasPrice={gasPrice}
+              gasLimit={gasLimit}
+              transactions={transactions}
+              recipients={recipients}
+              networkCost={networkCost}
+              totalFee={totalFee}
+              ETHBalanceREduction={ETHBalanceREduction}
+              estimatedMilliseconds={estimatedMilliseconds}
+            />
           </div>
         </>
       )}

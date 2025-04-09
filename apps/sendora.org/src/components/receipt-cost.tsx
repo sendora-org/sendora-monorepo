@@ -13,34 +13,39 @@ import { TooltipNotice } from './tooltip-notice';
 import { TooltipQuestion } from './tooltip-question';
 
 type IProps = {
-  estimatedMilliseconds: number;
-  gasPrice: string;
-  gasLimit: string;
-  networkCost: string;
-  totalFee: string;
+  estimatedMilliseconds: bigint;
+  gasPrice: bigint;
+  gasLimit: bigint;
+  networkCost: bigint;
+  totalFee: bigint;
   gasTokenSymbol: string;
-  ETHDecreaseAmount: string;
+  ETHBalanceREduction: bigint;
   chainId: number;
-  isValidSubscription: boolean;
-  isPromoOrEvent: boolean;
-  promoOrEventPrice: number;
-  discountedPriceTip: string;
+  isValidSubscription?: boolean;
+  isPromoOrEvent?: boolean;
+  promoOrEventPrice?: number;
+  discountedPriceTip?: string;
+  transactions: number;
+  recipients: number;
 };
 
 export const ReceiptCost = ({
-  estimatedMilliseconds = 1000 * 0,
-  gasPrice = '1',
+  estimatedMilliseconds = 1000n * 0n,
+  gasPrice = 0n,
   gasTokenSymbol = 'ETH',
-  networkCost = '0',
-  totalFee = '0',
-  ETHDecreaseAmount = '0',
-  gasLimit = '0',
+  networkCost = 0n,
+  totalFee = 0n,
+  ETHBalanceREduction = 0n,
+  gasLimit = 0n,
   chainId = 1,
-  isValidSubscription = true,
-  isPromoOrEvent = true,
+  isValidSubscription = false,
+  isPromoOrEvent = false,
   promoOrEventPrice = 0,
   discountedPriceTip = discountedPriceTips[0],
+  transactions,
+  recipients,
 }: IProps) => {
+  console.log({ gasPrice: formatWei(gasPrice.toString()) }, gasPrice);
   const { locale } = useLocale();
   const { decimalSeparator, thousandSeparator, hdLng } = numberFormats[locale];
 
@@ -55,21 +60,21 @@ export const ReceiptCost = ({
       <div className="flex justify-between min-h-[28px] items-center">
         <dt className="text-small text-default-300">Estimated time</dt>
         <dd className="text-small font-semibold text-default-500">
-          {humanizeDuration(estimatedMilliseconds, { language: hdLng })}
+          {humanizeDuration(Number(estimatedMilliseconds), { language: hdLng })}
         </dd>
       </div>
       <div className="flex justify-between min-h-[28px] items-center">
         <dt className="text-small text-default-300">Gas Price</dt>
         <dd className="text-small font-semibold text-default-500">
-          {formatWei(gasPrice)}
+          {formatWei(gasPrice.toString())}
         </dd>
       </div>
 
       <div className="flex justify-between min-h-[28px] items-center">
-        <dt className="text-small text-default-300">Gas Limit</dt>
+        <dt className="text-small text-default-300">Gas Limit/Tx</dt>
         <dd className="text-small font-semibold text-default-500">
           {formatBigIntNumber(
-            BigInt(gasLimit) * BigInt(10 ** 18),
+            gasLimit * BigInt(10 ** 18),
             thousandSeparator,
             decimalSeparator,
           )}
@@ -88,11 +93,7 @@ export const ReceiptCost = ({
         </dt>
         <dd className="text-small font-semibold text-default-500">
           {' '}
-          {formatBigIntNumber(
-            BigInt(networkCost) as bigint,
-            thousandSeparator,
-            decimalSeparator,
-          )}{' '}
+          {formatBigIntNumber(networkCost, thousandSeparator, decimalSeparator)}{' '}
           {gasTokenSymbol}
         </dd>
       </div>
@@ -122,7 +123,7 @@ export const ReceiptCost = ({
         )}
 
         {!isValidSubscription && !isPromoOrEvent && (
-          <dd className="text-small font-semibold text-default-500 line-through">
+          <dd className="text-small font-semibold text-default-500">
             {network?.toolFeePerUse} {gasTokenSymbol}
           </dd>
         )}
@@ -141,11 +142,7 @@ export const ReceiptCost = ({
 
         <dd className="text-small font-semibold text-default-500">
           {' '}
-          {formatBigIntNumber(
-            BigInt(totalFee) as bigint,
-            thousandSeparator,
-            decimalSeparator,
-          )}{' '}
+          {formatBigIntNumber(totalFee, thousandSeparator, decimalSeparator)}{' '}
           {gasTokenSymbol}
         </dd>
       </div>
@@ -167,9 +164,10 @@ export const ReceiptCost = ({
           <dd className="text-small font-semibold text-default-500">
             {' '}
             {formatBigIntNumber(
-              BigInt(ETHDecreaseAmount) as bigint,
+              ETHBalanceREduction,
               thousandSeparator,
               decimalSeparator,
+              4,
             )}{' '}
             {gasTokenSymbol}
           </dd>

@@ -35,6 +35,7 @@ export const Prepare = ({
     <>
       <EditorRefContext.Provider value={editorRef}>
         <UserInput
+          tokenType="native"
           tokenSymbol={network?.nativeCurrency?.symbol}
           example={native_coin_input_example}
           defaultValue={data ?? ''}

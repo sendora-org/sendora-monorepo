@@ -594,6 +594,21 @@ export function flattenArray<T>(chunks: T[][]): T[] {
   return chunks.reduce((acc, curr) => acc.concat(curr), []);
 }
 
+export const getGasPrice = async (chainId: number) => {
+  const network = findNetwork('chainId', chainId.toString()) ?? networks[0];
+
+  const publicClient = createPublicClient({
+    chain: composeViemChain(network),
+    transport: network ? http(network.rpcURL) : http(),
+  });
+
+  const { gasPrice } = await publicClient.estimateFeesPerGas({
+    type: 'legacy', // network.isEIP1559Supported ? 'eip1559' : 'legacy'
+  });
+
+  return gasPrice ?? 0n;
+};
+
 export const queryAddressFromENS = async (ensType: string, names: string[]) => {
   if (names.length === 0) {
     return [];

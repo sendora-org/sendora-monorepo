@@ -42,12 +42,14 @@ export const ConfirmInput = ({
   tokenSymbol,
   currency,
   rate,
+  tokenType,
 }: {
   eventSubject: Subject<{ event: string }>;
   isToggle: boolean;
   tokenSymbol: string;
   currency: string;
   rate: bigint;
+  tokenType: string;
 }) => {
   const { isConnected, chain, chainId, address } = useAccount();
   const { status, loginAddress } = useAuthStore();
@@ -177,6 +179,7 @@ export const ConfirmInput = ({
             currency={currency}
           />
           <ConfirmReceipt
+            tokenType={tokenType}
             isToggle={isToggle}
             workerService={workerService.current}
             currency={currency}
