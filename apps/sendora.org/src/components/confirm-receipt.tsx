@@ -165,6 +165,8 @@ export const ConfirmReceipt = ({
       const network = findNetwork('chainId', chainId?.toString(10) ?? '1')!;
       const blockTime = network?.blockTime;
       const halfBlockGasLimit = (network?.blockGasLimit * 50n) / 100n;
+
+      console.log({ halfBlockGasLimit }, network?.blockGasLimit, gasLimit)
       const txnsPerBlock = halfBlockGasLimit / gasLimit;
       const estimatedBlocks = BigInt(transactions) / txnsPerBlock + 3n;
 
