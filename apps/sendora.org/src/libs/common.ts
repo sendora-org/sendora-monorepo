@@ -1,4 +1,5 @@
 import { findNetwork, networks } from '@/constants/config';
+import { useRpcStore } from '@/hooks/useRpcStore';
 import {
   http,
   createPublicClient,
@@ -11,7 +12,9 @@ import type { Chain, Hex } from 'viem';
 import { arbitrum, base, bsc, mainnet } from 'viem/chains';
 import { normalize, packetToBytes } from 'viem/ens';
 
+import { useRpcStorePersistName } from '@/hooks/useRpcStore';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import { createIndexedDBStorage } from './indexedDBStorage';
 import { composeViemChain } from './wagmi';
 export const getVisitorId = async () => {
   const fpPromise = FingerprintJS.load();
@@ -595,7 +598,7 @@ export function flattenArray<T>(chunks: T[][]): T[] {
 }
 
 export const getGasPrice = async (chainId: number, rpcUrl = '') => {
-  const publicClient = createPublicClientWithRpc(chainId, rpcUrl);
+  const publicClient = await createPublicClientWithRpc(chainId, rpcUrl);
 
   const { gasPrice } = await publicClient.estimateFeesPerGas({
     type: 'legacy', // network.isEIP1559Supported ? 'eip1559' : 'legacy'
@@ -655,7 +658,7 @@ export const queryAddressFromENS = async (
     },
   };
 
-  const publicClient = createPublicClientWithRpc(
+  const publicClient = await createPublicClientWithRpc(
     registerMap[ensType].chainId,
     rpcUrl,
   );
@@ -683,7 +686,7 @@ export const queryAddressFromENS = async (
 };
 
 export const queryNameFromENS = async (addresses: Hex[], rpcUrl = '') => {
-  const publicClient = createPublicClientWithRpc(1, rpcUrl);
+  const publicClient = await createPublicClientWithRpc(1, rpcUrl);
   const universalResolverAddress = '0x74E20Bd2A1fE0cdbe45b9A1d89cb7e0a45b36376';
 
   const universalResolverReverseAbi = [
@@ -813,13 +816,22 @@ export const checkRpcUrl = async (chainId: number, rpcUrl: string) => {
   }
 };
 
-export const createPublicClientWithRpc = (chainId: number, rpcUrl: string) => {
+export const createPublicClientWithRpc = async (
+  chainId: number,
+  rpcUrl: string,
+) => {
   const network = findNetwork('chainId', chainId.toString()) ?? networks[0];
   let activeUrl = network.rpcURL;
 
-  if (rpcUrl !== '') {
-    activeUrl = rpcUrl;
+  const storage = createIndexedDBStorage();
+
+  const result = await storage.getItem(useRpcStorePersistName);
+  console.log({ result });
+
+  if (result?.state?.activeRpc[chainId]) {
+    activeUrl = result?.state?.activeRpc[chainId];
   }
+  // console.log({ activeUrl, activeRpc, state });
   const publicClient = createPublicClient({
     chain: composeViemChain(network),
     transport: http(activeUrl),

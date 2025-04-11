@@ -1,5 +1,7 @@
+import { createIndexedDBStorage } from '@/libs/indexedDBStorage';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+
 interface RpcStoreState {
   customRpcs: Record<number, string[]>;
   activeRpc: Record<number, string>;
@@ -14,6 +16,8 @@ interface RpcStoreState {
   clearChain: (chainId: number) => void;
   clearAll: () => void;
 }
+
+export const useRpcStorePersistName = 'useRpcStore';
 
 export const useRpcStore = create<RpcStoreState>()(
   persist(
@@ -87,15 +91,6 @@ export const useRpcStore = create<RpcStoreState>()(
       },
 
       setActiveRpc: (chainId, rpcUrl) => {
-        // const current = get().customRpcs[chainId] || [];
-
-        // console.log(222, { chainId, rpcUrl, setActiveRpc: "setActiveRpc", current },)
-        // if (!current.includes(rpcUrl)) {
-        //     return;
-        // }
-
-        console.log({ chainId, rpcUrl, setActiveRpc: 'setActiveRpc' });
-
         set((state) => ({
           activeRpc: {
             ...state.activeRpc,
@@ -121,7 +116,14 @@ export const useRpcStore = create<RpcStoreState>()(
       clearAll: () => set({ customRpcs: {}, activeRpc: {} }),
     }),
     {
-      name: 'useRpcStore',
+      name: useRpcStorePersistName,
+      // @ts-ignore
+      storage: createIndexedDBStorage(),
+      // @ts-ignore
+      partialize: (state) => ({
+        customRpcs: state.customRpcs,
+        activeRpc: state.activeRpc,
+      }),
     },
   ),
 );

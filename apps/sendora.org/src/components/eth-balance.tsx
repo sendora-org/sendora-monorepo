@@ -10,7 +10,7 @@ const fetchBalance = async ({
   chain,
   rpcUrl,
 }: { address: Hex; chain: Chain; rpcUrl: string }) => {
-  const client = createPublicClientWithRpc(chain.id, rpcUrl);
+  const client = await createPublicClientWithRpc(chain.id, rpcUrl);
 
   if (!address) throw new Error('The address cannot be empty.');
   const balanceWei = await client.getBalance({ address });

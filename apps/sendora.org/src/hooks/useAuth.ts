@@ -93,7 +93,10 @@ const useAuthStore = create<AuthState>((set) => ({
           const { address, message, signature } = JSON.parse(result ?? '');
           const { chainId } = Siwe.parseMessage(message);
 
-          const publicClient = createPublicClientWithRpc(chainId ?? 1, '');
+          const publicClient = await createPublicClientWithRpc(
+            chainId ?? 1,
+            '',
+          );
 
           const valid = await publicClient.verifyMessage({
             address: address,
