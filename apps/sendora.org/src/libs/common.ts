@@ -773,3 +773,46 @@ export function formatWei(wei: string | number): string {
 
   return `${weiNum} wei`;
 }
+
+export type RpcCheckResult = {
+  isMatch: boolean;
+  responseTimeMs: number;
+  error?: string;
+};
+
+// biome-ignore  lint/suspicious/noExplicitAny: reason
+export function getErrorMessage(error?: any): string {
+  if (error) {
+    return error.message || 'Unknown error';
+  }
+  return '';
+}
+
+export const checkRpcUrl = async (chainId: number, rpcUrl: string) => {
+  const startTime = performance.now();
+  try {
+    const network = findNetwork('chainId', chainId.toString()) ?? networks[0];
+
+    const publicClient = createPublicClient({
+      chain: composeViemChain(network),
+      transport: http(rpcUrl),
+    });
+
+    const returnedChainId = await publicClient.getChainId();
+    const endTime = performance.now();
+    const responseTime = endTime - startTime;
+    return {
+      isMatch: returnedChainId === chainId,
+      responseTimeMs: Math.round(responseTime),
+    };
+  } catch (error) {
+    const endTime = performance.now();
+    const responseTime = endTime - startTime;
+
+    return {
+      isMatch: false,
+      responseTimeMs: Math.round(responseTime),
+      error: getErrorMessage(error),
+    };
+  }
+};
