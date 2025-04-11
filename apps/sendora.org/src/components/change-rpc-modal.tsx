@@ -117,8 +117,7 @@ export default function ChangeRPCModal({ chainId }: IProps) {
                   <div>
                     {rpcStatusByChange?.isMatch && (
                       <span className="text-[#18c964]">
-                        RPC status: OK in {rpcStatusByChange?.responseTimeMs} ms
-                        latency
+                        RPC OK, latency {rpcStatusByChange?.responseTimeMs}ms
                       </span>
                     )}
                     {!rpcStatusByChange?.isMatch && (
@@ -131,8 +130,7 @@ export default function ChangeRPCModal({ chainId }: IProps) {
                   <div>
                     {rpcStatusByAdd?.isMatch && (
                       <span className="text-[#18c964]">
-                        RPC status: OK in {rpcStatusByAdd?.responseTimeMs} ms
-                        latency
+                        RPC OK, latency {rpcStatusByAdd?.responseTimeMs}ms
                       </span>
                     )}
                     {!rpcStatusByAdd?.isMatch && (
