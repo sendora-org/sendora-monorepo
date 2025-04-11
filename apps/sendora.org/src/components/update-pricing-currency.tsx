@@ -45,13 +45,10 @@ export default function App() {
 
   const [input, setInput] = useState('');
 
-  console.log({ selectedCode });
   const handleAdd = () => {
     if (input.trim()) {
       const currency = input.trim().toUpperCase();
       addCode(currency);
-
-      console.log({ currency });
       setCode(currency);
       setInput('');
     }

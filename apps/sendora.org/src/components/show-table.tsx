@@ -127,6 +127,7 @@ export default function ShowTable({
       placeholderData: keepPreviousData,
     });
 
+  console.log({ data });
   const deleteLines = async (ids: number[]) => {
     console.log('before', ids);
     if (ids.length >= 1) {

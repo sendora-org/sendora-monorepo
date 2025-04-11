@@ -26,8 +26,8 @@ const store = new DataManager<Item>([]);
 self.onmessage = async ({
   data,
   // biome-ignore  lint/suspicious/noExplicitAny: reason
-}: { data: { id: number; type: string; payload: any; rpcUrl?: string } }) => {
-  const { id, type, payload, rpcUrl } = data;
+}: { data: { id: number; type: string; payload: any } }) => {
+  const { id, type, payload } = data;
   // biome-ignore  lint/suspicious/noExplicitAny: reason
   let result: any;
   switch (type) {
@@ -149,15 +149,14 @@ self.onmessage = async ({
               return item.ensName;
             });
 
-          console.log('before send base eth req');
-          const ethAddrs = await queryAddressFromENS('.eth', ensOnEth, rpcUrl);
+          const ethAddrs = await queryAddressFromENS('.eth', ensOnEth);
+
           const baseAddrs = await queryAddressFromENS(
             '.base.eth',
             ensOnEthBase,
-            rpcUrl,
           );
-          const arbAddrs = await queryAddressFromENS('.arb', ensOnArb, rpcUrl);
-          const bnbAddrs = await queryAddressFromENS('.bnb', ensOnBnb, rpcUrl);
+          const arbAddrs = await queryAddressFromENS('.arb', ensOnArb);
+          const bnbAddrs = await queryAddressFromENS('.bnb', ensOnBnb);
 
           const chunkWithENS = newchunk.map(
             (item: {

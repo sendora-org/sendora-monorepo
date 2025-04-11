@@ -4,7 +4,6 @@ import { numberFormats } from '@/constants/common';
 import { EditorRefContext } from '@/constants/contexts';
 import useAuthStore from '@/hooks/useAuth';
 import { useLocale } from '@/hooks/useLocale';
-import { useRpcStore } from '@/hooks/useRpcStore';
 // import { runWorker } from '@/libs/common';
 // import { runWorker2 } from '@/libs/common';
 // import CheckTable from '@/components/check-table';
@@ -57,7 +56,7 @@ export const ConfirmInput = ({
   const [isDataReady, setDataReady] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const workerService = useRef<WorkerService | null>(null);
-  const { activeRpc } = useRpcStore();
+
   const editorRef = useContext(EditorRefContext);
 
   const queryClient = useQueryClient();
@@ -118,12 +117,7 @@ export const ConfirmInput = ({
 
       // validate
       const valiteRes = await firstValueFrom(
-        workerService.current.request(
-          'validate',
-          numberFormats[locale],
-          // biome-ignore lint/style/noNonNullAssertion: reason
-          activeRpc[chainId!],
-        ),
+        workerService.current.request('validate', numberFormats[locale]),
       );
       console.log('Validate:', valiteRes);
     }
