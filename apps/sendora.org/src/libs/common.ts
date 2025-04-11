@@ -594,13 +594,8 @@ export function flattenArray<T>(chunks: T[][]): T[] {
   return chunks.reduce((acc, curr) => acc.concat(curr), []);
 }
 
-export const getGasPrice = async (chainId: number) => {
-  const network = findNetwork('chainId', chainId.toString()) ?? networks[0];
-
-  const publicClient = createPublicClient({
-    chain: composeViemChain(network),
-    transport: network ? http(network.rpcURL) : http(),
-  });
+export const getGasPrice = async (chainId: number, rpcUrl = '') => {
+  const publicClient = createPublicClientWithRpc(chainId, rpcUrl);
 
   const { gasPrice } = await publicClient.estimateFeesPerGas({
     type: 'legacy', // network.isEIP1559Supported ? 'eip1559' : 'legacy'
@@ -609,7 +604,11 @@ export const getGasPrice = async (chainId: number) => {
   return gasPrice ?? 0n;
 };
 
-export const queryAddressFromENS = async (ensType: string, names: string[]) => {
+export const queryAddressFromENS = async (
+  ensType: string,
+  names: string[],
+  rpcUrl = '',
+) => {
   if (names.length === 0) {
     return [];
   }
@@ -631,35 +630,36 @@ export const queryAddressFromENS = async (ensType: string, names: string[]) => {
   type Ivalue = {
     register: Hex;
     network: Chain;
+    chainId: number;
   };
   const registerMap: Record<string, Ivalue> = {
     '.bnb': {
       register: '0x08CEd32a7f3eeC915Ba84415e9C07a7286977956',
       network: bsc,
+      chainId: 56,
     },
     '.base.eth': {
       register: '0xb94704422c2a1e396835a571837aa5ae53285a95',
       network: base,
+      chainId: 8453,
     },
     '.eth': {
       register: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
       network: mainnet,
+      chainId: 1,
     },
     '.arb': {
       register: '0x4a067EE58e73ac5E4a43722E008DFdf65B2bF348',
       network: arbitrum,
+      chainId: 42161,
     },
   };
 
-  const network =
-    findNetwork('chainId', registerMap[ensType].network.id.toString(10)) ??
-    null;
+  const publicClient = createPublicClientWithRpc(
+    registerMap[ensType].chainId,
+    rpcUrl,
+  );
 
-  const publicClient = createPublicClient({
-    chain: registerMap[ensType].network,
-
-    transport: network ? http(network.rpcURL) : http(),
-  });
   const queryName = (name: string) => {
     const readContractParameters = {
       address: ENSQuery,
@@ -682,12 +682,8 @@ export const queryAddressFromENS = async (ensType: string, names: string[]) => {
   }));
 };
 
-export const queryNameFromENS = async (addresses: Hex[]) => {
-  const publicClient = createPublicClient({
-    chain: mainnet,
-    transport: http(),
-  });
-
+export const queryNameFromENS = async (addresses: Hex[], rpcUrl = '') => {
+  const publicClient = createPublicClientWithRpc(1, rpcUrl);
   const universalResolverAddress = '0x74E20Bd2A1fE0cdbe45b9A1d89cb7e0a45b36376';
 
   const universalResolverReverseAbi = [
@@ -773,3 +769,60 @@ export function formatWei(wei: string | number): string {
 
   return `${weiNum} wei`;
 }
+
+export type RpcCheckResult = {
+  isMatch: boolean;
+  responseTimeMs: number;
+  error?: string;
+};
+
+// biome-ignore  lint/suspicious/noExplicitAny: reason
+export function getErrorMessage(error?: any): string {
+  if (error) {
+    return error.message || 'Unknown error';
+  }
+  return '';
+}
+
+export const checkRpcUrl = async (chainId: number, rpcUrl: string) => {
+  const startTime = performance.now();
+  try {
+    const network = findNetwork('chainId', chainId.toString()) ?? networks[0];
+
+    const publicClient = createPublicClient({
+      chain: composeViemChain(network),
+      transport: http(rpcUrl),
+    });
+
+    const returnedChainId = await publicClient.getChainId();
+    const endTime = performance.now();
+    const responseTime = endTime - startTime;
+    return {
+      isMatch: returnedChainId === chainId,
+      responseTimeMs: Math.round(responseTime),
+    };
+  } catch (error) {
+    const endTime = performance.now();
+    const responseTime = endTime - startTime;
+
+    return {
+      isMatch: false,
+      responseTimeMs: Math.round(responseTime),
+      error: getErrorMessage(error),
+    };
+  }
+};
+
+export const createPublicClientWithRpc = (chainId: number, rpcUrl: string) => {
+  const network = findNetwork('chainId', chainId.toString()) ?? networks[0];
+  let activeUrl = network.rpcURL;
+
+  if (rpcUrl !== '') {
+    activeUrl = rpcUrl;
+  }
+  const publicClient = createPublicClient({
+    chain: composeViemChain(network),
+    transport: http(activeUrl),
+  });
+  return publicClient;
+};

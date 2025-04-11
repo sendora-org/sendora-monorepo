@@ -6,6 +6,7 @@ import { findNetwork, networks } from '@/constants/config';
 import { EditorRefContext } from '@/constants/contexts';
 import useAuthStore from '@/hooks/useAuth';
 import { useLocale } from '@/hooks/useLocale';
+import { useRpcStore } from '@/hooks/useRpcStore';
 import { delay, getGasPrice } from '@/libs/common';
 import type { WorkerService } from '@/libs/worker-service';
 import { Button, Divider, Image } from '@heroui/react';
@@ -24,7 +25,6 @@ import { ReceiptCost } from './receipt-cost';
 import { ReceiptOverview } from './receipt-overview';
 import ShowTable from './show-table';
 import TypewriterTips from './typewriteer-tips';
-
 export const ConfirmReceipt = ({
   workerService,
 
@@ -57,7 +57,7 @@ export const ConfirmReceipt = ({
 
   const [isError, setError] = useState(false);
   const editorRef = useContext(EditorRefContext);
-
+  const { activeRpc } = useRpcStore();
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -222,7 +222,7 @@ export const ConfirmReceipt = ({
               const result = await testCRUD();
 
               // biome-ignore lint/style/noNonNullAssertion: reason
-              const gasPrice = await getGasPrice(chainId!);
+              const gasPrice = await getGasPrice(chainId!, activeRpc[chainId!]);
 
               if (result) {
                 // @ts-ignore
