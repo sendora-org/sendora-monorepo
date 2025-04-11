@@ -32,7 +32,7 @@ export class WorkerService {
     this.worker.onerror = (error) => console.error('Worker Error:', error);
   }
   // biome-ignore  lint/suspicious/noExplicitAny: reason
-  request<T>(type: string, payload?: any): Observable<T> {
+  request<T>(type: string, payload?: any, rpcUrl?: string): Observable<T> {
     return new Observable<T>((subscriber) => {
       const id = ++this.requestId;
 
@@ -44,7 +44,7 @@ export class WorkerService {
         reject: (error) => subscriber.error(error),
       });
 
-      this.worker.postMessage({ id, type, payload });
+      this.worker.postMessage({ id, type, payload, rpcUrl });
 
       return () => this.pendingRequests.delete(id);
     });

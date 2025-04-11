@@ -1,5 +1,6 @@
 import { findNetwork, networks } from '@/constants/config';
 import { getVisitorId } from '@/libs/common';
+import { createPublicClientWithRpc } from '@/libs/common';
 import { composeViemChain } from '@/libs/wagmi';
 import { Siwe } from 'ox';
 import type { Hex } from 'viem';
@@ -92,12 +93,7 @@ const useAuthStore = create<AuthState>((set) => ({
           const { address, message, signature } = JSON.parse(result ?? '');
           const { chainId } = Siwe.parseMessage(message);
 
-          const network =
-            findNetwork('chainId', String(chainId)) ?? networks[0];
-          const publicClient = createPublicClient({
-            chain: composeViemChain(network),
-            transport: http(),
-          });
+          const publicClient = createPublicClientWithRpc(chainId ?? 1, '');
 
           const valid = await publicClient.verifyMessage({
             address: address,
