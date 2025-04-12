@@ -37,6 +37,10 @@ body:is(.dark *) {
   height: 100%;
 }
 
+.ͼ1.cm-editor {
+  outline: none;
+}
+
 table {
   width: 100%;
 }

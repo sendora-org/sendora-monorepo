@@ -8,8 +8,10 @@ import {
   RainbowKitAuthenticationProvider,
   RainbowKitProvider,
   darkTheme,
+  lightTheme,
 } from '@rainbow-me/rainbowkit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useTheme } from 'next-themes';
 import type React from 'react';
 import { useEffect } from 'react';
 import type { Config } from 'wagmi';
@@ -23,7 +25,7 @@ export const SIWEProvider = ({
   chain,
 }: { children: React.ReactNode; chain: Chain }) => {
   const { status, loginAddress, logout } = useAuthStore();
-
+  const { theme } = useTheme();
   return (
     <WagmiProvider config={getConfig(chain, 'SIWE')}>
       <QueryClientProvider client={queryClient}>
@@ -33,7 +35,11 @@ export const SIWEProvider = ({
           status={status}
         >
           <RainbowKitProvider
-            theme={darkTheme({ accentColor: '#7b3fe4' })}
+            theme={
+              theme === 'dark'
+                ? darkTheme({ accentColor: '#7b3fe4' })
+                : lightTheme()
+            }
             modalSize="compact"
           >
             <Wrapper>{children}</Wrapper>

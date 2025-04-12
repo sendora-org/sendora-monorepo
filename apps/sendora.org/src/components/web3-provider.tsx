@@ -1,7 +1,12 @@
 'use client';
 import '@rainbow-me/rainbowkit/styles.css';
-import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+import {
+  RainbowKitProvider,
+  darkTheme,
+  lightTheme,
+} from '@rainbow-me/rainbowkit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useTheme } from 'next-themes';
 import type React from 'react';
 import type { Config } from 'wagmi';
 import { WagmiProvider } from 'wagmi';
@@ -20,11 +25,18 @@ export const Web3Provider = ({
   children,
   config,
 }: { children: React.ReactNode; config: Config }) => {
+  const { theme } = useTheme();
+
+  console.log({ theme });
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
-          theme={darkTheme({ accentColor: '#7b3fe4' })}
+          theme={
+            theme === 'dark'
+              ? darkTheme({ accentColor: '#7b3fe4' })
+              : lightTheme()
+          }
           modalSize="compact"
         >
           {children}

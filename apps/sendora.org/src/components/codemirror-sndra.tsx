@@ -1,11 +1,13 @@
 'use client';
 
 import { vscodeDark } from '@/libs/vscodeDark';
+import { vscodeLight } from '@/libs/vscodeLight';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { search, searchKeymap } from '@codemirror/search';
 import { highlightActiveLine, keymap, lineNumbers } from '@codemirror/view';
 import { useFullscreen } from '@mantine/hooks';
 import { EditorView } from 'codemirror';
+import { useTheme } from 'next-themes';
 import React, {
   useEffect,
   forwardRef,
@@ -28,7 +30,7 @@ const SNDRACodemirror = forwardRef(
     const editorRef = useRef<HTMLDivElement | null>(null);
     const editorViewRef = useRef<EditorView | null>(null);
     const { fullscreen } = useFullscreen();
-
+    const { theme, setTheme } = useTheme();
     useEffect(() => {
       if (fullscreen) {
         // @ts-ignore
@@ -45,7 +47,7 @@ const SNDRACodemirror = forwardRef(
           history(),
           search(),
           keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
-          vscodeDark,
+          theme === 'dark' ? vscodeDark : vscodeLight,
           EditorView.updateListener.of((update) => {
             if (update.docChanged) {
               onDocChange?.();
@@ -60,7 +62,7 @@ const SNDRACodemirror = forwardRef(
       return () => {
         view.destroy();
       };
-    }, [onDocChange, defaultValue]);
+    }, [onDocChange, defaultValue, theme]);
 
     useImperativeHandle(ref, () => ({
       getValue: () => {
@@ -88,6 +90,7 @@ const SNDRACodemirror = forwardRef(
     return (
       <div
         ref={editorRef}
+        className={theme === 'light' ? 'border border-1 rounded-lg' : ''}
         style={{
           width: '100%',
           height: fullscreen ? '100vh' : '400px',
