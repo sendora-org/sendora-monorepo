@@ -63,7 +63,9 @@ const Navbar = ({ uri = 'home', classNames = {}, ...props }) => {
               <NavbarItem key={`${item.uri}`}>
                 <Link
                   className={
-                    uri === item.uri ? 'text-default-600 ' : 'text-default-500 '
+                    uri === item.uri
+                      ? 'text-default-600 font-bold'
+                      : 'text-default-600 '
                   }
                   href={item.url}
                 >

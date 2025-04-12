@@ -38,12 +38,12 @@ export const ReceiptOverview = ({
       </H4Title>
 
       <div className="flex justify-between items-center min-h-[28px]">
-        <dt className="text-small text-default-300">Network</dt>
+        <dt className="text-small text-default-400">Network</dt>
         <dd className="text-small font-semibold text-default-500">{network}</dd>
       </div>
 
       <div className="flex justify-between items-center min-h-[28px]">
-        <dt className="text-small text-default-300">Token</dt>
+        <dt className="text-small text-default-400">Token</dt>
         <dd className="text-small font-semibold text-default-500">
           {tokenSymbol}
         </dd>
@@ -51,7 +51,7 @@ export const ReceiptOverview = ({
 
       {isTogglePricingCurrency && (
         <div className="flex justify-between items-center min-h-[28px]">
-          <dt className="text-small text-default-300">Pricing Currency</dt>
+          <dt className="text-small text-default-400">Pricing Currency</dt>
           <dd className="text-small font-semibold text-default-500">
             {pricingCurrency}
           </dd>
@@ -60,7 +60,7 @@ export const ReceiptOverview = ({
 
       {isTogglePricingCurrency && (
         <div className="flex justify-between items-center min-h-[28px]">
-          <dt className="text-small text-default-300">Rate</dt>
+          <dt className="text-small text-default-400">Rate</dt>
           <dd className="text-small font-semibold text-default-500">
             1 {gasTokenSymbol} ={' '}
             {formatBigIntNumber(
@@ -75,7 +75,7 @@ export const ReceiptOverview = ({
 
       {isTogglePricingCurrency && (
         <div className="flex justify-between items-center min-h-[28px]">
-          <dt className="text-small text-default-300">
+          <dt className="text-small text-default-400">
             Total amount in {pricingCurrency}
           </dt>
           <dd className="text-small font-semibold text-default-500">
@@ -91,7 +91,7 @@ export const ReceiptOverview = ({
 
       {isTogglePricingCurrency && (
         <div className="flex justify-between items-center min-h-[28px]">
-          <dt className="text-small text-default-300">
+          <dt className="text-small text-default-400">
             {tokenSymbol} Amount to Send
           </dt>
           <dd className="text-small font-semibold text-default-500">
@@ -108,7 +108,7 @@ export const ReceiptOverview = ({
 
       {!isTogglePricingCurrency && (
         <div className="flex justify-between items-center min-h-[28px]">
-          <dt className="text-small text-default-300">
+          <dt className="text-small text-default-400">
             {tokenSymbol} Amount to Send
           </dt>
           <dd className="text-small font-semibold text-default-500">
@@ -123,7 +123,7 @@ export const ReceiptOverview = ({
       )}
 
       <div className="flex justify-between items-center min-h-[28px]">
-        <dt className="text-small text-default-300 flex items-center">
+        <dt className="text-small text-default-400 flex items-center">
           Recipients{' '}
           <TooltipQuestion iconClassName="h-[16px] w-[16px]">
             <p className=" w-max-[250px]">
@@ -142,7 +142,7 @@ export const ReceiptOverview = ({
       </div>
 
       <div className="flex justify-between items-center min-h-[28px] items-center">
-        <dt className="text-small text-default-300 flex items-center ">
+        <dt className="text-small text-default-400 flex items-center ">
           Transactions{' '}
           <TooltipQuestion iconClassName="h-[16px] w-[16px]">
             <p className=" w-max-[250px]">

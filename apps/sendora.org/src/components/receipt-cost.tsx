@@ -58,20 +58,20 @@ export const ReceiptCost = ({
       </H4Title>
 
       <div className="flex justify-between min-h-[28px] items-center">
-        <dt className="text-small text-default-300">Estimated time</dt>
+        <dt className="text-small text-default-400">Estimated time</dt>
         <dd className="text-small font-semibold text-default-500">
           {humanizeDuration(Number(estimatedMilliseconds), { language: hdLng })}
         </dd>
       </div>
       <div className="flex justify-between min-h-[28px] items-center">
-        <dt className="text-small text-default-300">Gas Price</dt>
+        <dt className="text-small text-default-400">Gas Price</dt>
         <dd className="text-small font-semibold text-default-500">
           {formatWei(gasPrice.toString())}
         </dd>
       </div>
 
       <div className="flex justify-between min-h-[28px] items-center">
-        <dt className="text-small text-default-300">Gas Limit/Tx</dt>
+        <dt className="text-small text-default-400">Gas Limit/Tx</dt>
         <dd className="text-small font-semibold text-default-500">
           {formatBigIntNumber(
             gasLimit * BigInt(10 ** 18),
@@ -82,7 +82,7 @@ export const ReceiptCost = ({
       </div>
 
       <div className="flex justify-between min-h-[28px] items-center">
-        <dt className="text-small text-default-300 flex items-center">
+        <dt className="text-small text-default-400 flex items-center">
           Network Fee/Tx{' '}
           <TooltipQuestion iconClassName="h-[14px] w-[14px]">
             <p className=" w-max-[250px]">
@@ -99,7 +99,7 @@ export const ReceiptCost = ({
       </div>
 
       <div className="flex justify-between min-h-[28px] items-center">
-        <dt className="text-small text-default-300 flex items-center">
+        <dt className="text-small text-default-400 flex items-center">
           Tool Fee/Tx{' '}
           <TooltipQuestion iconClassName="h-[14px] w-[14px]">
             <p className=" w-max-[250px]">
@@ -130,7 +130,7 @@ export const ReceiptCost = ({
       </div>
 
       <div className="flex justify-between min-h-[28px] items-center">
-        <dt className="text-small text-default-300 flex items-center">
+        <dt className="text-small text-default-400 flex items-center">
           Total Fee{' '}
           <TooltipQuestion iconClassName="h-[14px] w-[14px]">
             <p className=" w-max-[250px]">
@@ -150,7 +150,7 @@ export const ReceiptCost = ({
       {!isValidSubscription && <SubscribePrompt />}
 
       <div className="flex justify-between min-h-[28px] items-center">
-        <dt className="text-small text-default-300 flex items-center">
+        <dt className="text-small text-default-400 flex items-center">
           {gasTokenSymbol} Balance Reduction
           <TooltipQuestion iconClassName="h-[14px] w-[14px]">
             <p className=" w-max-[250px]">

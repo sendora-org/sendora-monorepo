@@ -1,10 +1,9 @@
 'use client';
 import AppScreenshotSkewed from '@/components/app-screenshot-skewed';
-import Footer from '@/components/footer';
 import LayoutDefault from '@/components/layout-default';
-import Navbar from '@/components/navbar';
-import { SIWEProvider } from '@/components/siwe-provider';
+import Typewriter from '@/components/typewriter';
 import { Button } from '@heroui/react';
+import { Icon } from '@iconify/react';
 import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 export default function Home() {
@@ -42,7 +41,6 @@ export default function Home() {
                 kick: { width: 'auto' },
               }}
             >
-              {/* mode="wait" */}
               <AnimatePresence>
                 <m.div
                   key={1}
@@ -56,7 +54,7 @@ export default function Home() {
                     type: 'spring',
                   }}
                 >
-                  <div className="bg-hero-section-title bg-clip-text text-transparent dark:from-[#FFFFFF] dark:to-[#FFFFFF66]">
+                  <div className="bg-hero-section-title bg-clip-text dark:text-transparent dark:from-[#FFFFFF] dark:to-[#FFFFFF66]">
                     Send tokens to multiple <br />
                     recipients
                   </div>
@@ -74,9 +72,12 @@ export default function Home() {
                     type: 'spring',
                   }}
                 >
-                  {/* Sendora helps you send and track on-chain assets, securely
-                  store digital files forever, create airdrops, and seamlessly
-                  interact with on-chain programs. */}
+                  <Typewriter
+                    tips={[
+                      `Sendora helps you send and track on-chain assets, and seamlessly
+                  interact with on-chain programs.`,
+                    ]}
+                  />
                 </m.div>
 
                 <m.div
@@ -118,18 +119,11 @@ export default function Home() {
                 type: 'spring',
               }}
             >
-              <AppScreenshotSkewed className="w-full" />
+              <AppScreenshotSkewed className="w-[95%] " />
             </m.div>
           </AnimatePresence>
         </LazyMotion>
       </>
     </LayoutDefault>
-    // <div className="relative flex h-screen min-h-dvh w-full flex-col overflow bg-background">
-    //   <Navbar />
-
-    //   <div className="mt-[450px] md:mt-[650px]">
-    //     <Footer />
-    //   </div>
-    // </div>
   );
 }

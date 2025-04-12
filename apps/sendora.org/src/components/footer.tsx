@@ -78,7 +78,7 @@ export default function Component() {
         <ul className="mt-6 space-y-4">
           {items.map((item) => (
             <li key={item.name}>
-              <Link className="text-default-400" href={item.href} size="sm">
+              <Link className="text-default-500" href={item.href} size="sm">
                 {item.name}
               </Link>
             </li>
@@ -103,15 +103,15 @@ export default function Component() {
               </span>
             </div>
 
-            <p className="text-small text-default-500">
-              🚀 Building the best tool for Web3!
+            <p className="text-small text-default-600">
+              🚀 Building the best tool for Web3!❤️
             </p>
             <div className="flex space-x-6">
               {footerNavigation.social.map((item) => (
                 <Link
                   key={item.name}
                   isExternal
-                  className="text-default-400"
+                  className="text-default-600"
                   href={item.href}
                 >
                   <span className="sr-only">{item.name}</span>

@@ -12,9 +12,12 @@ import {
   DropdownTrigger,
   User,
 } from '@heroui/react';
+import { useTheme } from 'next-themes';
 import type { Hex } from 'viem';
 import { type Chain, base } from 'wagmi/chains';
 import ETHBalance from './eth-balance';
+import ThemeSwitch from './theme-switch';
+
 // export const PlusIcon = (props) => {
 //   return (
 //     <svg
@@ -65,8 +68,9 @@ export default function LoginProfile({
   chainId?: number;
 }) {
   const { logout } = useAuthStore.getState();
+  const { theme, setTheme } = useTheme();
 
-  console.log({ ensName });
+  console.log({ ensName, theme });
   const chain = findNetwork('chainId', (chainId ?? 1).toString());
   return (
     <Dropdown
@@ -140,27 +144,31 @@ export default function LoginProfile({
           {/* <DropdownItem key="settings">Settings</DropdownItem> */}
         </DropdownSection>
 
-        {/* <DropdownSection showDivider aria-label="Preferences"> */}
-
-        {/* <DropdownItem
-                        key="theme"
-                        isReadOnly
-                        className="cursor-default"
-                        endContent={
-                            <select
-                                className="z-10 outline-none w-16 py-0.5 rounded-md text-tiny group-data-[hover=true]:border-default-500 border-small border-default-300 dark:border-default-200 bg-transparent text-default-500"
-                                id="theme"
-                                name="theme"
-                            >
-                                <option>System</option>
-                                <option>Dark</option>
-                                <option>Light</option>
-                            </select>
-                        }
-                    >
-                        Theme
-                    </DropdownItem> */}
-        {/* </DropdownSection> */}
+        <DropdownSection showDivider aria-label="Preferences">
+          <DropdownItem
+            key="theme"
+            isReadOnly
+            className="cursor-default"
+            endContent={
+              <ThemeSwitch />
+              // <select
+              //   onChange={(e) => {
+              //     console.log(e.target.value)
+              //     setTheme(e.target.value)
+              //   }}
+              //   className="z-10 outline-none w-16 py-0.5 rounded-md text-tiny group-data-[hover=true]:border-default-500 border-small border-default-300 dark:border-default-200 bg-transparent text-default-500"
+              //   id="theme"
+              //   name="theme"
+              //   defaultValue={theme}
+              // >
+              //   <option value="dark">Dark</option>
+              //   <option value="light">Light</option>
+              // </select>
+            }
+          >
+            Theme
+          </DropdownItem>
+        </DropdownSection>
 
         <DropdownSection aria-label="Help & Feedback">
           <DropdownItem
