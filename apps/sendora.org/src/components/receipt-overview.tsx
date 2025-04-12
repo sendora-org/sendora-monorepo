@@ -32,7 +32,7 @@ export const ReceiptOverview = ({
   const { decimalSeparator, thousandSeparator } = numberFormats[locale];
 
   return (
-    <dl className="flex flex-col gap-2 py-4 w-full md:w-[400px] xl:w-[500px]">
+    <dl className="flex flex-col gap-2 py-4 w-full md:w-[400px] ">
       <H4Title>
         <span className="font-bold">Overview</span>
       </H4Title>

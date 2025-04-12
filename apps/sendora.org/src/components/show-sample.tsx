@@ -12,10 +12,13 @@ import { CopyText } from '@/components/copy-text';
 import { EditorRefContext } from '@/constants/contexts';
 import { vscodeDark } from '@/libs/vscodeDark';
 import { Tab, Tabs } from '@heroui/react';
+import { useTheme } from 'next-themes';
 import { useContext, useEffect } from 'react';
 
+import { vscodeLight } from '@/libs/vscodeLight';
 export default function App({ example = '' }: { example: string }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { theme } = useTheme();
 
   const editorRef = useContext(EditorRefContext);
 
@@ -46,7 +49,7 @@ export default function App({ example = '' }: { example: string }) {
                   value={example}
                   height="200px"
                   //   extensions={[javascript({ jsx: true })]}
-                  theme={vscodeDark}
+                  theme={theme === 'dark' ? vscodeDark : vscodeLight}
                   readOnly={true}
                 />
 

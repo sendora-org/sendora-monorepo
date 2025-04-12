@@ -52,7 +52,7 @@ export const ReceiptCost = ({
   const network = findNetwork('chainId', chainId.toString(10)) ?? null;
 
   return (
-    <dl className="flex flex-col gap-2 py-4 w-full md:w-[400px] xl:w-[500px]">
+    <dl className="flex flex-col gap-2 py-4 w-full md:w-[400px]  ">
       <H4Title>
         <span className="font-bold">Transaction Cost </span>
       </H4Title>
