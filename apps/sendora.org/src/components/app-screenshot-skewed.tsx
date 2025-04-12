@@ -1,13 +1,16 @@
 import type { ComponentProps } from 'react';
+import { useTheme } from 'next-themes';
 
-const AppScreenshotSkewed = ({ ...props }: ComponentProps<'svg'>) => (
-  <svg
+const AppScreenshotSkewed = ({ ...props }: ComponentProps<'svg'>) => {
+
+  const { theme } = useTheme()
+  return <svg
     role="img"
     aria-label="@sendora"
     fill="none"
     height="737"
-    viewBox="0 0 1280 737"
-    width="1280"
+    viewBox="0 0 1024 737"
+    width="1024"
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
     {...props}
@@ -481,10 +484,10 @@ const AppScreenshotSkewed = ({ ...props }: ComponentProps<'svg'>) => (
         height="2500"
         width="3978"
         id="image0_3051_12573"
-        xlinkHref="/ads/wrapperads3.png"
+        xlinkHref={theme === 'dark' ? '/ads/ads4-dark.png' : '/ads/ads4-light.png'}
       />
     </defs>
   </svg>
-);
+}
 
 export default AppScreenshotSkewed;

@@ -90,7 +90,7 @@ export default function Component() {
   );
 
   return (
-    <footer className="flex w-full flex-col container mx-auto    max-w-[1280px] ">
+    <footer className="flex w-full flex-col container mx-auto    max-w-[1024px] ">
       <div className="max-w-7xl px-2 pb-8 pt-16 sm:pt-32 lg:px-6 lg:pt-48">
         <div className="xl:grid xl:grid-cols-2 xl:gap-8">
           <div className="space-y-8 md:pr-8">
