@@ -25,7 +25,7 @@ export default function SelectNetworks({
     return network.isTestnet;
   });
   return (
-    <div className="flex items-center flex-1 justify-end gap-2">
+    <div className="flex items-center flex-1 sm:justify-end justify-between gap-2">
       <Select
         disallowEmptySelection
         aria-label="Select networks"
