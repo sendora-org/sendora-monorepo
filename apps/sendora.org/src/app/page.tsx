@@ -122,7 +122,7 @@ export default function Home() {
                 filter: 'blur(0px)',
               }}
               style={{ originX: 0.5, originY: 0.5 }}
-              className="px-12 mt-[100px]"
+              className="px-1 sm:px-12 mt-[100px]"
               initial={{ filter: 'blur(16px)', opacity: 0 }}
               transition={{
                 bounce: 0,
