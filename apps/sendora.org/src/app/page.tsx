@@ -143,8 +143,8 @@ export default function Home() {
                   aria-label="@sendora"
                   src={
                     theme === 'light'
-                      ? '/ads/ads4-light.png'
-                      : '/ads/ads4-dark.png'
+                      ? '/ads/ads5-light.png'
+                      : '/ads/ads5-dark.png'
                   }
                 />
               </div>
