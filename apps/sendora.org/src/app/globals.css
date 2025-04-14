@@ -44,3 +44,73 @@ body:is(.dark *) {
 table {
   width: 100%;
 }
+
+.browser-window {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  border: 1px solid #ccc;
+  transition: all 0.3s ease;
+}
+
+.browser-bar {
+  height: 36px;
+  background: #f2f2f2;
+  border-bottom: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  position: relative;
+}
+
+.circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+  margin-right: 6px;
+  display: inline-block;
+}
+.red {
+  background: #ff5f57;
+}
+.yellow {
+  background: #ffbd2e;
+}
+.green {
+  background: #28c840;
+}
+
+.address-bar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #e0e0e0;
+  padding: 3px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #555;
+}
+
+.browser-content {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.dark .browser-window {
+  background: #1e1e1e;
+  border-color: #3a3a3a;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+}
+
+.dark .browser-bar {
+  background: #2a2a2a;
+  border-bottom: 1px solid #444;
+}
+
+.dark .address-bar {
+  background: #444;
+  color: #ccc;
+}

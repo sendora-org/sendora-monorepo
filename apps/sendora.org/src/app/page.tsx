@@ -5,9 +5,14 @@ import Typewriter from '@/components/typewriter';
 import { Button } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useTheme } from 'next-themes';
+
 import { useRouter } from 'next/navigation';
 export default function Home() {
   const router = useRouter();
+
+  const { theme } = useTheme();
   return (
     <LayoutDefault footClasess="mt-[350px] md:mt-[650px]">
       <>
@@ -108,9 +113,50 @@ export default function Home() {
         </section>
         <LazyMotion features={domAnimation}>
           <AnimatePresence mode="wait">
+            <motion.div
+              animate={{
+                rotate: -15,
+                scale: 0.75,
+                skewX: 18,
+                opacity: 1,
+                filter: 'blur(0px)',
+              }}
+              style={{ originX: 0.5, originY: 0.5 }}
+              className="px-12"
+              initial={{ filter: 'blur(16px)', opacity: 0 }}
+              transition={{
+                bounce: 0,
+                delay: 0.01 * 10,
+                duration: 0.8 + 0.1 * 8,
+                type: 'spring',
+              }}
+            >
+              <div className="browser-window  ">
+                <div className="browser-bar">
+                  <span className="circle red" />
+                  <span className="circle yellow" />
+                  <span className="circle green" />
+                  <div className="address-bar">https://sendora.org</div>
+                </div>
+
+                <img
+                  aria-label="@sendora"
+                  src={
+                    theme === 'light'
+                      ? '/ads/ads4-light.png'
+                      : '/ads/ads4-dark.png'
+                  }
+                />
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </LazyMotion>
+
+        {/* <LazyMotion features={domAnimation}>
+          <AnimatePresence mode="wait">
             <m.div
               animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
-              className="absolute top-[20%] sm:top-[40%]"
+              className="absolute top-[50%] sm:top-[80%]"
               initial={{ filter: 'blur(16px)', opacity: 0, y: 300 }}
               transition={{
                 bounce: 0,
@@ -122,7 +168,7 @@ export default function Home() {
               <AppScreenshotSkewed className="w-[95%] " />
             </m.div>
           </AnimatePresence>
-        </LazyMotion>
+        </LazyMotion> */}
       </>
     </LayoutDefault>
   );
