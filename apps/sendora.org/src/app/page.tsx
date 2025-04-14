@@ -14,10 +14,10 @@ export default function Home() {
 
   const { theme } = useTheme();
   return (
-    <LayoutDefault footClasess="mt-[350px] md:mt-[650px]">
+    <LayoutDefault footClasess="mt-[100px] md:mt-[150px]">
       <>
         <section className="z-20 flex flex-col items-start justify-center gap-[18px] sm:gap-6">
-          {/* <Button
+          <Button
             className="h-9 overflow-hidden border-1 border-default-100 bg-default-50 px-[18px] py-2 text-small font-normal leading-5 text-default-500"
             endContent={
               <Icon
@@ -30,7 +30,7 @@ export default function Home() {
             variant="bordered"
           >
             New onboarding experience
-          </Button> */}
+          </Button>
           <LazyMotion features={domAnimation}>
             <m.div
               animate="kick"
@@ -122,7 +122,7 @@ export default function Home() {
                 filter: 'blur(0px)',
               }}
               style={{ originX: 0.5, originY: 0.5 }}
-              className="px-12"
+              className="px-12 mt-[100px]"
               initial={{ filter: 'blur(16px)', opacity: 0 }}
               transition={{
                 bounce: 0,
@@ -151,24 +151,6 @@ export default function Home() {
             </motion.div>
           </AnimatePresence>
         </LazyMotion>
-
-        {/* <LazyMotion features={domAnimation}>
-          <AnimatePresence mode="wait">
-            <m.div
-              animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
-              className="absolute top-[50%] sm:top-[80%]"
-              initial={{ filter: 'blur(16px)', opacity: 0, y: 300 }}
-              transition={{
-                bounce: 0,
-                delay: 0.01 * 10,
-                duration: 0.8 + 0.1 * 8,
-                type: 'spring',
-              }}
-            >
-              <AppScreenshotSkewed className="w-[95%] " />
-            </m.div>
-          </AnimatePresence>
-        </LazyMotion> */}
       </>
     </LayoutDefault>
   );
