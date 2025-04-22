@@ -61,7 +61,7 @@ export const SetGasPrice = ({ chain, onValueChange }: Iprops) => {
       minValue={0}
       step={0.1}
       value={value}
-      onChange={setValue}
+      onChange={(v) => setValue(Number(v))}
       endContent={
         <Button
           onPress={() => updateBasePrice(chain.id)}

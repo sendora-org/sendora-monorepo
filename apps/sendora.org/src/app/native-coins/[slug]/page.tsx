@@ -15,11 +15,13 @@ export default async function Page({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const uri = 'native-coins';
   const { slug } = await params;
   const network = findNetwork('chainId', slug) ?? networks[0];
   return (
-    <LayoutDefault uri="native-coins" network={network}>
+    <LayoutDefault uri={uri} network={network}>
       <AppTitle
+        uri={uri}
         title={`Send ${network?.symbol} to multiple recipients`}
         chainId={slug}
       />
