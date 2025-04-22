@@ -1,31 +1,17 @@
 'use client';
 
-import React, { useMemo, useRef } from 'react';
-import type { Chain, Hex } from 'viem';
-
-import { concatHex, getContractAddress, keccak256, toHex } from 'viem';
-
-import { useState } from 'react';
-import { useSendTransaction } from 'wagmi';
-
-import { encodeAbiParameters } from 'viem';
-
-import { Input, Textarea } from '@heroui/react';
-import { NumberInput } from '@heroui/react';
-import { whatsabi } from '@shazow/whatsabi';
-import { useEffect } from 'react';
-
-import { Button } from '@heroui/react';
-
 import ConnectButton from '@/components/connect-button';
+import { CopyText } from '@/components/copy-text-2';
+import H3Title from '@/components/h3-title';
+import { SetGasPrice } from '@/components/set-gas-price';
 import useAuthStore from '@/hooks/useAuth';
-import { CopyText } from '../copy-text-2';
-import H3Title from '../h3-title';
-import { SetGasPrice } from '../set-gas-price';
-
 import { getAbiConstructor } from '@/libs/common';
 import { waitForTransactionReceipt } from '@/libs/common';
-import { useAccount } from 'wagmi';
+import { Button, Input, NumberInput, Textarea } from '@heroui/react';
+import React, { useMemo, useEffect, useState } from 'react';
+import type { Chain, Hex } from 'viem';
+import { concatHex, encodeAbiParameters } from 'viem';
+import { useAccount, useSendTransaction } from 'wagmi';
 
 type Iprops = {
   network: Chain;
