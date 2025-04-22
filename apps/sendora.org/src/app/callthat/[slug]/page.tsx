@@ -1,6 +1,7 @@
 import H1Title from '@/components/h1-title';
 import LayoutDefault from '@/components/layout-default';
 import WebWorkerDemo1 from '@/components/web-worker-demo1';
+import { type NetworkInfo, findNetwork, networks } from '@/constants/config';
 import {
   formatLocalizedNumberWithSmallNumbers,
   formatSmallNumber,
@@ -18,9 +19,9 @@ export default async function Page({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-
+  const network = findNetwork('chainId', slug) ?? networks[0];
   return (
-    <LayoutDefault uri="callthat">
+    <LayoutDefault uri="callthat" network={network}>
       <H1Title>Coming soon</H1Title>
     </LayoutDefault>
   );

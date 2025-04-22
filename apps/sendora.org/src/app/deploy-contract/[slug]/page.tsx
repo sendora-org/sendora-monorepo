@@ -1,9 +1,11 @@
 import AppTitle from '@/components/app-title';
+import { App } from '@/components/deploy-contract/app';
 import LayoutDefault from '@/components/layout-default';
-import { App } from '@/components/native-coins/app';
 import { type NetworkInfo, findNetwork, networks } from '@/constants/config';
+import { useRpcStore } from '@/hooks/useRpcStore';
+import { getActiveRpc } from '@/libs/common';
 import { composeViemChain } from '@/libs/wagmi';
-
+import { useEffect } from 'react';
 export async function generateStaticParams() {
   return networks.map((network: NetworkInfo) => ({
     slug: network.chainId,
@@ -15,12 +17,20 @@ export default async function Page({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const uri = 'deploy-contract';
   const { slug } = await params;
+
   const network = findNetwork('chainId', slug) ?? networks[0];
+
   return (
-    <LayoutDefault uri="native-coins" network={network}>
+    <LayoutDefault
+      uri={uri}
+      network={network}
+      chain={composeViemChain(network)}
+    >
       <AppTitle
-        title={`Send ${network?.symbol} to multiple recipients`}
+        uri={uri}
+        title={`Deploy contract on ${network?.name}`}
         chainId={slug}
       />
       <App network={composeViemChain(network)} />

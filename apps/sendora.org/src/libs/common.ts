@@ -16,6 +16,9 @@ import { useRpcStorePersistName } from '@/hooks/useRpcStore';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import { createIndexedDBStorage } from './indexedDBStorage';
 import { composeViemChain } from './wagmi';
+
+import type { AbiConstructor } from 'abitype';
+
 export const getVisitorId = async () => {
   const fpPromise = FingerprintJS.load();
   const fp = await fpPromise;
@@ -597,6 +600,24 @@ export function flattenArray<T>(chunks: T[][]): T[] {
   return chunks.reduce((acc, curr) => acc.concat(curr), []);
 }
 
+export const waitForTransactionReceipt = async (chainId: number, hash: Hex) => {
+  const publicClient = await createPublicClientWithRpc(chainId, '');
+  const transaction = await publicClient.waitForTransactionReceipt({
+    hash: hash,
+  });
+  return transaction;
+};
+
+export const sendRawTransaction = async (
+  chainId: number,
+  signedRawTxn: Hex,
+) => {
+  const publicClient = await createPublicClientWithRpc(chainId, '');
+  const transactionHash = await publicClient.sendRawTransaction({
+    serializedTransaction: signedRawTxn,
+  });
+  return transactionHash;
+};
 export const getGasPrice = async (chainId: number, rpcUrl = '') => {
   const publicClient = await createPublicClientWithRpc(chainId, rpcUrl);
 
@@ -604,6 +625,7 @@ export const getGasPrice = async (chainId: number, rpcUrl = '') => {
     type: 'legacy', // network.isEIP1559Supported ? 'eip1559' : 'legacy'
   });
 
+  console.log({ gasPrice, chainId, rpcUrl });
   return gasPrice ?? 0n;
 };
 
@@ -744,8 +766,12 @@ export function delay(ms: number): Promise<boolean> {
   });
 }
 
-export function formatWei(wei: string | number): string {
-  const weiNum = BigInt(wei);
+function isBigInt(value: unknown): value is bigint {
+  return typeof value === 'bigint';
+}
+
+export function formatWei(wei: string | number | bigint): string {
+  const weiNum = isBigInt(wei) ? wei : BigInt(wei as number);
   if (weiNum < 0 || Number.isNaN(Number(wei))) {
     return 'Invalid input';
   }
@@ -837,4 +863,32 @@ export const createPublicClientWithRpc = async (
     transport: http(activeUrl),
   });
   return publicClient;
+};
+
+export const getActiveRpc = async (chainId: number) => {
+  const network = findNetwork('chainId', chainId.toString()) ?? networks[0];
+  let activeUrl = network.rpcURL;
+
+  const storage = createIndexedDBStorage();
+
+  const result = await storage.getItem(useRpcStorePersistName);
+  console.log({ result });
+
+  if (result?.state?.activeRpc[chainId]) {
+    activeUrl = result?.state?.activeRpc[chainId];
+  }
+
+  return activeUrl;
+};
+
+export const getAbiConstructor = (abis: string): AbiConstructor | null => {
+  try {
+    const JSONABIs = JSON.parse(abis);
+    // biome-ignore  lint/suspicious/noExplicitAny: reason
+    const abi = JSONABIs.find((abi: any) => abi.type === 'constructor');
+    if (!abi) return null;
+    return abi as AbiConstructor;
+  } catch (e) {
+    return null;
+  }
 };
