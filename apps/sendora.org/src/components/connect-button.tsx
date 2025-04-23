@@ -1,8 +1,11 @@
 'use client';
 import useAuthStore from '@/hooks/useAuth';
-import { Button } from '@heroui/react';
+import { Button, Input } from '@heroui/react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-export default () => {
+export default ({
+  showAddr,
+  register,
+}: { showAddr?: boolean; register?: Function }) => {
   const { loginAddress, logout } = useAuthStore();
   return (
     <ConnectButton.Custom>
@@ -67,6 +70,15 @@ export default () => {
                 );
               }
 
+              if (showAddr) {
+                return (
+                  <Input
+                    isReadOnly
+                    value={account?.address}
+                    {...register?.('from')}
+                  />
+                );
+              }
               return <></>;
             })()}
           </div>

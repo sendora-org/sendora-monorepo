@@ -1,3 +1,5 @@
+import AppTitle from '@/components/app-title';
+import { App } from '@/components/callthat/app';
 import H1Title from '@/components/h1-title';
 import LayoutDefault from '@/components/layout-default';
 import WebWorkerDemo1 from '@/components/web-worker-demo1';
@@ -7,6 +9,7 @@ import {
   formatSmallNumber,
   parseLocalizedNumber,
 } from '@/libs/common';
+import { composeViemChain } from '@/libs/wagmi';
 export async function generateStaticParams() {
   return [1, 56].map((chainId) => ({
     slug: chainId.toString(),
@@ -20,9 +23,18 @@ export default async function Page({
 }) {
   const { slug } = await params;
   const network = findNetwork('chainId', slug) ?? networks[0];
+
+  const uri = 'callthat';
   return (
-    <LayoutDefault uri="callthat" network={network}>
-      <H1Title>Coming soon</H1Title>
+    <LayoutDefault uri={uri} network={network}>
+      {/* <H1Title>Coming soon</H1Title> */}
+
+      <AppTitle
+        uri={uri}
+        title={`Call contract on ${network?.name}`}
+        chainId={slug}
+      />
+      <App network={composeViemChain(network)} />
     </LayoutDefault>
   );
 }

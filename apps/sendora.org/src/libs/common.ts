@@ -5,6 +5,7 @@ import {
   createPublicClient,
   decodeFunctionResult,
   encodeFunctionData,
+  isAddress,
   namehash,
   toHex,
 } from 'viem';
@@ -14,10 +15,11 @@ import { normalize, packetToBytes } from 'viem/ens';
 
 import { useRpcStorePersistName } from '@/hooks/useRpcStore';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import { loaders, whatsabi } from '@shazow/whatsabi';
+import type { AbiConstructor } from 'abitype';
+import { ethers } from 'ethers';
 import { createIndexedDBStorage } from './indexedDBStorage';
 import { composeViemChain } from './wagmi';
-
-import type { AbiConstructor } from 'abitype';
 
 export const getVisitorId = async () => {
   const fpPromise = FingerprintJS.load();
@@ -892,3 +894,146 @@ export const getAbiConstructor = (abis: string): AbiConstructor | null => {
     return null;
   }
 };
+
+export const isContract = async (chainId: number, CA: Hex) => {
+  if (!isAddress(CA, { strict: false })) {
+    console.log('bytecode 1.5');
+    return false;
+  }
+
+  const publicClient = await createPublicClientWithRpc(chainId, '');
+  const bytecode = await publicClient.getCode({
+    address: CA,
+  });
+
+  return typeof bytecode !== 'undefined';
+};
+
+export const getContractFunctions = async (
+  chainId: number,
+  CA: Hex,
+  enableABI: boolean,
+  ABI: string,
+) => {
+  if (enableABI) {
+    const functions: ethers.FunctionFragment[] = [];
+    const events: ethers.EventFragment[] = [];
+    let jsonAbi = [];
+    try {
+      jsonAbi = JSON.parse(ABI);
+    } catch (e) {}
+
+    if (functions.length === 0 || jsonAbi.length > 0) {
+      ethers.Interface.from(jsonAbi).forEachFunction((f) => functions.push(f));
+      ethers.Interface.from(jsonAbi).forEachEvent((e) => events.push(e));
+    }
+
+    console.log('from functions ', functions);
+
+    const rrr = splitMutability(functions);
+    console.log('from rrr', rrr);
+
+    return {
+      splitFns: rrr,
+      events,
+    };
+  }
+
+  const publicClient = await createPublicClientWithRpc(chainId, '');
+  const bytecode = await publicClient.getCode({
+    address: CA,
+  });
+
+  const abi = whatsabi.abiFromBytecode(bytecode!);
+
+  console.log('from bytecode', { abi });
+
+  const abiLoaders: Array<loaders.ABILoader> = [
+    new loaders.SourcifyABILoader({ chainId: chainId }),
+    // new loaders.EtherscanABILoader({ apiKey: env.ETHERSCAN_API_KEY }),
+  ];
+
+  if (chainId !== 1) {
+    // Add mainnet just in case
+    abiLoaders.push(new loaders.SourcifyABILoader({ chainId: 1 }));
+  }
+
+  let r;
+  try {
+    r = await whatsabi.autoload(CA, {
+      provider: publicClient,
+
+      abiLoader: new loaders.MultiABILoader(abiLoaders),
+      signatureLookup: loaders.defaultSignatureLookup,
+
+      followProxies: true,
+      onProgress: (progress, ...args: any[]) =>
+        console.log('WhatsABI:', progress, args),
+      // addressResolver: resolver,
+    });
+  } finally {
+    // loading.to = false;
+  }
+
+  console.log({ r });
+
+  console.log('from remote', r.abi);
+  // const signatureLookup = new whatsabi.loaders.OpenChainSignatureLookup();
+
+  const functions: ethers.FunctionFragment[] = [];
+
+  const events: ethers.EventFragment[] = [];
+
+  if (functions.length === 0 || r.abi.length > 0) {
+    ethers.Interface.from(r.abi).forEachFunction((f) => functions.push(f));
+    ethers.Interface.from(r.abi).forEachEvent((e) => events.push(e));
+  }
+
+  console.log('from functions ', functions);
+
+  const rrr = splitMutability(functions);
+  console.log('from rrr', rrr);
+
+  return {
+    splitFns: rrr,
+    events,
+  };
+};
+type FunctionsByStateMutability = Record<
+  'payable' | 'nonpayable' | 'readable' | 'unknown' | 'writable',
+  ethers.FunctionFragment[]
+>;
+
+export function splitMutability(
+  fns: ethers.FunctionFragment[],
+): FunctionsByStateMutability {
+  const r: FunctionsByStateMutability = {
+    payable: [],
+    nonpayable: [],
+    readable: [],
+    unknown: [],
+    writable: [],
+  };
+  if (!fns) return r;
+  for (const f of fns) {
+    if (f.stateMutability === 'payable') {
+      r.payable.push(f);
+      r.writable.push(f);
+    } else if (f.stateMutability === 'nonpayable') {
+      r.nonpayable.push(f);
+      r.writable.push(f);
+    } else if (f.stateMutability) r.readable.push(f);
+    else r.unknown.push(f);
+  }
+  // Detect whatsabi failing to detect
+  if (
+    !r.payable.length &&
+    !r.readable.length &&
+    !r.unknown.length &&
+    r.nonpayable.length
+  ) {
+    r.unknown = r.nonpayable;
+    r.nonpayable = [];
+  }
+  return r;
+}
