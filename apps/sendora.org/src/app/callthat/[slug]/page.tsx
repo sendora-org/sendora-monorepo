@@ -10,9 +10,10 @@ import {
   parseLocalizedNumber,
 } from '@/libs/common';
 import { composeViemChain } from '@/libs/wagmi';
+
 export async function generateStaticParams() {
-  return [1, 56].map((chainId) => ({
-    slug: chainId.toString(),
+  return networks.map((network: NetworkInfo) => ({
+    slug: network.chainId,
   }));
 }
 
