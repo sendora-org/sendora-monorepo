@@ -7,11 +7,19 @@ import { Controller, type SubmitHandler, useForm } from 'react-hook-form';
 import type { Hex } from 'viem';
 
 import type { EventFragment, FunctionFragment, ethers } from 'ethers';
+import { AddressInput } from './args-input/address-input';
+import { ArrayInput } from './args-input/array-input';
+import { BoolInput } from './args-input/bool-input';
+import { ByteInput } from './args-input/byte-input';
+import { IntInput } from './args-input/int-input';
+import { StringInput } from './args-input/string-input';
+import { TupleInput } from './args-input/tuple-input';
+
 type IProps = {
   chainId: number;
   CA: Hex;
   control: any;
-  fnSelector: string;
+  selector: string;
   enableABI: boolean;
   ABI: string;
   fns: IFns;
@@ -21,6 +29,7 @@ type IProps = {
   events: any;
   setEvents: any;
   selected: any;
+  selector: Hex;
 };
 
 type IFns = {
@@ -34,7 +43,7 @@ export const ContractFunctions = ({
   chainId,
   CA,
   control,
-  fnSelector,
+
   enableABI,
   ABI,
   fns,
@@ -44,10 +53,11 @@ export const ContractFunctions = ({
   events,
   setEvents,
   selected,
+  selector,
 }: IProps) => {
   const [loading, setLoading] = useState(true);
 
-  const specificArgs = watch(`args.${fnSelector}`);
+  const specificArgs = watch(`args.${selector}`);
 
   const updateArgAtIndex = (
     index: number,
@@ -56,7 +66,7 @@ export const ContractFunctions = ({
   ) => {
     const newArgs = [...(specificArgs ?? [])];
     newArgs[index] = newValue;
-    setValue(`args.${fnSelector}`, newArgs);
+    setValue(`args.${selector}`, newArgs);
   };
 
   console.log({ chainId, CA });
@@ -77,9 +87,10 @@ export const ContractFunctions = ({
       ...fns.readable,
       ...fns.unknown,
     ];
-    return functions.find((f) => f.selector === fnSelector);
-  }, [fnSelector, fns]);
+    return functions.find((f) => f.selector === selector);
+  }, [selector, fns]);
 
+  console.log({ selectedFragment });
   return (
     <div>
       {loading && (
@@ -103,7 +114,7 @@ export const ContractFunctions = ({
             <>
               <Controller
                 control={control}
-                name="fnSelector"
+                name="selectedAbi"
                 render={({ field }) => (
                   // <Select {...field}>
 
@@ -121,7 +132,7 @@ export const ContractFunctions = ({
                     >
                       {(f) => {
                         return (
-                          <SelectItem key={f.selector}>
+                          <SelectItem key={f.format('full')}>
                             {f.format('full').slice('function '.length)}
                           </SelectItem>
                         );
@@ -178,34 +189,149 @@ export const ContractFunctions = ({
                   selectedFragment.inputs.map(
                     (input: ethers.ParamType, index) => (
                       <Controller
-                        key={`args.${fnSelector}.${index}`}
+                        key={`args.${selector}.${index}`}
                         control={control}
-                        name={`args.${fnSelector}.${index}`}
+                        name={`args.${selector}.${index}`}
                         rules={{ required: 'required' }}
                         render={({
                           field: { onChange, value },
                           fieldState: { error },
-                        }) => (
-                          <Input
-                            className="my-2"
-                            isInvalid={!!error}
-                            errorMessage={error?.message}
-                            //  biome-ignore lint/suspicious/noArrayIndexKey: reason
+                        }) => {
+                          if (input.baseType === 'bool') {
+                            return (
+                              <BoolInput
+                                error={error}
+                                inputType={input.type}
+                                inputName={input.name}
+                                value={value}
+                                onChange={(value) => {
+                                  updateArgAtIndex(index, value, specificArgs);
+                                }}
+                              />
+                            );
+                          }
 
-                            placeholder={`_${input.type}`}
-                            value={value}
-                            onValueChange={(value) => {
-                              updateArgAtIndex(index, value, specificArgs);
-                            }}
-                            startContent={
-                              <div className="pointer-events-none flex items-center">
-                                <span className="text-default-400 text-small">
-                                  {input.name}
-                                </span>
-                              </div>
-                            }
-                          />
-                        )}
+                          if (input.baseType === 'string') {
+                            return (
+                              <StringInput
+                                error={error}
+                                inputType={input.type}
+                                inputName={input.name}
+                                value={value}
+                                onChange={(value) => {
+                                  updateArgAtIndex(index, value, specificArgs);
+                                }}
+                              />
+                            );
+                          }
+
+                          if (input.baseType.startsWith('bytes')) {
+                            return (
+                              <ByteInput
+                                error={error}
+                                inputType={input.type}
+                                inputName={input.name}
+                                value={value}
+                                onChange={(value) => {
+                                  updateArgAtIndex(index, value, specificArgs);
+                                }}
+                              />
+                            );
+                          }
+
+                          if (input.baseType.startsWith('address')) {
+                            return (
+                              <AddressInput
+                                error={error}
+                                inputType={input.type}
+                                inputName={input.name}
+                                value={value}
+                                onChange={(value) => {
+                                  updateArgAtIndex(index, value, specificArgs);
+                                }}
+                              />
+                            );
+                          }
+
+                          if (
+                            input.baseType.startsWith('uint') ||
+                            input.baseType.startsWith('int')
+                          ) {
+                            return (
+                              <IntInput
+                                error={error}
+                                inputType={input.type}
+                                inputName={input.name}
+                                value={value}
+                                onChange={(value) => {
+                                  updateArgAtIndex(index, value, specificArgs);
+                                }}
+                              />
+                            );
+                          }
+
+                          if (input.baseType === 'array') {
+                            return (
+                              <ArrayInput
+                                arrayLength={input.arrayLength}
+                                arrayChildren={input.arrayChildren}
+                                error={error}
+                                inputType={input.type}
+                                inputName={input.name}
+                                value={value}
+                                onChange={(value) => {
+                                  updateArgAtIndex(index, value, specificArgs);
+                                }}
+                              />
+                            );
+                          }
+
+                          if (input.baseType === 'tuple') {
+                            return (
+                              <TupleInput
+                                components={input.components}
+                                error={error}
+                                inputType={input.type}
+                                inputName={input.name}
+                                value={value}
+                                onChange={(value) => {
+                                  updateArgAtIndex(index, value, specificArgs);
+                                }}
+                              />
+                            );
+                          }
+
+                          return (
+                            <Input
+                              className="my-2"
+                              isInvalid={!!error}
+                              errorMessage={error?.message}
+                              // label={input.name}
+                              // labelPlacement='outside'
+                              //  biome-ignore lint/suspicious/noArrayIndexKey: reason
+
+                              placeholder={`${input.type}`}
+                              value={value}
+                              onValueChange={(value) => {
+                                updateArgAtIndex(index, value, specificArgs);
+                              }}
+                              // endContent={
+                              //   <div className="pointer-events-none flex items-center">
+                              //     <span className="text-default-400 text-small">
+                              //       {input.type}
+                              //     </span>
+                              //   </div>
+                              // }
+                              startContent={
+                                <div className="pointer-events-none flex items-center">
+                                  <span className="text-default-400 text-small">
+                                    {input.name}
+                                  </span>
+                                </div>
+                              }
+                            />
+                          );
+                        }}
                       />
                     ),
                   )
@@ -213,11 +339,11 @@ export const ContractFunctions = ({
             </>
           )}
 
-          {selected === 'events' && (
+          {/* {selected === 'events' && (
             <>
               <Controller
                 control={control}
-                name="fnSelector"
+                name="selector"
                 render={({ field }) => (
                   <Select
                     {...field}
@@ -231,7 +357,7 @@ export const ContractFunctions = ({
                     >
                       {(f) => {
                         return (
-                          <SelectItem key={f.topicHash}>
+                          <SelectItem key={f.format('full')}>
                             {f.format('full').slice('event'.length)}
                           </SelectItem>
                         );
@@ -241,7 +367,7 @@ export const ContractFunctions = ({
                 )}
               />
             </>
-          )}
+          )} */}
         </>
       )}
     </div>

@@ -3,22 +3,20 @@
 import { Button, Input, NumberInput, Tab, Tabs, Textarea } from '@heroui/react';
 import { Switch } from '@heroui/react';
 import React, { useMemo, useState } from 'react';
-import { type Chain, isAddress } from 'viem';
+import { type Address, type Chain, isAddress, toEventSelector } from 'viem';
 import type { Hex } from 'viem';
 import ConnectButton from '../connect-button';
 import H3Title from '../h3-title';
 
 import { isContract } from '@/libs/common';
-import { Select, SelectItem, SelectSection } from '@heroui/react';
 import { Controller, type SubmitHandler, useForm } from 'react-hook-form';
-import { concat } from 'viem';
 import { ContractFunctions } from '../contract-functions';
 
+import { ZERO_ADDRESS } from '@/constants/common';
+import { call } from '@/libs/common';
+import { getCalldata, getDecodedFunctionResult } from '@/libs/common';
 import type { ethers } from 'ethers';
-import { encodeAbiParameters, fromBytes } from 'viem';
-import { useCall } from 'wagmi';
-import { CallButton } from '../call-button';
-
+import { toFunctionSelector } from 'viem';
 import { SetGasPrice } from '../set-gas-price';
 type Iprops = {
   network: Chain;
@@ -26,10 +24,10 @@ type Iprops = {
 
 type Inputs = {
   from: Hex;
-  CA: Hex;
+  to: Address;
   enableABI: boolean;
   ABI: string;
-  fnSelector: string;
+  selectedAbi: string;
   args: any;
   value: bigint;
 };
@@ -54,28 +52,57 @@ export const App = ({ network }: Iprops) => {
     formState: { errors },
   } = useForm<Inputs>({
     defaultValues: {
-      enableABI: false,
+      from: '0x',
+      to: '0x',
+
+      // data
+      selectedAbi: '',
       args: {},
+
       value: 0n,
+
+      // Others
+      enableABI: false,
+      ABI: '',
     },
   });
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    console.log({ data });
+
+    const selector = toFunctionSelector(data.selectedAbi);
+    const calldata = getCalldata(data.selectedAbi, data.args[selector]);
+
+    const account = isAddress(data.from, { strict: false })
+      ? data.from
+      : ZERO_ADDRESS;
+
+    const result = await call(network.id, account, data.to, calldata);
+
+    let decodedResult = null;
+    if (result) {
+      decodedResult = getDecodedFunctionResult(
+        data.selectedAbi,
+        result.data as Hex,
+      );
+    }
+
+    console.log({ data, decodedResult });
+  };
 
   const [selected, setSelected] = React.useState('readable');
 
-  console.log(watch('CA'));
+  console.log(watch('to'));
   console.log('from', watch('from'));
   console.log('enableABI', watch('enableABI'));
   const enableABI = watch('enableABI');
-  const CA = watch('CA');
-  const fnSelector = watch('fnSelector');
+  const to = watch('to');
+
   const ABI = watch('ABI');
+  const selectedAbi = watch('selectedAbi');
 
   const args = watch('args');
   const value = watch('value');
   const from = watch('from');
-
-  console.log({ value });
 
   const [fns, setFns] = useState<IFns>({
     nonpayable: [],
@@ -87,10 +114,29 @@ export const App = ({ network }: Iprops) => {
 
   const [events, setEvents] = useState<ethers.EventFragment[]>([]);
 
-  console.log({ fnSelector });
-
   console.log({ args });
 
+  const fnSelector = useMemo(() => {
+    if (selectedAbi != '') {
+      return toFunctionSelector(selectedAbi);
+    } else {
+      return '';
+    }
+  }, [selectedAbi]);
+
+  const selector = useMemo(() => {
+    if (selectedAbi != '') {
+      if (selected === 'events') {
+        return toEventSelector(selectedAbi);
+      } else {
+        return toFunctionSelector(selectedAbi);
+      }
+    } else {
+      return '';
+    }
+  }, [selectedAbi, selected]);
+
+  console.log({ fnSelector, selectedAbi });
   const selectedFragment = useMemo(() => {
     const functions = [
       ...fns.payable,
@@ -101,24 +147,20 @@ export const App = ({ network }: Iprops) => {
     return functions.find((f) => f.selector === fnSelector);
   }, [fnSelector, fns]);
 
-  const specificArgs = watch(`args.${fnSelector}`);
+  const specificArgs = watch(`args.${selector}`);
 
   const calldata = useMemo(() => {
-    console.log({ selectedFragment, specificArgs });
-    if (
-      selectedFragment?.inputs &&
-      selectedFragment?.inputs.length > 0 &&
-      specificArgs?.length === selectedFragment?.inputs.length
-    ) {
-      try {
-        return concat([
-          fnSelector as Hex,
-          encodeAbiParameters(selectedFragment!.inputs, specificArgs),
-        ]);
-      } catch (e) {}
+    if (selectedAbi == '') {
+      return '0x';
     }
-    return fnSelector;
-  }, [fnSelector, specificArgs]);
+    try {
+      if (args[selector]) {
+        return getCalldata(selectedAbi, specificArgs);
+      }
+    } catch (e) {}
+
+    return selector;
+  }, [selectedAbi, specificArgs]);
 
   return (
     <form
@@ -138,19 +180,19 @@ export const App = ({ network }: Iprops) => {
       </H3Title>
 
       <Input
-        isInvalid={!!errors.CA}
-        errorMessage={errors.CA?.message}
-        {...register('CA', {
-          required: 'CA is required',
+        isInvalid={!!errors.to}
+        errorMessage={errors.to?.message}
+        {...register('to', {
+          required: 'To is required',
           validate: async (value) => {
             const isValid = await isContract(network.id, value);
-            return isValid || 'Invalid CA';
+            return isValid || 'Invalid To';
           },
         })}
         placeholder="CA(Contract Address)"
       />
 
-      {!!!errors.CA && CA?.length > 0 && (
+      {!!!errors.to && to?.length > 0 && (
         <>
           <div className="flex gap-4">
             <H3Title>ABI</H3Title>
@@ -189,10 +231,9 @@ export const App = ({ network }: Iprops) => {
             <Tab key={'unknown'} title={`Unknown (${fns.unknown.length})`} />
           </Tabs>
           <ContractFunctions
-            CA={CA}
+            CA={to}
             chainId={network.id}
             control={control}
-            fnSelector={fnSelector}
             enableABI={enableABI}
             ABI={ABI}
             fns={fns}
@@ -202,6 +243,7 @@ export const App = ({ network }: Iprops) => {
             events={events}
             setEvents={setEvents}
             selected={selected}
+            selector={selector}
           />
         </>
       )}
@@ -274,14 +316,6 @@ export const App = ({ network }: Iprops) => {
       )}
 
       <Button type="submit">confirm</Button>
-
-      <CallButton
-        account={from}
-        to={CA}
-        data={calldata}
-        value={value}
-        gasPrice={gasPrice}
-      />
     </form>
   );
 };

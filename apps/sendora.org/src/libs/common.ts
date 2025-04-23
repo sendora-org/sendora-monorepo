@@ -1,5 +1,13 @@
 import { findNetwork, networks } from '@/constants/config';
 import { useRpcStore } from '@/hooks/useRpcStore';
+import { AbiFunction } from 'abitype';
+import {
+  concat,
+  encodeAbiParameters,
+  parseAbi,
+  parseAbiItem,
+  toFunctionSelector,
+} from 'viem';
 import {
   http,
   createPublicClient,
@@ -9,13 +17,14 @@ import {
   namehash,
   toHex,
 } from 'viem';
-import type { Chain, Hex } from 'viem';
+import type { Address, Chain, Hex } from 'viem';
 import { arbitrum, base, bsc, mainnet } from 'viem/chains';
 import { normalize, packetToBytes } from 'viem/ens';
 
 import { useRpcStorePersistName } from '@/hooks/useRpcStore';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import { loaders, whatsabi } from '@shazow/whatsabi';
+import { AbiInternalType } from 'abitype';
 import type { AbiConstructor } from 'abitype';
 import { ethers } from 'ethers';
 import { createIndexedDBStorage } from './indexedDBStorage';
@@ -854,7 +863,6 @@ export const createPublicClientWithRpc = async (
   const storage = createIndexedDBStorage();
 
   const result = await storage.getItem(useRpcStorePersistName);
-  console.log({ result });
 
   if (result?.state?.activeRpc[chainId]) {
     activeUrl = result?.state?.activeRpc[chainId];
@@ -1037,3 +1045,36 @@ export function splitMutability(
   }
   return r;
 }
+
+export const call = async (
+  chainId: number,
+  account: Address,
+  to: Hex,
+  data: Hex,
+) => {
+  const publicClient = await createPublicClientWithRpc(chainId, '');
+  const returnValue = await publicClient.call({
+    account,
+    data,
+    to,
+  });
+  return returnValue;
+};
+
+export const getCalldata = (abi: string, args: any[]) => {
+  const ABIItem = parseAbiItem(abi);
+  const selector = toFunctionSelector(abi);
+  if (ABIItem.inputs?.length > 0) {
+    return concat([selector as Hex, encodeAbiParameters(ABIItem.inputs, args)]);
+  }
+  return selector;
+};
+
+export const getDecodedFunctionResult = (abi: string, data: Hex) => {
+  const ABIItem = parseAbiItem(abi);
+  // return value
+  return decodeFunctionResult({
+    abi: [ABIItem],
+    data: data,
+  });
+};
