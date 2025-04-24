@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'SENDORA',
-  description: '$SNDRA rises! 🚀 Building the best tool for Web3!',
+  description: '$SNDRA rises! 🚀 Building the best tool for Ethereum!',
 };
 
 export default function RootLayout({
@@ -53,7 +53,7 @@ export default function RootLayout({
         <title>sendora.org</title>
         <meta
           name="description"
-          content="🚀 Building the best tool for Web3!"
+          content="🚀 Building the best tool for Ethereum!"
         />
 
         {/* <!-- Facebook Meta Tags --> */}
@@ -62,7 +62,7 @@ export default function RootLayout({
         <meta property="og:title" content="$SNDRA" />
         <meta
           property="og:description"
-          content="🚀 Building the best tool for Web3!"
+          content="🚀 Building the best tool for Ethereum!"
         />
         <meta
           property="og:image"
@@ -76,7 +76,7 @@ export default function RootLayout({
         <meta name="twitter:title" content="$SNDRA" />
         <meta
           name="twitter:description"
-          content="🚀 Building the best tool for Web3!"
+          content="🚀 Building the best tool for Ethereum!"
         />
         <meta
           name="twitter:image"

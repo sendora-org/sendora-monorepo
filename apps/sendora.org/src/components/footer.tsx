@@ -104,7 +104,7 @@ export default function Component() {
             </div>
 
             <p className="text-small text-default-600">
-              🚀 Building the best tool for Web3!❤️
+              🚀 Building the best tool for Ethereum!❤️
             </p>
             <div className="flex space-x-6">
               {footerNavigation.social.map((item) => (
