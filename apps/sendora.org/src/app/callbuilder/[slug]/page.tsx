@@ -1,5 +1,5 @@
 import AppTitle from '@/components/app-title';
-import { App } from '@/components/callthat/app';
+import { App } from '@/components/callbuilder/app';
 import H1Title from '@/components/h1-title';
 import LayoutDefault from '@/components/layout-default';
 import WebWorkerDemo1 from '@/components/web-worker-demo1';
@@ -25,7 +25,7 @@ export default async function Page({
   const { slug } = await params;
   const network = findNetwork('chainId', slug) ?? networks[0];
 
-  const uri = 'callthat';
+  const uri = 'callbuilder';
   return (
     <LayoutDefault uri={uri} network={network}>
       {/* <H1Title>Coming soon</H1Title> */}

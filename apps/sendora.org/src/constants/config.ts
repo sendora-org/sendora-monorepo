@@ -264,9 +264,9 @@ export const menuItems = [
   },
 
   {
-    name: 'Callthat',
-    uri: 'callthat',
-    url: '/callthat/1',
+    name: 'Call Builder',
+    uri: 'callbuilder',
+    url: '/callbuilder/1',
   },
   {
     name: 'Portfolio',
