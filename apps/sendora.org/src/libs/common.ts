@@ -1,6 +1,7 @@
 import { findNetwork, networks } from '@/constants/config';
 import { useRpcStore } from '@/hooks/useRpcStore';
 import { AbiFunction } from 'abitype';
+
 import {
   concat,
   encodeAbiParameters,
@@ -917,6 +918,40 @@ export const isContract = async (chainId: number, CA: Hex) => {
   return typeof bytecode !== 'undefined';
 };
 
+export const getContractABIs = async (chainId: number, to: Hex) => {
+  const abiLoaders: Array<loaders.ABILoader> = [
+    new loaders.SourcifyABILoader({ chainId: chainId }),
+    // new loaders.EtherscanABILoader({ apiKey: env.ETHERSCAN_API_KEY }),
+  ];
+
+  if (chainId !== 1) {
+    // Add mainnet just in case
+    abiLoaders.push(new loaders.SourcifyABILoader({ chainId: 1 }));
+  }
+
+  try {
+    const publicClient = await createPublicClientWithRpc(chainId, '');
+
+    const r = await whatsabi.autoload(to, {
+      provider: publicClient,
+
+      abiLoader: new loaders.MultiABILoader(abiLoaders),
+      signatureLookup: loaders.defaultSignatureLookup,
+
+      followProxies: true,
+      onProgress: (progress, ...args: any[]) =>
+        console.log('WhatsABI:', progress, args),
+      // addressResolver: resolver,
+    });
+    const iface = new ethers.Interface(r.abi);
+
+    const abi = iface.format();
+    console.log({ abi });
+    return JSON.stringify(abi, null, 2);
+  } catch (e) {}
+  return [];
+};
+
 export const getContractFunctions = async (
   chainId: number,
   CA: Hex,
@@ -1062,12 +1097,36 @@ export const call = async (
 };
 
 export const getCalldata = (abi: string, args: any[]) => {
-  const ABIItem = parseAbiItem(abi);
-  const selector = toFunctionSelector(abi);
-  if (ABIItem.inputs?.length > 0) {
-    return concat([selector as Hex, encodeAbiParameters(ABIItem.inputs, args)]);
+  try {
+    console.log('getCalldata', { abi, args });
+    const ABIItem = parseAbiItem(abi);
+    const selector = toFunctionSelector(abi);
+    if (ABIItem.inputs?.length > 0) {
+      return concat([
+        selector as Hex,
+        encodeAbiParameters(ABIItem.inputs, args),
+      ]);
+    }
+    return selector;
+  } catch (e) {
+    console.log('getCallata', e);
   }
-  return selector;
+
+  return '0x';
+};
+
+export const getParams = (abi: string, args: any[]) => {
+  try {
+    console.log('getParams', { abi, args });
+    const ABIItem = parseAbiItem(abi);
+
+    if (ABIItem.inputs?.length > 0) {
+      return concat([encodeAbiParameters(ABIItem.inputs, args)]);
+    }
+  } catch (e) {
+    console.log('getParams', e);
+  }
+  return '';
 };
 
 export const getDecodedFunctionResult = (abi: string, data: Hex) => {
@@ -1077,4 +1136,49 @@ export const getDecodedFunctionResult = (abi: string, data: Hex) => {
     abi: [ABIItem],
     data: data,
   });
+};
+
+export function getDefaultValue(param: ethers.ParamType): any {
+  switch (param.baseType) {
+    case 'string':
+      return '';
+    case 'bool':
+      return false;
+    case 'uint':
+    case 'int':
+      return 0;
+    case 'address':
+      return '';
+    case 'tuple':
+      return param.components?.map(getDefaultValue) || [];
+    case 'array':
+      if (typeof param.arrayLength === 'number' && param.arrayLength >= 0) {
+        return Array(param.arrayLength).fill(
+          getDefaultValue(param.arrayChildren!),
+        );
+      }
+      return [];
+    default:
+      return '';
+  }
+}
+
+export const isValidJSON = (value: string | undefined) => {
+  if (value) {
+    try {
+      JSON.parse(value);
+    } catch {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+export const prettifyJSON = (json: string) => {
+  if (isValidJSON(json) && json?.length > 0) {
+    return JSON.stringify(JSON.parse(json), null, 2);
+  } else {
+    return '';
+  }
 };
