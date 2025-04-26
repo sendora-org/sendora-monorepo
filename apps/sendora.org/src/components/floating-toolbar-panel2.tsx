@@ -1,11 +1,13 @@
 import { useSelectionWithFloating } from '@/hooks/useSelectionWithFloating';
+import { Button } from '@heroui/react';
 import type React from 'react';
 import { useEffect } from 'react';
+import CopyButton from './copy-button';
 
 interface ActionItem {
   label: string;
   icon?: React.ReactNode;
-  handler: (selectionText: string) => Promise<string> | string;
+  handler: (selectionText: string) => Promise<any> | any;
 }
 
 interface FloatingToolbarWithPanelProps {
@@ -113,7 +115,7 @@ const FloatingToolbarWithPanel: React.FC<FloatingToolbarWithPanelProps> = ({
           </div>
         )}
 
-        {panelOpen && (
+        {panelOpen && panelContent.value && (
           <div
             ref={panelFloating.refs.setFloating}
             onMouseDown={(e) => e.preventDefault()}
@@ -133,12 +135,15 @@ const FloatingToolbarWithPanel: React.FC<FloatingToolbarWithPanelProps> = ({
               </div>
             ) : (
               <>
-                <h4>🎯 </h4>
-                <div style={{ marginTop: '8px' }}>
-                  {panelContent || 'No Content'}
+                <h4>{panelContent.label} </h4>
+                <div
+                  className="break-words overflow-auto "
+                  style={{ marginTop: '8px', maxHeight: '350px' }}
+                >
+                  {panelContent.value || 'No Content'}
                 </div>
 
-                <button onClick={() => console.log('click')}>click</button>
+                <CopyButton textToCopy={panelContent.value} />
               </>
             )}
           </div>

@@ -12,6 +12,7 @@ interface VirtualElement {
   contextElement?: Element | null;
 }
 
+type PanelContent = { label: string; value: string };
 export interface UseSelectionFloatingReturn {
   scopeRef: React.RefObject<HTMLDivElement>;
   toolbarFloating: ReturnType<typeof useFloating>;
@@ -20,7 +21,7 @@ export interface UseSelectionFloatingReturn {
   panelOpen: boolean;
   selectionText: string;
   loading: boolean;
-  panelContent: string;
+  panelContent: PanelContent;
   setPanelOpen: (v: boolean) => void;
   handleSelection: () => void;
   handleActionClick: (
@@ -33,7 +34,10 @@ export const useSelectionWithFloating = (): UseSelectionFloatingReturn => {
   const [panelOpen, setPanelOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectionText, setSelectionText] = useState('');
-  const [panelContent, setPanelContent] = useState<string>('');
+  const [panelContent, setPanelContent] = useState<PanelContent>({
+    label: '',
+    value: '',
+  });
   const [virtualReference, setVirtualReference] =
     useState<VirtualElement | null>(null);
 
@@ -141,7 +145,7 @@ export const useSelectionWithFloating = (): UseSelectionFloatingReturn => {
       panelFloating.refs.setPositionReference(virtualReference);
       setPanelOpen(true);
       setLoading(true);
-      setPanelContent('');
+      setPanelContent({ label: '', value: '' });
 
       const result = await Promise.resolve(handler(selectionText));
 
