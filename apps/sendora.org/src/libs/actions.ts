@@ -16,7 +16,7 @@ import {
 } from 'viem';
 import { formatWei } from './common';
 import { isDecimal, isIntegerString } from './common';
-import { formatBigIntNumber } from './number';
+import { formatBigIntNumber, parseAndScaleNumber } from './number';
 
 export const actions = (
   chainId: number,
@@ -237,11 +237,15 @@ export const actions = (
       },
       {
         label: 'USDT',
-        icon: '💲',
+        icon: '💵',
         handler: (txt: string) => {
           return {
-            label: '💲 USDT',
-            value: formatUnits(BigInt(txt), 6),
+            label: '💵 USDT',
+            value: formatBigIntNumber(
+              parseAndScaleNumber(formatUnits(BigInt(txt), 6), ',', '.'),
+              thousandSeparator,
+              decimalSeparator,
+            ),
           };
         },
       },
@@ -308,7 +312,7 @@ export const actions = (
       handler: (txt: string) => {
         return {
           label: '📦 Bytes32',
-          value: stringToHex(txt,{size:32}),
+          value: stringToHex(txt, { size: 32 }),
         };
       },
     },

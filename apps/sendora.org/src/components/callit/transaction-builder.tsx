@@ -3,7 +3,9 @@ import { CallStep } from '@/components/callstep';
 import ConnectButton from '@/components/connect-button';
 import H3Title from '@/components/h3-title';
 import { ZERO_ADDRESS } from '@/constants/common';
+import { numberFormats } from '@/constants/common';
 import useAuthStore from '@/hooks/useAuth';
+import { useLocale } from '@/hooks/useLocale';
 import { actions } from '@/libs/actions';
 import {
   isDecimal,
@@ -38,6 +40,11 @@ type Iprops = {
 };
 
 export const TransactionBuilder = ({ network }: Iprops) => {
+  const { locale } = useLocale();
+
+  const { decimalSeparator, thousandSeparator } = numberFormats[locale];
+
+  console.log({ decimalSeparator, thousandSeparator, locale });
   const steps = useScopedCallBuilder((s) => s.steps);
   const currentStep = useScopedCallBuilder((s) => s.currentStep);
   const addStep = useScopedCallBuilder((s) => s.addStep);
@@ -132,7 +139,7 @@ export const TransactionBuilder = ({ network }: Iprops) => {
     <div className="flex flex-col gap-2 w-full  ">
       <FloatingToolbarWithPanel
         actions={(text) => {
-          return actions(network.id, text);
+          return actions(network.id, text, thousandSeparator, decimalSeparator);
         }}
       >
         <CallStep
@@ -171,7 +178,7 @@ export const TransactionBuilder = ({ network }: Iprops) => {
 
       <FloatingToolbarWithPanel
         actions={(text) => {
-          return actions(network.id, text);
+          return actions(network.id, text, thousandSeparator, decimalSeparator);
         }}
       >
         {result && <JsonViewer data={result} enableCopy />}
