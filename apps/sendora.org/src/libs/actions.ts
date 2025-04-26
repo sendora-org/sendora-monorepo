@@ -48,12 +48,12 @@ export const actions = (
     return [
       {
         label: 'Address',
-        icon: '💰',
+        icon: '📍',
         handler: (txt: string) => {
           const result = trim(txt as Hex);
 
           return {
-            label: '💰 Address',
+            label: '📍 Address',
             value: result,
           };
         },
