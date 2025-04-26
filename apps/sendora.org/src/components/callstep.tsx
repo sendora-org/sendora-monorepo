@@ -65,24 +65,28 @@ export const CallStep: React.FC<CallStepProps> = ({
     formState: { errors, isValid },
   } = methods;
 
-  useEffect(() => {
-    reset({
-      to: data?.to || '',
-      value: data?.value || 0n,
-      args: data?.args || [],
-      contractMethod: data?.contractMethod || '',
-      abi: data?.abi || '',
-      functionType: data?.functionType || 'readable',
-    });
-  }, [
-    data?.to,
-    data?.value,
-    data?.args,
-    data?.contractMethod,
-    data?.abi,
-    data?.functionType,
-    reset,
-  ]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reason
+  useEffect(
+    () => {
+      reset({
+        to: data?.to || '',
+        value: data?.value || 0n,
+        args: data?.args || [],
+        contractMethod: data?.contractMethod || '',
+        abi: data?.abi || '',
+        functionType: data?.functionType || 'readable',
+      });
+    },
+    [
+      // data?.to,
+      // data?.value,
+      // data?.args,
+      // data?.contractMethod,
+      // data?.abi,
+      // data?.functionType,
+      // reset,
+    ],
+  );
 
   const to = watch('to');
   const abi = watch('abi');
@@ -92,11 +96,9 @@ export const CallStep: React.FC<CallStepProps> = ({
     name: 'args',
   });
 
-  console.log({ args });
-
   const functionType = watch('functionType', 'readable');
   const contractMethod = watch('contractMethod');
-
+  console.log({ args, functionType });
   //   const setAbi = async (chainId: number, to: Hex) => {
   //     const details = await getContractABIs(chainId, to);
   //     console.log({ details });
@@ -135,6 +137,8 @@ export const CallStep: React.FC<CallStepProps> = ({
         fn.stateMutability === 'payable' || fn.stateMutability === 'nonpayable',
     );
   }, [functions]);
+
+  console.log({ writables });
 
   const inputs = useMemo(() => {
     try {
@@ -176,15 +180,13 @@ export const CallStep: React.FC<CallStepProps> = ({
 
   // biome-ignore  lint/suspicious/noExplicitAny: reason
   const submitStep = (submit_data: any) => {
-    const valueInWei = 0n; //isPayable ? submit_data.value : 0n;
-
     onChange({
       id: data?.id ?? nanoid(),
       to: submit_data.to,
       abi: submit_data.abi,
       contractMethod: submit_data.contractMethod,
       args: submit_data.args,
-      value: valueInWei,
+      value: submit_data.value,
       functionType: submit_data.functionType,
     });
   };

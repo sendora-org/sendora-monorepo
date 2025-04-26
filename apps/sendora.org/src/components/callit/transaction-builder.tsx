@@ -151,7 +151,7 @@ export const TransactionBuilder = ({ network }: IProps) => {
           return actions(network.id, text, thousandSeparator, decimalSeparator);
         }}
       >
-        {result && <JsonViewer data={result} enableCopy />}
+        {result && <JsonViewer data={JSON.parse(result)} enableCopy />}
 
         {error && <ErrorPrompt error={error} setError={setError} />}
       </FloatingToolbarWithPanel>
