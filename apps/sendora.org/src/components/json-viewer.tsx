@@ -7,6 +7,7 @@ import '@/app/styles/github.css'; // Light mode theme
 import { prettifyJSON } from '@/libs/common';
 import { Json } from 'ox';
 import { CopyText } from './copy-text';
+import FloatingToolbarWithPanel from './floating-toolbar-panel';
 
 hljs.registerLanguage('json', json);
 

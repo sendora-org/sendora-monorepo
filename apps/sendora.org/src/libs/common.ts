@@ -1182,3 +1182,18 @@ export const prettifyJSON = (json: string) => {
     return '';
   }
 };
+
+export function isDecimal(value: string): boolean {
+  const regex = /^-?\d*\.\d+$/;
+  return regex.test(value.trim());
+}
+
+export function isHexString(value: string): boolean {
+  const regex = /^0x[0-9a-fA-F]+$/;
+  return regex.test(value.trim());
+}
+
+export function isIntegerString(value: string): boolean {
+  const regex = /^[+-]?\d+$/;
+  return regex.test(value.trim());
+}

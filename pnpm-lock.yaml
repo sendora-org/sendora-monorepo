@@ -85,6 +85,9 @@ importers:
       '@fingerprintjs/fingerprintjs':
         specifier: ^4.6.1
         version: 4.6.1
+      '@floating-ui/react':
+        specifier: ^0.27.8
+        version: 0.27.8(react-dom@19.0.0)(react@19.0.0)
       '@headlessui/react':
         specifier: ^2.2.2
         version: 2.2.2(react-dom@19.0.0)(react@19.0.0)
@@ -139,6 +142,9 @@ importers:
       codemirror:
         specifier: ^6.0.1
         version: 6.0.1
+      dayjs:
+        specifier: ^1.11.13
+        version: 1.11.13
       decimal.js:
         specifier: ^10.5.0
         version: 10.5.0
@@ -1579,6 +1585,19 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
+    dependencies:
+      '@floating-ui/react-dom': 2.1.2(react-dom@19.0.0)(react@19.0.0)
+      '@floating-ui/utils': 0.2.9
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+      tabbable: 6.2.0
+    dev: false
+
+  /@floating-ui/react@0.27.8(react-dom@19.0.0)(react@19.0.0):
+    resolution: {integrity: sha512-EQJ4Th328y2wyHR3KzOUOoTW2UKjFk53fmyahfwExnFQ8vnsMYqKc+fFPOkeYtj5tcp1DUMiNJ7BFhed7e9ONw==}
+    peerDependencies:
+      react: '>=17.0.0'
+      react-dom: '>=17.0.0'
     dependencies:
       '@floating-ui/react-dom': 2.1.2(react-dom@19.0.0)(react@19.0.0)
       '@floating-ui/utils': 0.2.9
@@ -7644,6 +7663,10 @@ packages:
     engines: {node: '>=0.11'}
     dependencies:
       '@babel/runtime': 7.26.10
+    dev: false
+
+  /dayjs@1.11.13:
+    resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
     dev: false
 
   /debug@2.6.9:

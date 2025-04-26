@@ -71,12 +71,12 @@ const useAuthStore = create<AuthState>((set) => ({
 
       const { nonce, chainId } = Siwe.parseMessage(message);
       // @ts-ignore
-      window?.stonks.event('sgin-in-success', { nonce, address, chainId });
+      window?.stonks?.event('sgin-in-success', { nonce, address, chainId });
     } catch (e) {
       console.log('login error=>', e);
       set({ status: 'unauthenticated' });
       // @ts-ignore
-      window?.stonks.event('sgin-in-failed', { message, signature });
+      window?.stonks?.event('sgin-in-failed', { message, signature });
     }
   },
 

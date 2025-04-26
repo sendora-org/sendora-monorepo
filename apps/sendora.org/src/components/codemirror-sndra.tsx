@@ -34,7 +34,7 @@ const SNDRACodemirror = forwardRef(
     useEffect(() => {
       if (fullscreen) {
         // @ts-ignore
-        window?.stonks.event('fullscreen-codemirror');
+        window?.stonks?.event('fullscreen-codemirror');
       }
     }, [fullscreen]);
     useEffect(() => {

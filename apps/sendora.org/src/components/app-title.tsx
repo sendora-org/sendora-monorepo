@@ -17,7 +17,7 @@ export default ({
           router.push(`/${uri}/${chainId}`);
 
           // @ts-ignore
-          window?.stonks.event(`${uri}-change-chain`, { chainId });
+          window?.stonks?.event(`${uri}-change-chain`, { chainId });
         }}
         defaultSelectedKeys={[chainId]}
       />

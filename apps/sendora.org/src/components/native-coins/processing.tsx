@@ -20,7 +20,7 @@ export const Processing = ({
 }: IProps<string>) => {
   useEffect(() => {
     // @ts-ignore
-    window?.stonks.event('native-coins-processing-loaded');
+    window?.stonks?.event('native-coins-processing-loaded');
   }, []);
   return (
     <>

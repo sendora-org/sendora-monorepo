@@ -59,7 +59,7 @@ export default function UploadSpreadsheet() {
             <SpreadsheetDropzone
               onDrop={async (acceptedFiles: File[]) => {
                 // @ts-ignore
-                window?.stonks.event('upload-ondrop');
+                window?.stonks?.event('upload-ondrop');
                 try {
                   const file = acceptedFiles[0];
                   const data = await file.arrayBuffer();

@@ -29,7 +29,7 @@ export const Prepare = ({
 
   useEffect(() => {
     // @ts-ignore
-    window?.stonks.event('native-coins-prepare-loaded');
+    window?.stonks?.event('native-coins-prepare-loaded');
   }, []);
   return (
     <>

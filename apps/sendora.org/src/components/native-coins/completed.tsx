@@ -20,7 +20,7 @@ export const Completed = ({
 }: IProps<string>) => {
   useEffect(() => {
     // @ts-ignore
-    window?.stonks.event('native-coins-completed-loaded');
+    window?.stonks?.event('native-coins-completed-loaded');
   }, []);
   return (
     <>

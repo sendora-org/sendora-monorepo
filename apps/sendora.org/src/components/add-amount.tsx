@@ -200,7 +200,7 @@ export default function AddAmount() {
                     );
                     onClose();
                     // @ts-ignore
-                    window?.stonks.event('update-amount', { isRandom });
+                    window?.stonks?.event('update-amount', { isRandom });
                   }}
                 >
                   Confirm

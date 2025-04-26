@@ -30,7 +30,7 @@ export default function App() {
           setLocale(selectedLocale);
 
           // @ts-ignore
-          window?.stonks.event('switch-locale', { locale });
+          window?.stonks?.event('switch-locale', { locale });
         }}
       >
         <DropdownItem key="en-US">en-US : 1,234,567.89</DropdownItem>

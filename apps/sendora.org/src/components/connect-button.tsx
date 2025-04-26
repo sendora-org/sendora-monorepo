@@ -46,7 +46,7 @@ export default ({
                     fullWidth
                     onPress={() => {
                       // @ts-ignore
-                      window?.stonks.event('Connect Button click');
+                      window?.stonks?.event('Connect Button click');
                       openConnectModal();
                     }}
                     type="button"

@@ -149,11 +149,11 @@ export const ConfirmInput = ({
                 setDataReady(true);
 
                 // @ts-ignore
-                window?.stonks.event('Prepare-Continue-Success');
+                window?.stonks?.event('Prepare-Continue-Success');
               } catch (e) {
                 console.log(e);
                 // @ts-ignore
-                window?.stonks.event('Prepare-Continue-failed', { e });
+                window?.stonks?.event('Prepare-Continue-failed', { e });
               }
               setLoading(false);
             }}

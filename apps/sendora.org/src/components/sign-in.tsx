@@ -67,7 +67,7 @@ export const SignIn = () => {
                     <Button
                       onPress={() => {
                         // @ts-ignore
-                        window?.stonks.event('Sign-In Button click');
+                        window?.stonks?.event('Sign-In Button click');
                         openConnectModal();
                       }}
                       type="button"
