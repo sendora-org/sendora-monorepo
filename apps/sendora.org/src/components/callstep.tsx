@@ -14,6 +14,7 @@ import {
 } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { Interface, ParamType, ethers } from 'ethers';
+import { nanoid } from 'nanoid';
 import type React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, FormProvider, useForm, useWatch } from 'react-hook-form';
@@ -28,7 +29,7 @@ import { getContractABIs } from '@/libs/common';
 
 type CallStepProps = {
   network: Chain;
-  data: CallStepData;
+  data?: CallStepData;
   onRemove: () => void;
   onChange: (data: CallStepData) => void;
 };
@@ -52,6 +53,7 @@ export const CallStep: React.FC<CallStepProps> = ({
 }) => {
   const methods = useForm({ mode: 'onChange', shouldUnregister: false });
   //
+
   const {
     register,
     watch,
@@ -65,14 +67,22 @@ export const CallStep: React.FC<CallStepProps> = ({
 
   useEffect(() => {
     reset({
-      to: data.to,
-      value: data.value,
-      args: data.args || [],
-      contractMethod: data.contractMethod,
-      abi: data.abi,
-      functionType: data.functionType,
+      to: data?.to || '',
+      value: data?.value || 0n,
+      args: data?.args || [],
+      contractMethod: data?.contractMethod || '',
+      abi: data?.abi || '',
+      functionType: data?.functionType || 'readable',
     });
-  }, [data, reset]);
+  }, [
+    data?.to,
+    data?.value,
+    data?.args,
+    data?.contractMethod,
+    data?.abi,
+    data?.functionType,
+    reset,
+  ]);
 
   const to = watch('to');
   const abi = watch('abi');
@@ -169,7 +179,7 @@ export const CallStep: React.FC<CallStepProps> = ({
     const valueInWei = 0n; //isPayable ? submit_data.value : 0n;
 
     onChange({
-      id: data.id,
+      id: data?.id ?? nanoid(),
       to: submit_data.to,
       abi: submit_data.abi,
       contractMethod: submit_data.contractMethod,
@@ -189,17 +199,16 @@ export const CallStep: React.FC<CallStepProps> = ({
         <H3Title>
           To <span className="text-red-600">*</span>
         </H3Title>
-
         <Input
           isInvalid={!!errors.to}
           errorMessage={String(errors.to?.message)}
           {...register('to', {
             required: 'Required',
-            validate: async (value) => {
-              const isValid = await isContract(network.id, value);
+            // validate: async (value) => {
+            //   const isValid = await isContract(network.id, value);
 
-              return isValid || 'Invalid CA (Contract Address)';
-            },
+            //   return isValid || 'Invalid CA (Contract Address)';
+            // },
           })}
           placeholder="CA (Contract Address)"
         />

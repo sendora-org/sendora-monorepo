@@ -44,8 +44,7 @@ export const TransactionBuilder = ({ network }: IProps) => {
   const addStep = useScopedCallBuilder((s) => s.addStep);
   const removeStep = useScopedCallBuilder((s) => s.removeStep);
   const updateStep = useScopedCallBuilder((s) => s.updateStep);
-  // biome-ignore lint/style/noNonNullAssertion: reason
-  const step = steps.find((s) => s.id === currentStep)!;
+  const step = steps.find((s) => s.id === currentStep);
   const { sendTransactionAsync } = useSendTransaction();
   const [result, setResult] = useState('');
   const [error, setError] = useState('');
@@ -108,19 +107,19 @@ export const TransactionBuilder = ({ network }: IProps) => {
 
   return (
     <div className="flex flex-col gap-2 w-full  ">
-      {/* <FloatingToolbarWithPanel
+      <FloatingToolbarWithPanel
         actions={(text) => {
           return actions(network.id, text, thousandSeparator, decimalSeparator);
         }}
-      > */}
-      <CallStep
-        network={network}
-        data={step}
-        key={step.id}
-        onRemove={() => removeStep(step.id)}
-        onChange={(data) => updateStep(step.id, data)}
-      />
-      {/* </FloatingToolbarWithPanel> */}
+      >
+        <CallStep
+          network={network}
+          data={step}
+          key={step?.id}
+          onRemove={() => removeStep(step?.id)}
+          onChange={(data) => updateStep(step?.id, data)}
+        />
+      </FloatingToolbarWithPanel>
       <ConnectButton />
 
       {isConnected &&

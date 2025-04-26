@@ -29,8 +29,8 @@ export type CallStepState = {
   currentStep: string;
   steps: CallStep[];
   addStep: () => void;
-  removeStep: (id: string) => void;
-  updateStep: (id: string, data: Partial<CallStep>) => void;
+  removeStep: (id?: string) => void;
+  updateStep: (id?: string, data?: Partial<CallStep>) => void;
   setCurrentStep: (id: string) => void;
   setSteps: (newSteps: CallStep[]) => void;
 };
