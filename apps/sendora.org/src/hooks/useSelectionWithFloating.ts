@@ -25,7 +25,7 @@ export interface UseSelectionFloatingReturn {
   setPanelOpen: (v: boolean) => void;
   handleSelection: () => void;
   handleActionClick: (
-    handler: (text: string) => Promise<string> | string,
+    handler: (text: string) => Promise<PanelContent> | PanelContent,
   ) => Promise<void>;
 }
 
@@ -46,8 +46,9 @@ export const useSelectionWithFloating = (): UseSelectionFloatingReturn => {
     label: '',
     value: '',
   });
-  const [virtualReference, setVirtualReference] =
-    useState<VirtualElement | null>(null);
+  const [virtualReference, setVirtualReference] = useState<
+    VirtualElement | undefined
+  >(undefined);
 
   const scopeRef = useRef<HTMLDivElement>(null);
 
@@ -128,7 +129,11 @@ export const useSelectionWithFloating = (): UseSelectionFloatingReturn => {
       setSelectionText(selectedText);
       setVirtualReference(virtualElement);
 
+      // typings todo
+      // @ts-ignore
       toolbarFloating.refs.setPositionReference(virtualElement);
+      // typings todo
+      // @ts-ignore
       panelFloating.refs.setPositionReference(virtualElement);
 
       setOpen(true);
@@ -141,9 +146,11 @@ export const useSelectionWithFloating = (): UseSelectionFloatingReturn => {
   }, [isInScope, panelFloating.refs, toolbarFloating.refs]);
 
   const handleActionClick = useCallback(
-    async (handler: (text: string) => Promise<string> | string) => {
+    async (handler: (text: string) => Promise<PanelContent> | PanelContent) => {
       if (!selectionText || !virtualReference) return;
 
+      // typings todo
+      // @ts-ignore
       panelFloating.refs.setPositionReference(virtualReference);
       setPanelOpen(true);
       setLoading(true);
@@ -186,6 +193,8 @@ export const useSelectionWithFloating = (): UseSelectionFloatingReturn => {
   }, [handlePointerDownOutside]);
 
   return {
+    // typings todo
+    // @ts-ignore
     scopeRef,
     toolbarFloating,
     panelFloating,

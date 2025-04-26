@@ -6,6 +6,7 @@ import type { Chain } from 'viem';
 import { Arbitrage } from './arbitrage';
 import { MultiStep } from './multi-step';
 import { TransactionBuilder } from './transaction-builder';
+import { WrapTransactionBuilder } from './transaction-builder';
 type IProps = {
   network: Chain;
 };
@@ -14,7 +15,7 @@ const tabsData = [
   {
     key: '0',
     label: 'Transaction Builder',
-    Component: TransactionBuilder,
+    Component: WrapTransactionBuilder,
   },
 
   // {
@@ -29,13 +30,17 @@ const tabsData = [
   //   Component: Arbitrage,
   // },
 ];
+// const MemoizedComponents = tabsData.map((tab) => {
+//   const WrappedComponent = ({ network }: IProps) => (
+//     <CallBuilderProvider>
+//       <tab.Component network={network} />
+//     </CallBuilderProvider>
+//   );
+//   return React.memo(WrappedComponent);
+// });
+
 const MemoizedComponents = tabsData.map((tab) => {
-  const WrappedComponent = ({ network }: IProps) => (
-    <CallBuilderProvider>
-      <tab.Component network={network} />
-    </CallBuilderProvider>
-  );
-  return React.memo(WrappedComponent);
+  return React.memo(tab.Component);
 });
 
 export const App = ({ network }: IProps) => {

@@ -637,7 +637,6 @@ export const getGasPrice = async (chainId: number, rpcUrl = '') => {
     type: 'legacy', // network.isEIP1559Supported ? 'eip1559' : 'legacy'
   });
 
-  console.log({ gasPrice, chainId, rpcUrl });
   return gasPrice ?? 0n;
 };
 
@@ -883,7 +882,6 @@ export const getActiveRpc = async (chainId: number) => {
   const storage = createIndexedDBStorage();
 
   const result = await storage.getItem(useRpcStorePersistName);
-  console.log({ result });
 
   if (result?.state?.activeRpc[chainId]) {
     activeUrl = result?.state?.activeRpc[chainId];
@@ -906,7 +904,6 @@ export const getAbiConstructor = (abis: string): AbiConstructor | null => {
 
 export const isContract = async (chainId: number, CA: Hex) => {
   if (!isAddress(CA, { strict: false })) {
-    console.log('bytecode 1.5');
     return false;
   }
 
@@ -946,7 +943,7 @@ export const getContractABIs = async (chainId: number, to: Hex) => {
     const iface = new ethers.Interface(r.abi);
 
     const abi = iface.format();
-    console.log({ abi });
+
     return JSON.stringify(abi, null, 2);
   } catch (e) {}
   return [];
@@ -971,10 +968,7 @@ export const getContractFunctions = async (
       ethers.Interface.from(jsonAbi).forEachEvent((e) => events.push(e));
     }
 
-    console.log('from functions ', functions);
-
     const rrr = splitMutability(functions);
-    console.log('from rrr', rrr);
 
     return {
       splitFns: rrr,
@@ -1085,13 +1079,16 @@ export const call = async (
 // biome-ignore  lint/suspicious/noExplicitAny: reason
 export const getCalldata = (abi: string, args: any[]) => {
   try {
-    console.log('getCalldata', { abi, args });
     const ABIItem = parseAbiItem(abi);
     const selector = toFunctionSelector(abi);
-    if (ABIItem.inputs?.length > 0) {
+    // typings todo
+    // @ts-ignore
+    if (ABIIte?.inputs?.length > 0) {
       return concat([
         selector as Hex,
-        encodeAbiParameters(ABIItem.inputs, args),
+        // typings todo
+        // @ts-ignore
+        encodeAbiParameters(ABIItem?.inputs, args),
       ]);
     }
     return selector;
@@ -1105,11 +1102,13 @@ export const getCalldata = (abi: string, args: any[]) => {
 // biome-ignore  lint/suspicious/noExplicitAny: reason
 export const getParams = (abi: string, args: any[]) => {
   try {
-    console.log('getParams', { abi, args });
     const ABIItem = parseAbiItem(abi);
-
-    if (ABIItem.inputs?.length > 0) {
-      return concat([encodeAbiParameters(ABIItem.inputs, args)]);
+    // typings todo
+    // @ts-ignore
+    if (ABIItem?.inputs?.length > 0) {
+      // typings todo
+      // @ts-ignore
+      return concat([encodeAbiParameters(ABIItem?.inputs, args)]);
     }
   } catch (e) {
     console.log('getParams', e);

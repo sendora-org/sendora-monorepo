@@ -58,7 +58,6 @@ export const MultiStep = ({ network }: Iprops) => {
                   network.id,
                   transactionHash,
                 );
-                console.log({ transactionHash, transaction }, 999);
               } catch (e) {
                 console.log(111, e);
               }

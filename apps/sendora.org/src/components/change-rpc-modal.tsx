@@ -42,8 +42,6 @@ export default function ChangeRPCModal({ chainId }: IProps) {
   const [input, setInput] = useState('');
   const network = findNetwork('chainId', chainId) ?? networks[0];
 
-  console.log(555, activeRpc[Number(chainId)]);
-
   const handleAdd = async () => {
     setLoading(true);
     setRpcStatusByAdd(null);

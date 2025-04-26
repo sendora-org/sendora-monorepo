@@ -61,8 +61,6 @@ export const ConfirmInput = ({
 
   const queryClient = useQueryClient();
 
-  console.log(111, { isToggle });
-
   useEffect(() => {
     const worker = new Worker(
       new URL('@/web-workers/userinput-validate.ts', import.meta.url),

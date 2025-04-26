@@ -5,7 +5,11 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 export default ({
   showAddr,
   register,
-}: { showAddr?: boolean; register?: (name: string) => void }) => {
+}: {
+  showAddr?: boolean;
+  // biome-ignore  lint/suspicious/noExplicitAny: reason
+  register?: (name: string) => any;
+}) => {
   const { loginAddress, logout } = useAuthStore();
   return (
     <ConnectButton.Custom>

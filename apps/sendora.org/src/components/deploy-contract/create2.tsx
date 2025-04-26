@@ -36,7 +36,7 @@ type Iprops = {
 export const Create2 = ({ network }: Iprops) => {
   const { isConnected, chain, chainId, address } = useAccount();
   const { status, loginAddress } = useAuthStore();
-  console.log(`Create2 render ${new Date().toISOString()}`);
+
   const [bytecode, setBytecode] = useState<string>('');
   const [salt, setSalt] = useState<string>('');
   const [abi, setABI] = useState<string>('');
@@ -44,7 +44,6 @@ export const Create2 = ({ network }: Iprops) => {
   const [gasPrice, setGasPrice] = useState<bigint>(10000000n);
   const [loading, setLoading] = useState(false);
 
-  console.log('ddd', gasPrice);
   const [inputs, setInputs] = useState<string[]>([]);
 
   const { sendTransactionAsync } = useSendTransaction();
@@ -204,8 +203,6 @@ export const Create2 = ({ network }: Iprops) => {
                 encodedData,
               ]);
 
-              console.log({ abi, addr });
-
               try {
                 const transactionHash = await sendTransactionAsync({
                   to,
@@ -217,7 +214,6 @@ export const Create2 = ({ network }: Iprops) => {
                   network.id,
                   transactionHash,
                 );
-                console.log({ transactionHash, transaction }, 999);
               } catch (e) {
                 console.log(111, e);
               }

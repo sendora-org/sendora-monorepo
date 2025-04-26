@@ -33,8 +33,6 @@ const tabsData = [
 const MemoizedComponents = tabsData.map((tab) => React.memo(tab.Component));
 
 export const App = ({ network }: Iprops) => {
-  console.log(`deploy contract render ${new Date().toISOString()}`);
-
   const [selected, setSelected] = React.useState('0');
 
   const Comp = MemoizedComponents[Number(selected)];

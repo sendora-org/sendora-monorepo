@@ -47,7 +47,6 @@ export default function SelectNetworks({
         renderValue={(
           items: { key: string | number | undefined; data: NetworkInfo }[],
         ) => {
-          console.log(items);
           return items.map(
             (item: { key: string | number | undefined; data: NetworkInfo }) => (
               <div key={item.key} className="flex items-center gap-2">

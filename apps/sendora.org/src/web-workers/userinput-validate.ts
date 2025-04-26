@@ -47,7 +47,6 @@ self.onmessage = async ({
     }
 
     case 'validate': {
-      // console.log('validate', { payload }, store.getIdIndex());
       const { thousandSeparator, decimalSeparator } = payload;
       const chunks = chunk(store.getIdIndex(), 20000);
 
@@ -321,7 +320,6 @@ self.onmessage = async ({
     }
 
     case 'getAll': {
-      console.log('getALL');
       result = store.getAll();
       break;
     }

@@ -1,7 +1,6 @@
 import XLSX from 'xlsx';
 
 self.onmessage = (event: MessageEvent<ArrayBuffer>) => {
-  console.log('onmessage');
   const spreadsheetBuffer = event.data;
   const result = parseWorkBook(spreadsheetBuffer);
   postMessage(result);

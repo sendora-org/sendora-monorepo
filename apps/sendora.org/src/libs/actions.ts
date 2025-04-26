@@ -17,13 +17,20 @@ import {
 import { formatWei } from './common';
 import { isDecimal, isIntegerString } from './common';
 import { formatBigIntNumber, parseAndScaleNumber } from './number';
+type PanelContent = { label: string; value: string };
+
+type ActionItem = {
+  label: string;
+  icon: string;
+  handler: (selectionText: string) => Promise<PanelContent> | PanelContent;
+};
 
 export const actions = (
   chainId: number,
   txt: string,
   thousandSeparator = ',',
   decimalSeparator = '.',
-) => {
+): ActionItem[] => {
   const network = findNetwork('chainId', chainId.toString()) ?? networks[0];
 
   // address
@@ -205,7 +212,7 @@ export const actions = (
         handler: (txt: string) => {
           return {
             label: '💰 μUSDT',
-            value: parseUnits(txt, 6),
+            value: parseUnits(txt, 6).toString(),
           };
         },
       },
@@ -215,7 +222,7 @@ export const actions = (
         handler: (txt: string) => {
           return {
             label: '⛽ Wei',
-            value: parseEther(txt),
+            value: parseEther(txt).toString(),
           };
         },
       },
@@ -231,7 +238,7 @@ export const actions = (
         handler: (txt: string) => {
           return {
             label: '💰 μUSDT',
-            value: parseUnits(txt, 6),
+            value: parseUnits(txt, 6).toString(),
           };
         },
       },
@@ -255,7 +262,7 @@ export const actions = (
         handler: (txt: string) => {
           return {
             label: '⛽ Wei',
-            value: parseEther(txt),
+            value: parseEther(txt).toString(),
           };
         },
       },

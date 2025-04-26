@@ -30,20 +30,20 @@ type Iprops = {
 const MemoizedComponents = stepsData.map((step) => React.memo(step.Component));
 
 export const App = ({ network }: Iprops) => {
-  console.log(`native-coins render ${new Date().toISOString()}`);
+  // console.log(`native-coins render ${new Date().toISOString()}`);
   const { currentStep, steps, nextStep, prevStep, setStepData, resetSteps } =
     useStep('native-coins', stepsData);
 
   const Comp = MemoizedComponents[currentStep];
 
-  console.log({
-    currentStep,
-    steps,
-    nextStep,
-    prevStep,
-    setStepData,
-    resetSteps,
-  });
+  // console.log({
+  //   currentStep,
+  //   steps,
+  //   nextStep,
+  //   prevStep,
+  //   setStepData,
+  //   resetSteps,
+  // });
   return (
     <>
       <div className="mb-2 flex items-center justify-between w-full">

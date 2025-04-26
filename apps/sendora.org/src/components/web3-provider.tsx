@@ -27,7 +27,6 @@ export const Web3Provider = ({
 }: { children: React.ReactNode; config: Config }) => {
   const { theme } = useTheme();
 
-  console.log({ theme });
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
