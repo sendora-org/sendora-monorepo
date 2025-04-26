@@ -1081,7 +1081,6 @@ export const getCalldata = (abi: string, args: any[]) => {
   try {
     const ABIItem = parseAbiItem(abi);
 
- 
     const selector = toFunctionSelector(abi);
     // typings todo
     // @ts-ignore

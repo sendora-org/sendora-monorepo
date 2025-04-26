@@ -213,56 +213,51 @@ export const CallStep: React.FC<CallStepProps> = ({
           placeholder="CA (Contract Address)"
         />
 
-        {!errors.to && (
-          <>
-            <H3Title>
-              ABI <span className="text-red-600">*</span>
-            </H3Title>
+        <>
+          <H3Title>
+            ABI <span className="text-red-600">*</span>
+          </H3Title>
 
-            <Controller
-              name="abi"
-              control={control}
-              defaultValue=""
-              rules={{
-                required: 'Required',
-                validate: (value) => {
-                  const isValid = isValidJSON(value);
-                  return isValid || 'Invalid JSON value';
-                },
-              }}
-              render={({
-                field: { onChange, value },
-                fieldState: { error },
-              }) => {
-                return (
-                  <Textarea
-                    endContent={
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setValue('abi', prettifyJSON(abi));
-                        }}
-                      >
-                        <Icon icon="mdi:code" width="24" height="24" />
-                      </button>
-                    }
-                    disableAnimation
-                    disableAutosize
-                    classNames={{
-                      input: 'resize-y min-h-[300px]',
-                    }}
-                    isInvalid={!!error}
-                    errorMessage={String(error?.message)}
-                    value={value}
-                    onValueChange={(v) => {
-                      onChange(v);
-                    }}
-                  />
-                );
-              }}
-            />
-          </>
-        )}
+          <Controller
+            name="abi"
+            control={control}
+            defaultValue=""
+            rules={{
+              required: 'Required',
+              validate: (value) => {
+                const isValid = isValidJSON(value);
+                return isValid || 'Invalid JSON value';
+              },
+            }}
+            render={({ field: { onChange, value }, fieldState: { error } }) => {
+              return (
+                <Textarea
+                  endContent={
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setValue('abi', prettifyJSON(abi));
+                      }}
+                    >
+                      <Icon icon="mdi:code" width="24" height="24" />
+                    </button>
+                  }
+                  disableAnimation
+                  disableAutosize
+                  classNames={{
+                    input: 'resize-y min-h-[300px]',
+                  }}
+                  isInvalid={!!error}
+                  errorMessage={String(error?.message)}
+                  value={value}
+                  onValueChange={(v) => {
+                    onChange(v);
+                  }}
+                />
+              );
+            }}
+          />
+        </>
 
         {functions.length > 0 && (
           <>
