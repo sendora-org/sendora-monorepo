@@ -303,6 +303,17 @@ export const actions = (
     },
 
     {
+      label: 'Bytes32',
+      icon: '📦',
+      handler: (txt: string) => {
+        return {
+          label: '📦 Bytes32',
+          value: stringToHex(txt,{size:32}),
+        };
+      },
+    },
+
+    {
       label: 'Timestamp',
       icon: '⏰',
       handler: (txt: string) => {
