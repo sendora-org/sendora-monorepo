@@ -1080,10 +1080,12 @@ export const call = async (
 export const getCalldata = (abi: string, args: any[]) => {
   try {
     const ABIItem = parseAbiItem(abi);
+
+ 
     const selector = toFunctionSelector(abi);
     // typings todo
     // @ts-ignore
-    if (ABIIte?.inputs?.length > 0) {
+    if (ABIItem?.inputs?.length > 0) {
       return concat([
         selector as Hex,
         // typings todo
