@@ -264,12 +264,6 @@ export const menuItems = [
   },
 
   {
-    name: 'Call Builder',
-    uri: 'callbuilder',
-    url: '/callbuilder/1',
-  },
-
-  {
     name: 'Callit',
     uri: 'callit',
     url: '/callit/1',

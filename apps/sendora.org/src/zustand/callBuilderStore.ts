@@ -8,6 +8,7 @@ export type CallStep = {
   value: bigint;
   abi: string;
   contractMethod: string; // human-readable abi item
+  // biome-ignore  lint/suspicious/noExplicitAny: reason
   args?: any[];
   functionType: string;
 };
@@ -48,7 +49,7 @@ export const createCallBuilderStore = () => {
     removeStep: (id) => {
       set((state) => {
         if (id === state.currentStep) {
-          let idx = state.steps.findIndex((s) => s.id == id);
+          let idx = state.steps.findIndex((s) => s.id === id);
           if (idx > 0) {
             idx = idx - 1;
           }

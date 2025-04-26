@@ -50,6 +50,7 @@ export const TransactionBuilder = ({ network }: Iprops) => {
   const addStep = useScopedCallBuilder((s) => s.addStep);
   const removeStep = useScopedCallBuilder((s) => s.removeStep);
   const updateStep = useScopedCallBuilder((s) => s.updateStep);
+  // biome-ignore lint/style/noNonNullAssertion: reason
   const step = steps.find((s) => s.id === currentStep)!;
   const { sendTransactionAsync } = useSendTransaction();
   const [result, setResult] = useState('');

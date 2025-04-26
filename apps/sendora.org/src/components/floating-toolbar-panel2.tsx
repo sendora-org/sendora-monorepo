@@ -3,11 +3,12 @@ import { Button } from '@heroui/react';
 import type React from 'react';
 import { useEffect } from 'react';
 import CopyButton from './copy-button';
+type PanelContent = { label: string; value: string };
 
 interface ActionItem {
   label: string;
   icon?: React.ReactNode;
-  handler: (selectionText: string) => Promise<any> | any;
+  handler: (selectionText: string) => Promise<PanelContent> | PanelContent;
 }
 
 interface FloatingToolbarWithPanelProps {
@@ -42,7 +43,7 @@ const FloatingToolbarWithPanel: React.FC<FloatingToolbarWithPanelProps> = ({
 
     const handleClickOutside = (e: MouseEvent) => {
       if (scopeRef.current && !scopeRef.current.contains(e.target as Node)) {
-        // setPanelOpen(false);
+        setPanelOpen(false);
       }
     };
 
@@ -96,7 +97,8 @@ const FloatingToolbarWithPanel: React.FC<FloatingToolbarWithPanelProps> = ({
           >
             {computedActions.map((action, idx) => (
               <button
-                key={idx}
+                type="button"
+                key={`${action.label}-${idx}`}
                 onMouseDown={(e) => e.preventDefault()} // ⭐ Prevent blurring of selection.
                 onClick={() => handleActionClick(action.handler)}
                 style={{

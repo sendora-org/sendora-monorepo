@@ -4,7 +4,11 @@ import { useState } from 'react';
 import { CustomAlert } from './custom-alert';
 import JsonViewer from './json-viewer';
 
-export const ErrorPrompt = ({ error, setError }) => {
+type IProps = {
+  error: string;
+  setError: (error: string) => void;
+};
+export const ErrorPrompt = ({ error, setError }: IProps) => {
   const [isVisible, setIsVisible] = useState(true);
   return (
     <CustomAlert
@@ -21,7 +25,7 @@ export const ErrorPrompt = ({ error, setError }) => {
         <Button
           isIconOnly
           onPress={() => {
-            setError && setError('');
+            setError?.('');
             setIsVisible(false);
           }}
           className="text-default-500 font-medium   absolute top-2 right-2"

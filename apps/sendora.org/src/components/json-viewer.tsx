@@ -28,7 +28,7 @@ const JsonViewer: React.FC<JsonViewerProps> = ({
     if (codeRef.current) {
       hljs.highlightElement(codeRef.current);
     }
-  }, [data]);
+  }, []);
 
   const jsonString =
     typeof data === 'string' ? data : prettifyJSON(Json.stringify(data));

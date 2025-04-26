@@ -939,8 +939,8 @@ export const getContractABIs = async (chainId: number, to: Hex) => {
       signatureLookup: loaders.defaultSignatureLookup,
 
       followProxies: true,
-      onProgress: (progress, ...args: any[]) =>
-        console.log('WhatsABI:', progress, args),
+      // onProgress: (progress, ...args: any[]) =>
+      //   console.log('WhatsABI:', progress, args),
       // addressResolver: resolver,
     });
     const iface = new ethers.Interface(r.abi);
@@ -983,13 +983,6 @@ export const getContractFunctions = async (
   }
 
   const publicClient = await createPublicClientWithRpc(chainId, '');
-  const bytecode = await publicClient.getCode({
-    address: CA,
-  });
-
-  const abi = whatsabi.abiFromBytecode(bytecode!);
-
-  console.log('from bytecode', { abi });
 
   const abiLoaders: Array<loaders.ABILoader> = [
     new loaders.SourcifyABILoader({ chainId: chainId }),
@@ -1001,7 +994,8 @@ export const getContractFunctions = async (
     abiLoaders.push(new loaders.SourcifyABILoader({ chainId: 1 }));
   }
 
-  let r;
+  // biome-ignore  lint/suspicious/noExplicitAny: reason
+  let r: any;
   try {
     r = await whatsabi.autoload(CA, {
       provider: publicClient,
@@ -1010,18 +1004,13 @@ export const getContractFunctions = async (
       signatureLookup: loaders.defaultSignatureLookup,
 
       followProxies: true,
-      onProgress: (progress, ...args: any[]) =>
-        console.log('WhatsABI:', progress, args),
+      // onProgress: (progress, ...args: any[]) =>
+      //   console.log('WhatsABI:', progress, args),
       // addressResolver: resolver,
     });
   } finally {
     // loading.to = false;
   }
-
-  console.log({ r });
-
-  console.log('from remote', r.abi);
-  // const signatureLookup = new whatsabi.loaders.OpenChainSignatureLookup();
 
   const functions: ethers.FunctionFragment[] = [];
 
@@ -1032,10 +1021,7 @@ export const getContractFunctions = async (
     ethers.Interface.from(r.abi).forEachEvent((e) => events.push(e));
   }
 
-  console.log('from functions ', functions);
-
   const rrr = splitMutability(functions);
-  console.log('from rrr', rrr);
 
   return {
     splitFns: rrr,
@@ -1096,6 +1082,7 @@ export const call = async (
   return returnValue;
 };
 
+// biome-ignore  lint/suspicious/noExplicitAny: reason
 export const getCalldata = (abi: string, args: any[]) => {
   try {
     console.log('getCalldata', { abi, args });
@@ -1115,6 +1102,7 @@ export const getCalldata = (abi: string, args: any[]) => {
   return '0x';
 };
 
+// biome-ignore  lint/suspicious/noExplicitAny: reason
 export const getParams = (abi: string, args: any[]) => {
   try {
     console.log('getParams', { abi, args });
@@ -1138,6 +1126,7 @@ export const getDecodedFunctionResult = (abi: string, data: Hex) => {
   });
 };
 
+// biome-ignore  lint/suspicious/noExplicitAny: reason
 export function getDefaultValue(param: ethers.ParamType): any {
   switch (param.baseType) {
     case 'string':
@@ -1154,6 +1143,7 @@ export function getDefaultValue(param: ethers.ParamType): any {
     case 'array':
       if (typeof param.arrayLength === 'number' && param.arrayLength >= 0) {
         return Array(param.arrayLength).fill(
+          // biome-ignore lint/style/noNonNullAssertion: reason
           getDefaultValue(param.arrayChildren!),
         );
       }
@@ -1178,9 +1168,8 @@ export const isValidJSON = (value: string | undefined) => {
 export const prettifyJSON = (json: string) => {
   if (isValidJSON(json) && json?.length > 0) {
     return JSON.stringify(JSON.parse(json), null, 2);
-  } else {
-    return '';
   }
+  return '';
 };
 
 export function isDecimal(value: string): boolean {

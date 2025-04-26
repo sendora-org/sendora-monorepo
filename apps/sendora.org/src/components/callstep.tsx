@@ -39,6 +39,7 @@ export type CallStepData = {
   value: bigint;
   abi: string;
   contractMethod: string; // human-readable abi item
+  // biome-ignore  lint/suspicious/noExplicitAny: reason
   args?: any[];
   functionType: string;
 };
@@ -71,7 +72,7 @@ export const CallStep: React.FC<CallStepProps> = ({
       abi: data.abi,
       functionType: data.functionType,
     });
-  }, []);
+  }, [data, reset]);
 
   const to = watch('to');
   const abi = watch('abi');
@@ -86,16 +87,20 @@ export const CallStep: React.FC<CallStepProps> = ({
   const functionType = watch('functionType', 'readable');
   const contractMethod = watch('contractMethod');
 
-  const setAbi = async (chainId: number, to: Hex) => {
-    const details = await getContractABIs(chainId, to);
-    console.log({ details });
-    await delay(150);
-    setValue('abi', details);
-  };
+  //   const setAbi = async (chainId: number, to: Hex) => {
+  //     const details = await getContractABIs(chainId, to);
+  //     console.log({ details });
+  //     await delay(150);
+  // return details
+  //   };
 
   useEffect(() => {
-    setAbi(network.id, to);
-  }, [to, network.id]);
+    // setAbi(network.id, to);
+
+    getContractABIs(network.id, to).then((details) => {
+      setValue('abi', details);
+    });
+  }, [to, network.id, setValue]);
 
   const functions: ethers.FunctionFragment[] = useMemo(() => {
     try {
@@ -143,20 +148,23 @@ export const CallStep: React.FC<CallStepProps> = ({
   }, [functionType, contractMethod]);
 
   useEffect(() => {
-    setValue('args', []);
-  }, [contractMethod]);
+    if (contractMethod) {
+      setValue('args', []);
+    }
+  }, [contractMethod, setValue]);
 
   const params = useMemo(() => {
     return getParams(contractMethod, args);
   }, [contractMethod, args]);
 
   const calldata = useMemo(() => {
-    if (contractMethod == '') {
+    if (contractMethod === '') {
       return '0x';
     }
     return getCalldata(contractMethod, args);
   }, [contractMethod, args]);
 
+  // biome-ignore  lint/suspicious/noExplicitAny: reason
   const submitStep = (submit_data: any) => {
     const valueInWei = 0n; //isPayable ? submit_data.value : 0n;
 
@@ -196,7 +204,7 @@ export const CallStep: React.FC<CallStepProps> = ({
           placeholder="CA (Contract Address)"
         />
 
-        {!!!errors.to && (
+        {!errors.to && (
           <>
             <H3Title>
               ABI <span className="text-red-600">*</span>
@@ -350,7 +358,8 @@ export const CallStep: React.FC<CallStepProps> = ({
               <FormProvider {...methods}>
                 {inputs.map((param, idx) => (
                   <FormField
-                    key={`${contractMethod}-${idx}`}
+                    // biome-ignore lint/suspicious/noArrayIndexKey: reason
+                    key={`${contractMethod}-args-${idx}`}
                     param={param}
                     name={`args.${idx}`}
                   />
@@ -364,7 +373,7 @@ export const CallStep: React.FC<CallStepProps> = ({
 
                 <Controller
                   control={control}
-                  name={`value`}
+                  name="value"
                   rules={{ required: 'required' }}
                   render={({
                     field: { onChange, value },

@@ -88,13 +88,15 @@ export const FormField: React.FC<FormRendererProps> = ({ param, name }) => {
     if (typeof arrayLength === 'number' && arrayLength >= 0) {
       return (
         <div className="p-2  border border-default-300 rounded">
-          <label className="font-semibold block mb-2">
+          <div className="font-semibold block mb-2">
             {param.name || name} (fixed array[{arrayLength}])
-          </label>
+          </div>
 
           {Array.from({ length: arrayLength }).map((_, index) => (
             <FormField
+              // biome-ignore lint/suspicious/noArrayIndexKey: reason
               key={index}
+              // biome-ignore lint/style/noNonNullAssertion: reason
               param={param.arrayChildren!}
               name={`${name}.${index}`}
             />
@@ -109,13 +111,14 @@ export const FormField: React.FC<FormRendererProps> = ({ param, name }) => {
     });
     return (
       <div className="p-2  border border-default-300 rounded my-2">
-        <label className="font-semibold block mb-2">
+        <div className="font-semibold block mb-2">
           {param.name || name} (array)
-        </label>
+        </div>
         {fieldArray.fields.map((field, index) => (
           <div key={field.id} className="flex gap-2 items-center mb-2">
             <div className="flex-1">
               <FormField
+                // biome-ignore lint/style/noNonNullAssertion: reason
                 param={param.arrayChildren!}
                 name={`${name}.${index}`}
               />
@@ -151,7 +154,8 @@ export const FormField: React.FC<FormRendererProps> = ({ param, name }) => {
             <Disclosure.Panel className="pl-4 border-l border-default-300">
               {param.components?.map((childParam, index) => (
                 <FormField
-                  key={index}
+                  // biome-ignore lint/suspicious/noArrayIndexKey: reason
+                  key={`${name}.${index}`}
                   param={childParam}
                   name={`${name}.${index}`}
                 />

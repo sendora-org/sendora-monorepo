@@ -5,7 +5,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 export default ({
   showAddr,
   register,
-}: { showAddr?: boolean; register?: Function }) => {
+}: { showAddr?: boolean; register?: (name: string) => void }) => {
   const { loginAddress, logout } = useAuthStore();
   return (
     <ConnectButton.Custom>

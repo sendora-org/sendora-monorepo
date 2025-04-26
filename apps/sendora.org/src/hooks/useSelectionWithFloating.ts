@@ -29,6 +29,14 @@ export interface UseSelectionFloatingReturn {
   ) => Promise<void>;
 }
 
+const createVirtualElement = (rect: DOMRect): VirtualElement => ({
+  getBoundingClientRect: () => rect,
+  contextElement: null,
+});
+const isInside = (parent: HTMLElement | null | undefined, target: Node) => {
+  return parent ? parent.contains(target) : false;
+};
+
 export const useSelectionWithFloating = (): UseSelectionFloatingReturn => {
   const [open, setOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
@@ -59,15 +67,9 @@ export const useSelectionWithFloating = (): UseSelectionFloatingReturn => {
     if (!scopeRef.current || !node) return false;
     if (node.nodeType === 1) {
       return scopeRef.current.contains(node as Node);
-    } else {
-      return scopeRef.current.contains(node.parentNode as Node);
     }
+    return scopeRef.current.contains(node.parentNode as Node);
   }, []);
-
-  const createVirtualElement = (rect: DOMRect): VirtualElement => ({
-    getBoundingClientRect: () => rect,
-    contextElement: null,
-  });
 
   const handleSelection = useCallback(() => {
     let selectedText = '';
@@ -155,10 +157,6 @@ export const useSelectionWithFloating = (): UseSelectionFloatingReturn => {
     [selectionText, virtualReference, panelFloating.refs],
   );
 
-  const isInside = (parent: HTMLElement | null | undefined, target: Node) => {
-    return parent ? parent.contains(target) : false;
-  };
-
   const handlePointerDownOutside = useCallback(
     (e: PointerEvent) => {
       const target = e.target as Node;
@@ -172,20 +170,8 @@ export const useSelectionWithFloating = (): UseSelectionFloatingReturn => {
         setPanelOpen(false);
       }
     },
-    [scopeRef, toolbarFloating.refs.floating, panelFloating.refs.floating],
+    [toolbarFloating.refs.floating, panelFloating.refs.floating],
   );
-  //   const handlePointerDownOutside = useCallback((e: PointerEvent) => {
-  //     const target = e.target as Node;
-
-  //     const insideScope = scopeRef.current?.contains(target);
-  //     const insideToolbar = toolbarFloating.refs.floating.current?.contains(target);
-  //     const insidePanel = panelFloating.refs.floating.current?.contains(target);
-
-  //     if (!insideScope && !insideToolbar && !insidePanel) {
-  //       setOpen(false);
-  //       setPanelOpen(false);
-  //     }
-  //   }, [scopeRef, toolbarFloating.refs.floating, panelFloating.refs.floating]);
 
   useEffect(() => {
     const listener = (e: PointerEvent) => {
