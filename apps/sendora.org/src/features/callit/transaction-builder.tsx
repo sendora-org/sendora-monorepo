@@ -17,11 +17,11 @@ import { Json } from 'ox';
 import React, { useState } from 'react';
 import type { Chain, Hex } from 'viem';
 
-import { useAccount } from 'wagmi';
-import { useSendTransaction } from 'wagmi';
 import { ErrorPrompt } from '@/components/error-prompt';
 import FloatingToolbarWithPanel from '@/components/floating-toolbar-panel2';
 import JsonViewer from '@/components/json-viewer';
+import { useAccount } from 'wagmi';
+import { useSendTransaction } from 'wagmi';
 type IProps = {
   network: Chain;
 };

@@ -1,7 +1,7 @@
 import AppTitle from '@/components/app-title';
-import { App } from '@/features/deploy-contract/app';
 import LayoutDefault from '@/components/layout-default';
 import { type NetworkInfo, findNetwork, networks } from '@/constants/config';
+import { App } from '@/features/deploy-contract/app';
 import { useRpcStore } from '@/hooks/useRpcStore';
 import { getActiveRpc } from '@/libs/common';
 import { composeViemChain } from '@/libs/wagmi';

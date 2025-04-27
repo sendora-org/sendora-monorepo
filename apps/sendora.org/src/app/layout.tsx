@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import Script from 'next/script';
+
 import './globals.css';
 
 import { Providers } from './providers';
@@ -103,6 +105,20 @@ export default function RootLayout({
           src="https://assets.onedollarstats.com/stonks.js"
           data-debug="sendora.org"
         />
+
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-1M0RT62WH8"
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){ window.dataLayer.push(arguments); }
+            gtag('js', new Date());
+            gtag('config', 'G-1M0RT62WH8');
+          `}
+        </Script>
       </body>
     </html>
   );

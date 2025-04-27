@@ -1,7 +1,7 @@
 import AppTitle from '@/components/app-title';
-import { App } from '@/features/callit/app';
 import LayoutDefault from '@/components/layout-default';
 import { type NetworkInfo, findNetwork, networks } from '@/constants/config';
+import { App } from '@/features/callit/app';
 import { composeViemChain } from '@/libs/wagmi';
 
 export async function generateStaticParams() {

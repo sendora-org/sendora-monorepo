@@ -17,8 +17,8 @@ import { useEffect } from 'react';
 
 import { Button } from '@heroui/react';
 
-import useAuthStore from '@/hooks/useAuth';
 import { CopyText } from '@/components/copy-text-2';
+import useAuthStore from '@/hooks/useAuth';
 
 import ConnectButton from '@/components/connect-button';
 import { DeterministicDeployerPrompt } from '@/components/deterministic-deployer-prompt';

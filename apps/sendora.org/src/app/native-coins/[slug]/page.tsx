@@ -1,7 +1,7 @@
 import AppTitle from '@/components/app-title';
 import LayoutDefault from '@/components/layout-default';
-import { App } from '@/features/native-coins/app';
 import { type NetworkInfo, findNetwork, networks } from '@/constants/config';
+import { App } from '@/features/native-coins/app';
 import { composeViemChain } from '@/libs/wagmi';
 
 export async function generateStaticParams() {
