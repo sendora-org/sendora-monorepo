@@ -1,6 +1,6 @@
 import AppTitle from '@/components/app-title';
 import LayoutDefault from '@/components/layout-default';
-import { App } from '@/components/native-coins/app';
+import { App } from '@/features/native-coins/app';
 import { type NetworkInfo, findNetwork, networks } from '@/constants/config';
 import { composeViemChain } from '@/libs/wagmi';
 

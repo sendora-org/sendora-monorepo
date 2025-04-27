@@ -46,7 +46,7 @@ export default function AddAmount() {
       const setValue = editorRef?.current?.setValue;
 
       const worker = new Worker(
-        new URL('@/web-workers/codemirror-amount-update.ts', import.meta.url),
+        new URL('@/workers/codemirror-amount-update.ts', import.meta.url),
         { type: 'module' },
       );
       const input = {

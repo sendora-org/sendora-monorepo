@@ -44,7 +44,7 @@ export default function SheetTableData({
 
   const handleClick = async () => {
     const worker = new Worker(
-      new URL('@/web-workers/tabledata-op1.ts', import.meta.url),
+      new URL('@/workers/tabledata-op1.ts', import.meta.url),
       { type: 'module' },
     );
     const input = {

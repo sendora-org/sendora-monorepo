@@ -1,5 +1,5 @@
 import AppTitle from '@/components/app-title';
-import { App } from '@/components/callit/app';
+import { App } from '@/features/callit/app';
 import LayoutDefault from '@/components/layout-default';
 import { type NetworkInfo, findNetwork, networks } from '@/constants/config';
 import { composeViemChain } from '@/libs/wagmi';

@@ -13,7 +13,7 @@ export default () => {
 
   useEffect(() => {
     taffydbRef.current = new Worker(
-      new URL('@/web-workers/demo3.ts', import.meta.url),
+      new URL('@/workers/demo3.ts', import.meta.url),
       { type: 'module' },
     );
     return () => {
@@ -27,7 +27,7 @@ export default () => {
       <Button
         onPress={() => {
           const worker = new Worker(
-            new URL('@/web-workers/demo1.ts', import.meta.url),
+            new URL('@/workers/demo1.ts', import.meta.url),
             { type: 'module' },
           );
           const num = 12;
@@ -46,7 +46,7 @@ export default () => {
       <Button
         onPress={() => {
           const worker = new Worker(
-            new URL('@/web-workers/demo2.ts', import.meta.url),
+            new URL('@/workers/demo2.ts', import.meta.url),
             { type: 'module' },
           );
           const value = '123';
@@ -64,7 +64,7 @@ export default () => {
         onPress={async () => {
           const value = '123';
           const worker = new Worker(
-            new URL('@/web-workers/demo2.ts', import.meta.url),
+            new URL('@/workers/demo2.ts', import.meta.url),
             { type: 'module' },
           );
           const result = await runWorker(worker, value);

@@ -3,7 +3,7 @@ import { type StoreApi, useStore } from 'zustand';
 import {
   type CallStepState,
   createCallBuilderStore,
-} from '../zustand/callBuilderStore';
+} from '../stores/callBuilderStore';
 
 const CallBuilderContext = createContext<StoreApi<CallStepState> | null>(null);
 

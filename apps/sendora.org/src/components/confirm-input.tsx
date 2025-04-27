@@ -63,7 +63,7 @@ export const ConfirmInput = ({
 
   useEffect(() => {
     const worker = new Worker(
-      new URL('@/web-workers/userinput-validate.ts', import.meta.url),
+      new URL('@/workers/userinput-validate.ts', import.meta.url),
       { type: 'module' },
     );
     workerService.current = new WorkerService(worker);

@@ -415,7 +415,7 @@ export function runWorker3<T, R>(
 
 export const getWorkbook = async (ab: ArrayBuffer) => {
   const worker = new Worker(
-    new URL('@/web-workers/spreadsheet-workbook.ts', import.meta.url),
+    new URL('@/workers/spreadsheet-workbook.ts', import.meta.url),
     { type: 'module' },
   );
   const result = await runWorker<ArrayBuffer, string[] | null>(worker, ab);
@@ -434,7 +434,7 @@ export type TableData = {
 
 export const getTableData = async (ab: ArrayBuffer, sheetIndex = 0) => {
   const worker = new Worker(
-    new URL('@/web-workers/spreadsheet-tabledata.ts', import.meta.url),
+    new URL('@/workers/spreadsheet-tabledata.ts', import.meta.url),
     { type: 'module' },
   );
   const input = {

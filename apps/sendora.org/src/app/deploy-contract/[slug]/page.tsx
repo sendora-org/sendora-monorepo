@@ -1,5 +1,5 @@
 import AppTitle from '@/components/app-title';
-import { App } from '@/components/deploy-contract/app';
+import { App } from '@/features/deploy-contract/app';
 import LayoutDefault from '@/components/layout-default';
 import { type NetworkInfo, findNetwork, networks } from '@/constants/config';
 import { useRpcStore } from '@/hooks/useRpcStore';

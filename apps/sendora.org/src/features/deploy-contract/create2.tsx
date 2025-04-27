@@ -18,12 +18,12 @@ import { useEffect } from 'react';
 import { Button } from '@heroui/react';
 
 import useAuthStore from '@/hooks/useAuth';
-import { CopyText } from '../copy-text-2';
+import { CopyText } from '@/components/copy-text-2';
 
 import ConnectButton from '@/components/connect-button';
-import { DeterministicDeployerPrompt } from '../deterministic-deployer-prompt';
-import H3Title from '../h3-title';
-import { SetGasPrice } from '../set-gas-price';
+import { DeterministicDeployerPrompt } from '@/components/deterministic-deployer-prompt';
+import H3Title from '@/components/h3-title';
+import { SetGasPrice } from '@/components/set-gas-price';
 
 import { getAbiConstructor } from '@/libs/common';
 import { waitForTransactionReceipt } from '@/libs/common';

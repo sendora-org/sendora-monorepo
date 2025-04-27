@@ -19,9 +19,9 @@ import type { Chain, Hex } from 'viem';
 
 import { useAccount } from 'wagmi';
 import { useSendTransaction } from 'wagmi';
-import { ErrorPrompt } from '../error-prompt';
-import FloatingToolbarWithPanel from '../floating-toolbar-panel2';
-import JsonViewer from '../json-viewer';
+import { ErrorPrompt } from '@/components/error-prompt';
+import FloatingToolbarWithPanel from '@/components/floating-toolbar-panel2';
+import JsonViewer from '@/components/json-viewer';
 type IProps = {
   network: Chain;
 };

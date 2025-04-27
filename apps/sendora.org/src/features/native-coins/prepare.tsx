@@ -3,7 +3,7 @@ import { native_coin_input_example } from '@/constants/common';
 import { EditorRefContext } from '@/constants/contexts';
 import { useEffect, useRef } from 'react';
 import type { Chain } from 'viem';
-import type { SNDRACodemirrorRef } from '../codemirror-sndra';
+import type { SNDRACodemirrorRef } from '@/components/codemirror-sndra';
 type IProps<T> = {
   data: T;
   currentStep: number;
