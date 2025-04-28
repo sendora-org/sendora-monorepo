@@ -17,7 +17,7 @@ const footerNavigation = {
     };
   }),
   aboutUs: [
-    { name: 'Tutorials', href: 'https://docs.sendora.org' },
+    { name: 'Docs', href: 'https://docs.sendora.org' },
     { name: 'ENS', href: 'https://app.ens.domains/sendora.eth' },
     { name: 'Twitter', href: 'https://x.com/sendora_org' },
     { name: 'Github', href: 'https://github.com/sendora-org' },
