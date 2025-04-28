@@ -24,6 +24,26 @@ export default defineConfig({
           label: 'Advanced',
           autogenerate: { directory: 'advanced' },
         },
+
+        {
+          label: '',
+          autogenerate: { directory: 'advanced' },
+        },
+
+        {
+          label: 'SNDRA.LINK',
+          autogenerate: { directory: 'sndra-link' },
+        },
+
+        {
+          label: 'SENDORA Wallet',
+          autogenerate: { directory: 'sendora-wallet' },
+        },
+        {
+          label: 'SENDORA Vault',
+          autogenerate: { directory: 'sendora-vault' },
+        },
+
         {
           label: 'FAQs',
           autogenerate: { directory: 'faqs' },
