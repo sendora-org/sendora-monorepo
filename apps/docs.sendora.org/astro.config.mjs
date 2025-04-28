@@ -7,21 +7,30 @@ export default defineConfig({
   site: 'https://docs.sendora.org',
   integrations: [
     starlight({
-      title: 'SENDORA Tutorial',
+      title: 'SENDORA docs',
       social: {
         github: 'https://github.com/sendora-org/sendora-monorepo',
       },
       sidebar: [
         {
-          label: 'Guides',
-          items: [
-            // Each item here is one entry in the navigation menu.
-            { label: 'Example Guide', slug: 'guides/example' },
-          ],
+          label: 'Why We Built SENDORA',
+          autogenerate: { directory: 'why-we-built-sendora' },
         },
         {
-          label: 'Reference',
-          autogenerate: { directory: 'reference' },
+          label: 'Getting started',
+          autogenerate: { directory: 'getting-started' },
+        },
+        {
+          label: 'Advanced',
+          autogenerate: { directory: 'advanced' },
+        },
+        {
+          label: 'FAQs',
+          autogenerate: { directory: 'faqs' },
+        },
+        {
+          label: 'Help',
+          autogenerate: { directory: 'help' },
         },
       ],
     }),
