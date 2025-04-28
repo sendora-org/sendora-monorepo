@@ -7,9 +7,9 @@ export default defineConfig({
   site: 'https://docs.sendora.org',
   integrations: [
     starlight({
-      title: 'My Docs',
+      title: 'SENDORA Tutorial',
       social: {
-        github: 'https://github.com/withastro/starlight',
+        github: 'https://github.com/sendora-org/sendora-monorepo',
       },
       sidebar: [
         {
