@@ -26,11 +26,6 @@ export default defineConfig({
         },
 
         {
-          label: '',
-          autogenerate: { directory: 'advanced' },
-        },
-
-        {
           label: 'SNDRA.LINK',
           autogenerate: { directory: 'sndra-link' },
         },
