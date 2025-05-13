@@ -130,7 +130,10 @@ export const FormField: React.FC<FormRendererProps> = ({ param, name }) => {
           <div className="font-semibold block mb-2">
             {param.name || name} (fixed array[{arrayLength}]){' '}
             {param.type !== 'array' && param.type !== 'tuple' && (
-              <Button size='sm' onPress={() => paste(fieldArray, name, arrayLength)}>
+              <Button
+                size="sm"
+                onPress={() => paste(fieldArray, name, arrayLength)}
+              >
                 paste
               </Button>
             )}
@@ -199,7 +202,9 @@ export const FormField: React.FC<FormRendererProps> = ({ param, name }) => {
         <div className="font-semibold block mb-2">
           {param.name || name} (array){' '}
           {param.type !== 'array' && param.type !== 'tuple' && (
-            <Button size='sm' onPress={() => paste(fieldArray, name, -1)}>paste</Button>
+            <Button size="sm" onPress={() => paste(fieldArray, name, -1)}>
+              paste
+            </Button>
           )}
         </div>
         {fieldArray.fields.map((field, index) => (

@@ -22,7 +22,7 @@ const footerNavigation = {
     { name: 'Twitter', href: 'https://x.com/sendora_org' },
     { name: 'Github', href: 'https://github.com/sendora-org' },
     { name: 'Discord', href: 'https://discord.gg/YQp7fzv2G5' },
-    { name: 'Telegram', href: 'https://t.me/+ZmtViJxAr1AzNzBl' },
+    { name: 'Telegram', href: 'https://t.me/+8LCvYzchyF01ZGI9' },
   ],
   legal: [
     { name: 'Claim', href: '#' },
@@ -56,7 +56,7 @@ const footerNavigation = {
 
     {
       name: 'Telegram',
-      href: 'https://t.me/+ZmtViJxAr1AzNzBl',
+      href: 'https://t.me/+8LCvYzchyF01ZGI9',
       icon: (props: SocialIconProps) => (
         <Icon {...props} icon="fontisto:telegram" />
       ),
