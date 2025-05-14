@@ -3,16 +3,26 @@ import { Button, Input, Switch } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import type { ethers } from 'ethers';
 import type React from 'react';
+import {useEffect} from "react"
 
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 
 type FormRendererProps = {
   param: ethers.ParamType;
   name: string;
+  defaultValue?:any;
 };
 
-export const FormField: React.FC<FormRendererProps> = ({ param, name }) => {
-  const { control, register, setValue } = useFormContext();
+export const FormField: React.FC<FormRendererProps> = ({ param, name, defaultValue }) => {
+  const { control, register, setValue,getValues } = useFormContext();
+
+
+  useEffect(() => {
+    const currentValue = getValues(name);
+    if (defaultValue !== undefined && currentValue === undefined) {
+      setValue(name, defaultValue);
+    }
+  }, [defaultValue, name, getValues, setValue]);
 
   // biome-ignore  lint/suspicious/noExplicitAny: reason
   const paste = async (param: any, name: string, arrayLength: number) => {
@@ -145,6 +155,7 @@ export const FormField: React.FC<FormRendererProps> = ({ param, name }) => {
                   // biome-ignore lint/style/noNonNullAssertion: reason
                   param={param.arrayChildren!}
                   name={`${name}.${index}`}
+                  defaultValue={[]}
                 />
               </div>
               <button
@@ -214,6 +225,7 @@ export const FormField: React.FC<FormRendererProps> = ({ param, name }) => {
                 // biome-ignore lint/style/noNonNullAssertion: reason
                 param={param.arrayChildren!}
                 name={`${name}.${index}`}
+                defaultValue={[]}
               />
             </div>
             <button
