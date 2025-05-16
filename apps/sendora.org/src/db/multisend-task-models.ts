@@ -35,7 +35,7 @@ export enum SigningMode {
   Wallet = 'wallet'
 }
 
-type Hex = `0x${string}`
+export type Hex = `0x${string}`
 
 // The update occurs only for the status field
 export interface IMultisendTask {
@@ -75,14 +75,13 @@ export interface IMultisendTask {
   total_token_amount: string;
 
   signing_mode: SigningMode;
-  session_key: Hex;
+  session_key: Hex|null;
   signer_address: Hex;
   funding_wallet_address: Hex;
   connected_wallet_address: Hex;
 
   status: MultisendTaskStatus; // task status： pending|processing|canceled|completed
   created_at: number;
-  updated_at: number;
 }
 
 // Only fields starting with tx_ and status will be updated.
@@ -97,9 +96,6 @@ export interface IMultisendTaskItem {
 
   value: string;// The amount of Ethereum priced in wei.
 
-  gas_limit: string;
-  gas_price: string;
-
   total_recipients: number;
 
   // Total amount in pricing currency (e.g. USD, EUR), expressed as a stringified integer.
@@ -110,6 +106,8 @@ export interface IMultisendTaskItem {
   // Represents the amounts of tokens to be sent, specified in the smallest unit of the token.
   total_token_amount: string;
 
+  tx_gas_limit: string | null;
+  tx_gas_price: string | null;
   tx_hash: Hex | null;
   tx_gas_used: string | null;
   tx_gas_fee_cost: string | null;
@@ -119,6 +117,5 @@ export interface IMultisendTaskItem {
 
   status: MultisendTaskItemStatus; // task item status： pending|processing|failed|succeeded
   created_at: number;
-  updated_at: number;
 
 }
