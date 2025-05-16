@@ -70,9 +70,8 @@ export interface IMultisendTask {
   // This value is scaled by 1e18 for precision.
   total_pricing_amount: string;
 
-
   // Total amount in token units (e.g. ETH, DAI), expressed as a stringified integer.
-  // This value is also scaled by 1e18 for precision.
+  // Represents the amounts of tokens to be sent, specified in the smallest unit of the token.
   total_token_amount: string;
 
   signing_mode: SigningMode;
@@ -92,11 +91,11 @@ export interface IMultisendTaskItem {
   position: number;
 
   recipients: Hex[];
-  amounts: string[];
+  amounts: string[]; // Represents the amounts of tokens to be sent, specified in the smallest unit of the token.
   proof: Hex[];
   leaf: Hex;
 
-  value: string;
+  value: string;// The amount of Ethereum priced in wei.
 
   gas_limit: string;
   gas_price: string;
@@ -108,7 +107,7 @@ export interface IMultisendTaskItem {
   total_pricing_amount: string;
 
   // Total amount in token units (e.g. ETH, DAI), expressed as a stringified integer.
-  // This value is also scaled by 1e18 for precision.
+  // Represents the amounts of tokens to be sent, specified in the smallest unit of the token.
   total_token_amount: string;
 
   tx_hash: Hex | null;
