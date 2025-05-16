@@ -1,4 +1,4 @@
-import { cancelMultisendTask, createMultisendTask, mockData, deleteMultisendTask } from '@/services/multisend-task';
+import { cancelMultisendTask, createMultisendTask, mockData, deleteMultisendTask, dequeueTaskItem } from '@/services/multisend-task';
 export const DemoOps = () => {
 
     return <>
@@ -18,5 +18,13 @@ export const DemoOps = () => {
 
             console.log({ result })
         }}>delete a task </button>
+
+
+        <button onClick={async () => {
+            const result = await dequeueTaskItem(mockData.task.id)
+            console.log({ result })
+        }}>dequeue a task</button>
+
+
     </>
 }

@@ -149,3 +149,39 @@ export const deleteMultisendTask = async (taskId: Hex): Promise<boolean> => {
     return true
 
 }
+
+
+export async function dequeueTaskItem(taskId: Hex, status: MultisendTaskItemStatus, nextStatus: MultisendTaskItemStatus): Promise<IMultisendTaskItem | null> {
+    let selectedItem: IMultisendTaskItem | null = null;
+
+    try {
+        await db.transaction('rw', db.multisendTaskItems, async () => {
+            const pendingItem = await db.multisendTaskItems
+                .where('[batch_id+status]')
+                .equals([taskId, status])
+                .first();
+
+            if (!pendingItem) return;
+
+            await db.multisendTaskItems.update(
+                [pendingItem.batch_id, pendingItem.position],
+                {
+                    status: nextStatus
+                }
+            );
+
+
+            selectedItem = {
+                ...pendingItem,
+                status: nextStatus
+
+            };
+        });
+    } catch (err) {
+        console.error('dequeueTaskItem Transaction failed', err)
+
+    }
+    return selectedItem;
+}
+
+

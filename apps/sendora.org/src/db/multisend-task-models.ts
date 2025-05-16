@@ -8,8 +8,9 @@ export enum MultisendTaskStatus {
 export enum MultisendTaskItemStatus {
   PENDING = 'pending',
   PROCESSING = 'processing',
+  COMMMITTED ='committed',
   FAILED = 'failed',
-  SUCCEEDED = 'succeeded',
+  COMPLETED = 'completed',
 }
 
 export enum TransactionStatus {
@@ -115,7 +116,7 @@ export interface IMultisendTaskItem {
   tx_confirmed_at: number | null;
   tx_sent_at: number | null;
 
-  status: MultisendTaskItemStatus; // task item status： pending|processing|failed|succeeded
+  status: MultisendTaskItemStatus; // task item status： pending|processing|committed|failed|completed
   created_at: number;
 
 }
