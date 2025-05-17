@@ -8,7 +8,7 @@ export enum MultisendTaskStatus {
 export enum MultisendTaskItemStatus {
   PENDING = 'pending',
   PROCESSING = 'processing',
-  COMMMITTED ='committed',
+  COMMITTED = 'committed',
   FAILED = 'failed',
   COMPLETED = 'completed',
 }
@@ -76,7 +76,7 @@ export interface IMultisendTask {
   total_token_amount: string;
 
   signing_mode: SigningMode;
-  session_key: Hex|null;
+  session_key: Hex | null;
   signer_address: Hex;
   funding_wallet_address: Hex;
   connected_wallet_address: Hex;
@@ -107,6 +107,7 @@ export interface IMultisendTaskItem {
   // Represents the amounts of tokens to be sent, specified in the smallest unit of the token.
   total_token_amount: string;
 
+  tx_nonce: number | null;
   tx_gas_limit: string | null;
   tx_gas_price: string | null;
   tx_hash: Hex | null;
@@ -115,8 +116,10 @@ export interface IMultisendTaskItem {
   tx_status: TransactionStatus | null;
   tx_confirmed_at: number | null;
   tx_sent_at: number | null;
+  tx_error_reason: string | null;
 
   status: MultisendTaskItemStatus; // task item status： pending|processing|committed|failed|completed
   created_at: number;
+  updated_at: number;
 
 }

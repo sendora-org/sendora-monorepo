@@ -1,6 +1,8 @@
 import { multisendTaskDb as db, SigningMode, MultisendTaskStatus, TransactionStatus, MultisendTaskItemStatus } from "@/db/databases"
 import type { IMultisendTask, IMultisendTaskItem, Hex } from "@/db/databases"
 import { keccak256 } from 'viem'
+import { Subject, firstValueFrom, race, timer, take, map } from 'rxjs';
+import { getErrorMessage } from "@/libs/common"
 
 // mock
 const mockTaskId: Hex = `0x${'a'.repeat(64)}`
@@ -57,7 +59,11 @@ const mockTaskItem1: IMultisendTaskItem = {
     tx_confirmed_at: null,
     tx_sent_at: null,
     status: MultisendTaskItemStatus.PENDING,
-    created_at: Date.now()
+    created_at: Date.now(),
+
+    updated_at: Date.now(),
+    tx_error_reason: null,
+    tx_nonce: null
 };
 
 const mockTaskItem2: IMultisendTaskItem = {
@@ -80,7 +86,10 @@ const mockTaskItem2: IMultisendTaskItem = {
     tx_confirmed_at: null,
     tx_sent_at: null,
     status: MultisendTaskItemStatus.PENDING,
-    created_at: Date.now()
+    created_at: Date.now(),
+    updated_at: Date.now(),
+    tx_error_reason: null,
+    tx_nonce: null
 };
 
 export const mockData = {
@@ -150,15 +159,14 @@ export const deleteMultisendTask = async (taskId: Hex): Promise<boolean> => {
 
 }
 
-
-export async function dequeueTaskItem(taskId: Hex, status: MultisendTaskItemStatus, nextStatus: MultisendTaskItemStatus): Promise<IMultisendTaskItem | null> {
+export async function dequeueTaskItem(taskId: Hex, status: MultisendTaskItemStatus, nextStatus: MultisendTaskItemStatus, timeThreshold = 0, tx_gas_limit?: string, tx_gas_price?: string, tx_nonce?: number): Promise<IMultisendTaskItem | null> {
     let selectedItem: IMultisendTaskItem | null = null;
 
     try {
         await db.transaction('rw', db.multisendTaskItems, async () => {
             const pendingItem = await db.multisendTaskItems
-                .where('[batch_id+status]')
-                .equals([taskId, status])
+                .where('[batch_id+status+updated_at]')
+                .between([taskId, status, timeThreshold], [taskId, status, Infinity], true, true)
                 .first();
 
             if (!pendingItem) return;
@@ -166,13 +174,18 @@ export async function dequeueTaskItem(taskId: Hex, status: MultisendTaskItemStat
             await db.multisendTaskItems.update(
                 [pendingItem.batch_id, pendingItem.position],
                 {
-                    status: nextStatus
+                    status: nextStatus,
+                    tx_nonce: tx_nonce ?? (pendingItem.tx_nonce ?? null),
+                    tx_gas_price: tx_gas_price ?? (pendingItem.tx_gas_price ?? null),
+                    tx_gas_limit: tx_gas_limit ?? (pendingItem.tx_gas_limit ?? null),
                 }
             );
 
-
             selectedItem = {
                 ...pendingItem,
+                tx_nonce: tx_nonce ?? (pendingItem.tx_nonce ?? null),
+                tx_gas_price: tx_gas_price ?? (pendingItem.tx_gas_price ?? null),
+                tx_gas_limit: tx_gas_limit ?? (pendingItem.tx_gas_limit ?? null),
                 status: nextStatus
 
             };
@@ -183,5 +196,303 @@ export async function dequeueTaskItem(taskId: Hex, status: MultisendTaskItemStat
     }
     return selectedItem;
 }
+
+
+/**
+ * 
+ * Process tasks with status PENDING
+ * 
+ * Pick a task → Mark as PROCESSING (transaction security)
+ * Execute business logic
+ * Success: Change status to COMMITTED.
+ * Failure: Change status to FAILED.
+ * Exception: The status stays at PROCESSING
+ * 
+ * 
+ * Task Status Flowchart
+ * 
+ * PENDING ➠ PROCESSING ➠ COMMITTED ➠ PROCESSING ➠ COMPLETED
+ * 
+ * @param taskId 
+ * @param tx_gas_limit 
+ * @param tx_gas_price 
+ * 
+ */
+export async function processPendingTaskItems(taskId: Hex, tx_gas_limit: string, tx_gas_price: string, tx_nonce: number, callback?: () => boolean) {
+
+    let taskItem: IMultisendTaskItem | null;
+
+    while ((callback?.() ?? true) && (taskItem = await dequeueTaskItem(taskId, MultisendTaskItemStatus.PENDING, MultisendTaskItemStatus.PROCESSING, 0, tx_gas_limit, tx_gas_price, tx_nonce))) {
+        console.log('📦 Processing item:', taskItem.batch_id, taskItem.position);
+
+        try {
+            // 👇 sendTransaction
+
+            /***
+             * 
+             * 1. Simulated tx
+             * 2. Signing tx
+             * 3. Submit tx
+             */
+            // await sendTransaction(taskItem);
+
+            const updatedAt = Date.now();
+            await db.multisendTaskItems.update(
+                [taskItem.batch_id, taskItem.position],
+                {
+                    tx_hash: "0x",
+                    status: MultisendTaskItemStatus.COMMITTED,
+                    tx_sent_at: updatedAt,
+                    updated_at: updatedAt,
+                }
+            );
+        } catch (err) {
+            console.error('❌ error => ', err);
+            try {
+                // ✅ Even in the face of failure, it should be documented as a failure status.
+                await db.multisendTaskItems.update(
+                    [taskItem.batch_id, taskItem.position],
+                    {
+                        tx_error_reason: getErrorMessage(err),
+                        status: MultisendTaskItemStatus.FAILED,
+                    }
+                );
+            } catch (saveErr) {
+                console.error('❗Status update failed (data may be stuck):', saveErr);
+            }
+        }
+    }
+
+    console.log('✅ processPendingTaskItems finished');
+}
+
+/**
+ * 
+ * Process tasks with status COMMITTED
+ * 
+ * Pick a task → Mark as PROCESSING (transaction security)
+ * Execute business logic
+ * Success: Change status to COMPLETED.
+ * Failure scenario 1: Stuck on the chain → Rollback to COMMITTED.
+ * Failure scenario 2: Transaction cannot be found → Rollback to PENDING.
+ * Failure scenario 3: Others  →  Change status to FAILED.
+ * Exception: The status stays at PROCESSING
+ * 
+ * @param taskId 
+ * 
+ */
+export async function processCommittedTaskItems(taskId: Hex, callback?: () => boolean) {
+
+    let taskItem: IMultisendTaskItem | null;
+
+    while ((callback?.() ?? true) && (taskItem = await dequeueTaskItem(taskId, MultisendTaskItemStatus.COMMITTED, MultisendTaskItemStatus.PROCESSING))) {
+        console.log('📦 Processing item:', taskItem.batch_id, taskItem.position);
+
+        try {
+            // 👇 sendTransaction
+
+            /***
+             * 
+             * 1. Check if the transaction is in the RPC memory pool. viem client.getTransaction
+             * The return of undefined from getTransaction simply indicates that "the RPC node currently connected cannot find the transaction.
+             * 
+             * 2. Check if the transaction has been confirmed.  viem client.getTransactionReceipt
+             */
+            // await sendTransaction(taskItem);
+
+            const updatedAt = Date.now();
+
+            // Failure scenario 1: Stuck on the chain → Rollback to COMMITTED.
+            await db.multisendTaskItems.update(
+                [taskItem.batch_id, taskItem.position],
+                {
+                    status: MultisendTaskItemStatus.COMMITTED,
+                    updated_at: updatedAt,
+                }
+            );
+
+            // Failure scenario 2: Transaction cannot be found → Rollback to PENDING.
+            await db.multisendTaskItems.update(
+                [taskItem.batch_id, taskItem.position],
+                {
+                    status: MultisendTaskItemStatus.PENDING,
+                    updated_at: updatedAt,
+                }
+            );
+
+            // Success
+            await db.multisendTaskItems.update(
+                [taskItem.batch_id, taskItem.position],
+                {
+                    status: MultisendTaskItemStatus.COMPLETED,
+                    tx_gas_used: "0",
+                    tx_gas_fee_cost: "0",
+                    tx_confirmed_at: updatedAt,
+                    updated_at: updatedAt,
+                }
+            );
+        } catch (err) {
+            console.error('❌ error => ', err);
+
+            try {
+                // ✅ Even in the face of failure, it should be documented as a failure status.
+                await db.multisendTaskItems.update(
+                    [taskItem.batch_id, taskItem.position],
+                    {
+                        status: MultisendTaskItemStatus.FAILED,
+                    }
+                );
+            } catch (saveErr) {
+                console.error('❗Status update failed (data may be stuck):', saveErr);
+            }
+        }
+    }
+
+    console.log('✅ processCommittedTaskItems finished.');
+
+}
+
+/**
+ * 
+ * Process tasks with status PROCESSING & updated_at < now - 10 seconds
+ * 
+ * Pick a task → Mark as PROCESSING (transaction security)
+ * Execute business logic
+ * Success: Change status to FAILED.
+ * Exception: The status stays at PROCESSING
+ * 
+ * @param taskId 
+ * 
+ */
+export async function processProcessingTaskItems(taskId: Hex, callback?: () => boolean) {
+
+    let taskItem: IMultisendTaskItem | null;
+
+    let timeThreshold = Date.now() - 10 * 1000;
+
+    while ((callback?.() ?? true) && (taskItem = await dequeueTaskItem(taskId, MultisendTaskItemStatus.PROCESSING, MultisendTaskItemStatus.PROCESSING, timeThreshold))) {
+        console.log('📦 Processing item:', taskItem.batch_id, taskItem.position);
+
+        try {
+            const updatedAt = Date.now();
+            await db.multisendTaskItems.update(
+                [taskItem.batch_id, taskItem.position],
+                {
+                    status: MultisendTaskItemStatus.FAILED,
+                    updated_at: updatedAt,
+                }
+            );
+
+        } catch (err) {
+            console.error('❌ error => ', err);
+
+            try {
+                // ✅ Even in the face of failure, it should be documented as a failure status.
+                await db.multisendTaskItems.update(
+                    [taskItem.batch_id, taskItem.position],
+                    {
+                        status: MultisendTaskItemStatus.FAILED,
+                    }
+                );
+            } catch (saveErr) {
+                console.error('❗Status update failed (data may be stuck):', saveErr);
+            }
+        }
+    }
+
+    console.log('✅ processFailedTaskItems finished');
+}
+
+
+/**
+ * 
+ * Process tasks with status FAILED
+ * 
+ * Pick a task → Mark as PROCESSING (transaction security)
+ * Execute business logic
+ * Scenario 1: Once entered the committed state.  → Rollback to COMMITTED.
+ * Scenario 2: Never entered the committed state and failed to submit (no tx hash).  → Rollback to PENDING.
+ * Scenario 3: Never entered the committed state and successfully submitted (with tx hash). → Rollback to COMMITTED.
+ * 
+ * Failure: Change status to FAILED.
+ * Exception: The status stays at PROCESSING
+ * 
+ * @param taskId 
+ * 
+ */
+export async function processFailedTaskItems(taskId: Hex, callback?: () => boolean) {
+
+    let taskItem: IMultisendTaskItem | null;
+
+    while ((callback?.() ?? true) && (taskItem = await dequeueTaskItem(taskId, MultisendTaskItemStatus.FAILED, MultisendTaskItemStatus.PROCESSING))) {
+        console.log('📦 Processing item:', taskItem.batch_id, taskItem.position);
+
+        try {
+            // 👇 sendTransaction
+            /***
+             * 
+             * 1. Calculate transaction hash
+             * 2. Check if the transaction is in the RPC memory pool.
+             * 3. Check if the task item is executed.
+             */
+            // await sendTransaction(taskItem);
+
+
+            const updatedAt = Date.now();
+
+            // Scenario 1: Once entered the committed state.  → Rollback to COMMITTED.
+            await db.multisendTaskItems.update(
+                [taskItem.batch_id, taskItem.position],
+                {
+                    tx_hash: "0x",
+                    status: MultisendTaskItemStatus.COMMITTED,
+                    tx_sent_at: updatedAt,
+                    updated_at: updatedAt,
+
+                }
+            );
+
+            // Scenario 2: Never entered the committed state and failed to submit (no tx hash).  → Rollback to PENDING.
+            await db.multisendTaskItems.update(
+                [taskItem.batch_id, taskItem.position],
+                {
+                    status: MultisendTaskItemStatus.PENDING,
+
+                    updated_at: updatedAt,
+                }
+            );
+
+
+            // Scenario 3: Never entered the committed state and successfully submitted (with tx hash). → Rollback to COMMITTED.
+            await db.multisendTaskItems.update(
+                [taskItem.batch_id, taskItem.position],
+                {
+                    tx_hash: "0x",
+                    status: MultisendTaskItemStatus.COMMITTED,
+                    tx_sent_at: updatedAt,
+                    updated_at: updatedAt,
+                }
+            );
+
+        } catch (err) {
+            console.error('❌ error => ', err);
+
+            try {
+                // ✅ Even in the face of failure, it should be documented as a failure status.
+                await db.multisendTaskItems.update(
+                    [taskItem.batch_id, taskItem.position],
+                    {
+                        status: MultisendTaskItemStatus.FAILED,
+                    }
+                );
+            } catch (saveErr) {
+                console.error('❗Status update failed (data may be stuck):', saveErr);
+            }
+        }
+    }
+
+    console.log('✅ processFailedTaskItems finished');
+}
+
 
 
