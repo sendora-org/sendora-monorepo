@@ -23,7 +23,7 @@ interface ISmartAccount is ISessionKeyModule, IERC721Receiver, IERC1155Receiver 
 
     function execute(Call[] calldata calls) external payable;
 
-    function getOwner() external view returns (address);
+    function owner() external view returns (address);
 
     function init(address owner, Call[] calldata calls) external payable;
 }

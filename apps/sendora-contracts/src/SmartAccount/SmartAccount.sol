@@ -56,7 +56,7 @@ contract SmartAccount is OwnerModule, SessionKeyModule, ISmartAccount {
         _sendEther(payable(tx.origin), gasFee);
     }
 
-    function getOwner() public view returns (address) {
+    function owner() public view returns (address) {
         return _getOwner();
     }
 
