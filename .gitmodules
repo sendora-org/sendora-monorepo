@@ -7,3 +7,6 @@
 [submodule "apps/sendora-contracts/lib/safe-contracts"]
 	path = apps/sendora-contracts/lib/safe-contracts
 	url = https://github.com/safe-global/safe-contracts
+[submodule "apps/sendora-contracts/lib/solady"]
+	path = apps/sendora-contracts/lib/solady
+	url = https://github.com/vectorized/solady
