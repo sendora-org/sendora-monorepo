@@ -41,6 +41,8 @@ interface ISmartAccount {
 
     function init(address owner, Call[] calldata calls) external payable;
 
+    function init(address owner) external payable;
+
     function isValidSignature(
         bytes32 hash,
         bytes calldata signature

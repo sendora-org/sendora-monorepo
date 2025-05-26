@@ -14,7 +14,13 @@ contract SmartAccountFactory {
             implementation,
             keccak256(abi.encodePacked(msg.sender))
         );
-        ISmartAccount(clone).init{value: msg.value}(msg.sender, calls);
+
+        if (calls.length > 0) {
+            ISmartAccount(clone).init{value: msg.value}(msg.sender, calls);
+        } else {
+            ISmartAccount(clone).init{value: msg.value}(msg.sender);
+        }
+
         emit CloneDeployed(clone);
     }
 }
