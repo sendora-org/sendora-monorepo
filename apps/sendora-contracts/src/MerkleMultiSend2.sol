@@ -20,7 +20,6 @@ contract MerkleMultiSend2 {
         uint256 decimals,
         string symbol,
         uint256 amount,
-        uint256 toolFee,
         uint256 timestamp
     );
 
@@ -36,11 +35,9 @@ contract MerkleMultiSend2 {
         _validate(merkleRoot, proof, batchID, token, recipients, amounts);
 
         uint256 totalAmount = 0;
-        uint256 toolFee = msg.value;
 
         // send
         if (token.tokenAddress == address(0)) {
-            toolFee = msg.value - totalAmount;
             totalAmount = _sendETH(token, recipients, amounts);
         } else {
             totalAmount = _sendERC20(token, recipients, amounts);
@@ -54,7 +51,6 @@ contract MerkleMultiSend2 {
             token.decimals,
             token.symbol,
             totalAmount,
-            toolFee,
             block.timestamp
         );
     }
