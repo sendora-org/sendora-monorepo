@@ -5,14 +5,6 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract MerkleMultiSend2 {
-    address public constant feeCollector =
-        0x0c73894c8dBc2F48EFd57E340934D6A2c172fC81;
-
-    struct Referrer {
-        address referrer;
-        bool isEligibleForCommission;
-    }
-
     struct Token {
         address tokenAddress;
         uint256 decimals;
@@ -22,7 +14,6 @@ contract MerkleMultiSend2 {
     mapping(bytes32 => bool) public executed;
 
     event Executed(
-        address indexed referrer,
         address indexed from,
         bytes32 indexed executeID,
         address tokenAddress,
@@ -38,20 +29,11 @@ contract MerkleMultiSend2 {
         bytes32[] calldata proof,
         bytes32 batchID,
         Token calldata token,
-        Referrer calldata referrer,
         address[] calldata recipients,
         uint256[] calldata amounts
     ) external payable {
         // validate
-        _validate(
-            merkleRoot,
-            proof,
-            batchID,
-            token,
-            referrer,
-            recipients,
-            amounts
-        );
+        _validate(merkleRoot, proof, batchID, token, recipients, amounts);
 
         uint256 totalAmount = 0;
         uint256 toolFee = msg.value;
@@ -64,12 +46,8 @@ contract MerkleMultiSend2 {
             totalAmount = _sendERC20(token, recipients, amounts);
         }
 
-        // allocate fee
-        _allocateToolFee(referrer, toolFee);
-
         bytes32 executeID = keccak256(abi.encode(batchID, merkleRoot, proof));
         emit Executed(
-            referrer.referrer,
             msg.sender,
             executeID,
             token.tokenAddress,
@@ -117,7 +95,6 @@ contract MerkleMultiSend2 {
         bytes32[] calldata proof,
         bytes32 batchID,
         Token calldata token,
-        Referrer calldata referrer,
         address[] calldata recipients,
         uint256[] calldata amounts
     ) internal {
@@ -125,7 +102,7 @@ contract MerkleMultiSend2 {
         require(!executed[executeID], "Operation already executed");
         require(recipients.length == amounts.length, "Input length  mismatch");
         bytes32 leaf = keccak256(
-            abi.encode(batchID, token, referrer, recipients, amounts)
+            abi.encode(batchID, token, recipients, amounts)
         );
 
         require(
@@ -153,26 +130,5 @@ contract MerkleMultiSend2 {
             success && (data.length == 0 || abi.decode(data, (bool))),
             "Transfer failed"
         );
-    }
-
-    function _allocateToolFee(
-        Referrer calldata referrer,
-        uint256 toolFee
-    ) internal {
-        uint256 referralRewardETH = toolFee / 2;
-        if (
-            referrer.referrer != address(0) && referrer.isEligibleForCommission
-        ) {
-            (bool success, ) = payable(referrer.referrer).call{
-                value: referralRewardETH
-            }("");
-            require(success, "Referral reward transfer failed");
-        }
-
-        (bool feeSuccess, ) = payable(feeCollector).call{
-            value: address(this).balance
-        }("");
-
-        require(feeSuccess, "ToolFee transfer failed");
     }
 }

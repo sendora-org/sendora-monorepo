@@ -1,11 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.23;
 import "@openzeppelin/contracts/proxy/Clones.sol";
-import "./types.sol";
-
-interface SmartAccount {
-    function init(address owner, Call[] calldata calls) external payable;
-}
+import "./ISmartAccount.sol";
 
 contract SmartAccountFactory {
     event CloneDeployed(address clone);
@@ -18,7 +14,7 @@ contract SmartAccountFactory {
             implementation,
             keccak256(abi.encodePacked(msg.sender))
         );
-        SmartAccount(clone).init{value: msg.value}(msg.sender, calls);
+        ISmartAccount(clone).init{value: msg.value}(msg.sender, calls);
         emit CloneDeployed(clone);
     }
 }

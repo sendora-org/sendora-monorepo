@@ -1,53 +1,84 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
-import "@openzeppelin/contracts/interfaces/IERC721Receiver.sol";
-import "@openzeppelin/contracts/interfaces/IERC1155Receiver.sol";
-import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+pragma solidity ^0.8.23;
+import {ECDSA} from "openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./OwnerModule.sol";
-import "./SessionKeyModule.sol";
-import "./types.sol";
+
 import "./ISmartAccount.sol";
+import "../interfaces/IERC1271.sol";
+import {Receiver} from "solady/accounts/Receiver.sol";
 
-contract SmartAccount is OwnerModule, SessionKeyModule, ISmartAccount {
-    // Receive Ether
-    receive() external payable {}
+contract SmartAccount is Receiver, ISmartAccount, IERC1271 {
+    address private _owner;
+    /// @notice ERC-1271 interface constants
+    bytes4 internal constant _ERC1271_MAGIC_VALUE = 0x1626ba7e;
+    bytes4 internal constant _ERC1271_FAIL_VALUE = 0xffffffff;
 
-    function revokeSession(address _sessionKey) public onlyOwner {
-        _revokeSession(_sessionKey);
+    string public constant DESCRIPTION =
+        "Sign only on sendora.org.\nReject if shown anywhere else.";
+
+    // signature usage
+    mapping(bytes signature => uint256 count) public useSignatureCounts;
+
+    function useSignature(
+        bytes calldata signature
+    ) internal returns (uint256 count) {
+        count = useSignatureCounts[signature]++;
     }
 
-    function createSession(
-        address _sessionKey,
-        CallPolicy[] memory _policies,
-        uint256 _validUntil
-    ) public onlyOwner {
-        _createSession(_sessionKey, _policies, _validUntil);
+    function isValidSignature(
+        bytes32 hash,
+        bytes calldata signature
+    ) public view returns (bytes4 magicValue) {
+        address signer = owner();
+
+        (bool success, bytes memory result) = signer.staticcall(
+            abi.encodeWithSelector(
+                IERC1271.isValidSignature.selector,
+                hash,
+                signature
+            )
+        );
+
+        if (
+            success &&
+            result.length == 32 &&
+            bytes4(result) == _ERC1271_MAGIC_VALUE
+        ) {
+            return _ERC1271_MAGIC_VALUE;
+        }
+
+        // Validate signature against EOA as fallback
+        (address recovered, ECDSA.RecoverError error, ) = ECDSA.tryRecover(
+            hash,
+            signature
+        );
+        if (error == ECDSA.RecoverError.NoError && recovered == signer) {
+            return _ERC1271_MAGIC_VALUE;
+        }
+
+        // Default return failure value
+        return _ERC1271_FAIL_VALUE;
     }
 
-    function isSessionValid(address _sessionKey) public view returns (bool) {
-        return _isSessionValid(_sessionKey);
-    }
-
-    function getSession(
-        address _sessionKey
-    ) public view returns (Session memory session) {
-        return _getSession(_sessionKey);
-    }
-
-    function execute(Call[] calldata calls) public payable {
+    function execute(
+        Call[] calldata calls,
+        bytes calldata signature,
+        uint256 usageLimit,
+        uint256 validUntil,
+        CallPolicy[] calldata policies
+    ) public payable {
         uint256 gas0 = gasleft();
         bool authrorized = false;
 
-        if (_getOwner() == msg.sender) {
-            authrorized = true;
-        }
+        // if (_getOwner() == msg.sender) {
+        //     authrorized = true;
+        // }
 
-        if (
-            _isSessionValid(msg.sender) && _checkSessionkey(msg.sender, calls)
-        ) {
-            authrorized = true;
-        }
+        // if (
+        //     _isSessionValid(msg.sender) && _checkSessionkey(msg.sender, calls)
+        // ) {
+        //     authrorized = true;
+        // }
 
         require(authrorized, "Not authorized");
         _multicall(_encodeCalls(calls));
@@ -57,56 +88,20 @@ contract SmartAccount is OwnerModule, SessionKeyModule, ISmartAccount {
     }
 
     function owner() public view returns (address) {
-        return _getOwner();
+        return _owner;
     }
 
     function init(address newOwner, Call[] calldata calls) public payable {
-        require(_getOwner() == address(0), "Already initialized");
+        require(owner() == address(0), "Already initialized");
 
         uint256 gas0 = gasleft();
         if (calls.length > 0) {
             _multicall(_encodeCalls(calls));
         }
-        _setOwner(newOwner);
+        _owner = (newOwner);
         uint256 gas1 = gasleft();
         uint256 gasFee = (((gas0 - gas1) * 125) / 100) * tx.gasprice;
         _sendEther(payable(tx.origin), gasFee);
-    }
-
-    function onERC721Received(
-        address,
-        address,
-        uint256,
-        bytes calldata
-    ) external pure returns (bytes4) {
-        return this.onERC721Received.selector;
-    }
-
-    function onERC1155Received(
-        address,
-        address,
-        uint256,
-        uint256,
-        bytes calldata
-    ) external pure returns (bytes4) {
-        return this.onERC1155Received.selector;
-    }
-
-    function onERC1155BatchReceived(
-        address,
-        address,
-        uint256[] calldata,
-        uint256[] calldata,
-        bytes calldata
-    ) external pure returns (bytes4) {
-        return this.onERC1155BatchReceived.selector;
-    }
-
-    function supportsInterface(bytes4 interfaceId) public pure returns (bool) {
-        return
-            interfaceId == type(IERC721Receiver).interfaceId ||
-            interfaceId == type(IERC1155Receiver).interfaceId ||
-            interfaceId == type(IERC165).interfaceId;
     }
 
     /**
