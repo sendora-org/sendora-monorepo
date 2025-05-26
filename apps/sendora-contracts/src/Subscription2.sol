@@ -40,7 +40,7 @@ contract Subscription {
     );
 
     constructor() {
-        plans["monthly"] = Plan(0.05 ether, "monthly", 30 days, 0);
+        plans["monthly"] = Plan(0.1 ether, "monthly", 30 days, 0);
         plans["yearly"] = Plan(0.4 ether, "yearly", 365 days, 0);
     }
 

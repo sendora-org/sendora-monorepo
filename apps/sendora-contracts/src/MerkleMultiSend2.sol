@@ -11,8 +11,6 @@ contract MerkleMultiSend2 {
         string symbol;
     }
 
-    mapping(bytes32 => bool) public executed;
-
     event Executed(
         address indexed from,
         bytes32 indexed executeID,
@@ -20,8 +18,13 @@ contract MerkleMultiSend2 {
         uint256 decimals,
         string symbol,
         uint256 amount,
+        uint256 toolFee,
         uint256 timestamp
     );
+
+    address public constant feeCollector =
+        0x0c73894c8dBc2F48EFd57E340934D6A2c172fC81;
+    mapping(bytes32 => bool) public executed;
 
     function execute(
         bytes32 merkleRoot,
@@ -35,15 +38,19 @@ contract MerkleMultiSend2 {
         _validate(merkleRoot, proof, batchID, token, recipients, amounts);
 
         uint256 totalAmount = 0;
-
+        uint256 toolFee = msg.value;
         // send
         if (token.tokenAddress == address(0)) {
+            toolFee = msg.value - totalAmount;
             totalAmount = _sendETH(token, recipients, amounts);
         } else {
             totalAmount = _sendERC20(token, recipients, amounts);
         }
 
         bytes32 executeID = keccak256(abi.encode(batchID, merkleRoot, proof));
+
+        // allocate fee
+        _allocateToolFee();
         emit Executed(
             msg.sender,
             executeID,
@@ -51,6 +58,7 @@ contract MerkleMultiSend2 {
             token.decimals,
             token.symbol,
             totalAmount,
+            toolFee,
             block.timestamp
         );
     }
@@ -126,5 +134,13 @@ contract MerkleMultiSend2 {
             success && (data.length == 0 || abi.decode(data, (bool))),
             "Transfer failed"
         );
+    }
+
+    function _allocateToolFee() internal {
+        (bool feeSuccess, ) = payable(feeCollector).call{
+            value: address(this).balance
+        }("");
+
+        require(feeSuccess, "ToolFee transfer failed");
     }
 }
