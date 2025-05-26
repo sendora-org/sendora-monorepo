@@ -1,23 +1,46 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.23;
 import {ECDSA} from "openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-
+import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import "./ISmartAccount.sol";
-import "../interfaces/IERC1271.sol";
 import {Receiver} from "solady/accounts/Receiver.sol";
 
-contract SmartAccount is Receiver, ISmartAccount, IERC1271 {
+contract SmartAccount is EIP712, Receiver, ISmartAccount {
     address private _owner;
     /// @notice ERC-1271 interface constants
     bytes4 internal constant _ERC1271_MAGIC_VALUE = 0x1626ba7e;
     bytes4 internal constant _ERC1271_FAIL_VALUE = 0xffffffff;
 
+    string private constant SIGNING_DOMAIN = "sendora.org";
+    string private constant SIGNATURE_VERSION = "1";
+
     string public constant DESCRIPTION =
-        "Sign only on sendora.org.\nReject if shown anywhere else.";
+        "Sign only on sendora.org. Reject if shown anywhere else.";
+    string public constant TIPS =
+        "Review signatureUseLimit, signatureExpiry & policies before signing. See docs.sendora.org";
+
+    bytes32 public constant MESSAGE_TYPE_TYPEHASH =
+        keccak256(
+            "MessageType(string description,uint256 signatureUseLimit,uint256 signatureExpiry,CallPolicy[] policies,string tips)CallPolicy(address to,string functionSelector,string operation,uint256 valueLimit,ParamRule[] paramRules)ParamRule(string paramName,string condition,bytes32 paramValue,uint256 offset)"
+        );
+    bytes32 public constant CALL_POLICY_TYPEHASH =
+        keccak256(
+            "CallPolicy(address to,string functionSelector,string operation,uint256 valueLimit,ParamRule[] paramRules)ParamRule(string paramName,string condition,bytes32 paramValue,uint256 offset)"
+        );
+    bytes32 public constant Param_RULE_TYPEHASH =
+        keccak256(
+            "ParamRule(string paramName,string condition,bytes32 paramValue,uint256 offset)"
+        );
+    event Initialized(
+        address indexed sender,
+        address indexed newOwner,
+        address thisAddr
+    );
 
     // signature usage
     mapping(bytes signature => uint256 count) public useSignatureCounts;
+
+    constructor() EIP712(SIGNING_DOMAIN, SIGNATURE_VERSION) {}
 
     function useSignature(
         bytes calldata signature
@@ -33,7 +56,7 @@ contract SmartAccount is Receiver, ISmartAccount, IERC1271 {
 
         (bool success, bytes memory result) = signer.staticcall(
             abi.encodeWithSelector(
-                IERC1271.isValidSignature.selector,
+                ISmartAccount.isValidSignature.selector,
                 hash,
                 signature
             )
@@ -60,48 +83,214 @@ contract SmartAccount is Receiver, ISmartAccount, IERC1271 {
         return _ERC1271_FAIL_VALUE;
     }
 
-    function execute(
+    function hashParamRue(ParamRule memory rule) public pure returns (bytes32) {
+        return
+            keccak256(
+                abi.encode(
+                    Param_RULE_TYPEHASH,
+                    keccak256(bytes(rule.paramName)),
+                    keccak256(bytes(rule.condition)),
+                    rule.paramValue,
+                    rule.offset
+                )
+            );
+    }
+
+    function hashCallPolicy(
+        CallPolicy memory policy
+    ) public pure returns (bytes32) {
+        bytes32[] memory paramRulesHashes = new bytes32[](
+            policy.paramRules.length
+        );
+        for (uint i = 0; i < policy.paramRules.length; i++) {
+            paramRulesHashes[i] = hashParamRue(policy.paramRules[i]);
+        }
+
+        bytes32 paramRulesHash = keccak256(abi.encodePacked(paramRulesHashes));
+        return
+            keccak256(
+                abi.encode(
+                    CALL_POLICY_TYPEHASH,
+                    policy.to,
+                    keccak256(bytes(policy.functionSelector)),
+                    keccak256(bytes(policy.operation)),
+                    policy.valueLimit,
+                    paramRulesHash
+                )
+            );
+    }
+
+    function hashMessage(
+        MessageType memory message
+    ) public pure returns (bytes32) {
+        bytes32[] memory policyHashes = new bytes32[](message.policies.length);
+        for (uint i = 0; i < message.policies.length; i++) {
+            policyHashes[i] = hashCallPolicy(message.policies[i]);
+        }
+
+        bytes32 policiesHash = keccak256(abi.encodePacked(policyHashes));
+        return
+            keccak256(
+                abi.encode(
+                    MESSAGE_TYPE_TYPEHASH,
+                    keccak256(bytes(message.description)),
+                    message.signatureUseLimit,
+                    message.signatureExpiry,
+                    policiesHash,
+                    keccak256(bytes(message.tips))
+                )
+            );
+    }
+
+    function hashTypedData(
+        MessageType memory message
+    ) public view returns (bytes32) {
+        return _hashTypedDataV4(hashMessage(message));
+    }
+
+    function verify(
+        MessageType memory message,
+        bytes calldata signature
+    ) public view returns (bool) {
+        bytes32 digest = hashTypedData(message);
+
+        return
+            bytes4(isValidSignature(digest, signature)) == _ERC1271_MAGIC_VALUE;
+    }
+
+    function checkPolicies(
         Call[] calldata calls,
+        CallPolicy[] memory policies
+    ) public pure returns (bool) {
+        for (uint256 i = 0; i < policies.length; i++) {
+            CallPolicy memory policy = policies[i];
+            // bytes4 functionSelector = bytes4(calls[i].data);
+
+            if (calls[i].value > policy.valueLimit) {
+                return false;
+            }
+            if (policy.to != calls[i].to) {
+                return false;
+            }
+
+            if (
+                keccak256(bytes(policy.operation)) !=
+                keccak256(bytes(calls[i].operation))
+            ) {
+                return false;
+            }
+
+            bytes4 functionSelector = 0x00000000;
+            bytes4 functionSelectorP = 0x00000000;
+
+            if (calls[i].data.length >= 4) {
+                functionSelector = bytes4(calls[i].data);
+                functionSelectorP = bytes4(
+                    keccak256(bytes(policy.functionSelector))
+                );
+            }
+
+            if (
+                functionSelector == 0x00000000 ||
+                functionSelector == functionSelectorP
+            ) {
+                if (policy.paramRules.length > 0) {
+                    bytes memory _data = calls[i].data;
+                    for (uint256 j = 0; j < policy.paramRules.length; j++) {
+                        ParamRule memory rule = policy.paramRules[j];
+                        bytes32 param = extractParam(_data, 4 + rule.offset);
+                        if (
+                            keccak256(bytes(rule.condition)) ==
+                            keccak256(bytes("EQUAL")) &&
+                            param != rule.paramValue
+                        ) {
+                            return false;
+                        } else if (
+                            keccak256(bytes(rule.condition)) ==
+                            keccak256(bytes("GREATER_THAN")) &&
+                            param <= rule.paramValue
+                        ) {
+                            return false;
+                        } else if (
+                            keccak256(bytes(rule.condition)) ==
+                            keccak256(bytes("LESS_THAN")) &&
+                            param >= rule.paramValue
+                        ) {
+                            return false;
+                        } else if (
+                            keccak256(bytes(rule.condition)) ==
+                            keccak256(bytes("GREATER_THAN_OR_EQUAL")) &&
+                            param < rule.paramValue
+                        ) {
+                            return false;
+                        } else if (
+                            keccak256(bytes(rule.condition)) ==
+                            keccak256(bytes("LESS_THAN_OR_EQUAL")) &&
+                            param > rule.paramValue
+                        ) {
+                            return false;
+                        } else if (
+                            keccak256(bytes(rule.condition)) ==
+                            keccak256(bytes("NOT_EQUAL")) &&
+                            param == rule.paramValue
+                        ) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    function execute(
         bytes calldata signature,
-        uint256 usageLimit,
-        uint256 validUntil,
-        CallPolicy[] calldata policies
+        Call[] calldata calls,
+        MessageType memory message
     ) public payable {
-        uint256 gas0 = gasleft();
-        bool authrorized = false;
+        // uint256 gas0 = gasleft();
 
-        // if (_getOwner() == msg.sender) {
-        //     authrorized = true;
-        // }
+        require(
+            useSignatureCounts[signature] < message.signatureUseLimit,
+            "Signature limit exceeded"
+        );
+        require(message.signatureExpiry > block.timestamp, "Signature expired");
 
-        // if (
-        //     _isSessionValid(msg.sender) && _checkSessionkey(msg.sender, calls)
-        // ) {
-        //     authrorized = true;
-        // }
+        require(checkPolicies(calls, message.policies), "Invalid policies");
 
-        require(authrorized, "Not authorized");
+        message.description = DESCRIPTION;
+        message.tips = TIPS;
+        require(verify(message, signature), "Not authorized");
+        useSignature(signature);
+
         _multicall(_encodeCalls(calls));
-        uint256 gas1 = gasleft();
-        uint256 gasFee = (((gas0 - gas1) * 125) / 100) * tx.gasprice;
-        _sendEther(payable(tx.origin), gasFee);
+        // uint256 gas1 = gasleft();
+        // uint256 gasFee = (((gas0 - gas1) * 125) / 100) * tx.gasprice;
+        // _sendEther(payable(tx.origin), gasFee);
     }
 
     function owner() public view returns (address) {
         return _owner;
     }
 
+    function init(address newOwner) public payable {
+        require(owner() == address(0), "Already initialized");
+
+        _owner = newOwner;
+
+        emit Initialized(msg.sender, newOwner, address(this));
+    }
+
     function init(address newOwner, Call[] calldata calls) public payable {
         require(owner() == address(0), "Already initialized");
 
-        uint256 gas0 = gasleft();
         if (calls.length > 0) {
             _multicall(_encodeCalls(calls));
         }
-        _owner = (newOwner);
-        uint256 gas1 = gasleft();
-        uint256 gasFee = (((gas0 - gas1) * 125) / 100) * tx.gasprice;
-        _sendEther(payable(tx.origin), gasFee);
+        _owner = newOwner;
+
+        emit Initialized(msg.sender, newOwner, address(this));
     }
 
     /**
@@ -169,7 +358,7 @@ contract SmartAccount is Receiver, ISmartAccount, IERC1271 {
 
         for (uint i = 0; i < calls.length; i++) {
             Call memory c = calls[i];
-            uint8 operation = address(this) == c.to ? c.operation : 0;
+            uint8 operation = address(this) == c.to ? 1 : 0;
             bytes memory encoded = abi.encodePacked(
                 operation, // 1 byte
                 c.to, // 20 bytes
@@ -182,5 +371,45 @@ contract SmartAccount is Receiver, ISmartAccount, IERC1271 {
         }
 
         return txs;
+    }
+
+    /**
+     * @dev   Extract parameter value
+     * @param _data  Transaction data
+     * @param _offset   Parameter offset
+     * @return   Parameter value
+     */
+    function extractParam(
+        bytes memory _data,
+        uint256 _offset
+    ) private pure returns (bytes32) {
+        bytes memory argsData = _data.length > 4
+            ? slice(_data, 4, _data.length - 4)
+            : new bytes(0);
+        require(_offset + 32 <= argsData.length, "Offset exceeds data length");
+        bytes32 value;
+        assembly {
+            value := mload(add(add(argsData, 32), _offset))
+        }
+        return value;
+    }
+
+    /**
+     * @dev   Slice byte array
+     * @param _data   Data
+     * @param _start Start position
+     * @param _length Length
+     * @return  Sliced result
+     */
+    function slice(
+        bytes memory _data,
+        uint256 _start,
+        uint256 _length
+    ) private pure returns (bytes memory) {
+        bytes memory result = new bytes(_length);
+        for (uint256 i = 0; i < _length; i++) {
+            result[i] = _data[_start + i];
+        }
+        return result;
     }
 }

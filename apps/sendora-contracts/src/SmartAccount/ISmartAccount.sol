@@ -1,48 +1,48 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.23;
-
+struct MessageType {
+    string description;
+    uint256 signatureUseLimit;
+    uint256 signatureExpiry;
+    CallPolicy[] policies;
+    string tips;
+}
 struct Call {
     address to; // Replaced with `address(this)` if `address(0)`.
     uint256 value; // Amount of native currency (i.e. Ether) to send.
     bytes data; // Calldata to send with the call.
-    uint8 operation; // Delegatecall(1) or Call(0).
-}
-//  Parameter condition enum
-enum ParamCondition {
-    EQUAL, //   Equal
-    GREATER_THAN, //   Greater than
-    LESS_THAN, //  Less than
-    NOT_EQUAL, //  Not equal
-    GREATER_THAN_OR_EQUAL, //   Greater than or equal
-    LESS_THAN_OR_EQUAL, //  Less than or equal
-    ANY // Any value (no condition)
+    string operation; // Delegatecall(1) or Call(0).
 }
 
 //  Parameter rule structure
 struct ParamRule {
+    string paramName;
+    string condition; //EQUAL GREATER_THAN LESS_THAN NOT_EQUAL GREATER_THAN_OR_EQUAL LESS_THAN_OR_EQUAL ANY
+    bytes32 paramValue;
     uint256 offset;
-    ParamCondition condition; // Parameter condition
-    bytes32 value; // Expected value
 }
 //  Call policy structure
 struct CallPolicy {
-    address target; //  Target contract address
-    uint8 operation; // Delegatecall(1) or Call(0).
-    bytes4 functionSelector; //   Function selector
+    address to; //  Target contract address
+    string functionSelector; //   Function selector
+    string operation; // delegatecall call
     uint256 valueLimit; //   Max value per transaction
     ParamRule[] paramRules; //   Array of parameter rules
 }
 
 interface ISmartAccount {
     function execute(
-        Call[] calldata calls,
         bytes calldata signature,
-        uint256 maxUsage,
-        uint256 validUntil,
-        CallPolicy[] calldata policies
+        Call[] calldata calls,
+        MessageType memory message
     ) external payable;
 
     function owner() external view returns (address);
 
     function init(address owner, Call[] calldata calls) external payable;
+
+    function isValidSignature(
+        bytes32 hash,
+        bytes calldata signature
+    ) external returns (bytes4 magicValue);
 }
