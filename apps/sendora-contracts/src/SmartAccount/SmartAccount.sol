@@ -6,7 +6,6 @@ import {ECDSA} from "openzeppelin-contracts/contracts/utils/cryptography/ECDSA.s
 
 import "./ISmartAccount.sol";
 
-
 contract SmartAccount is EIP712, Receiver, ISmartAccount {
     address private _owner;
     /// @notice ERC-1271 interface constants
@@ -33,6 +32,18 @@ contract SmartAccount is EIP712, Receiver, ISmartAccount {
         keccak256(
             "ParamRule(string paramName,string condition,bytes32 paramValue,uint256 offset)"
         );
+
+    bytes32 public constant EQUAL_HASH = keccak256(bytes("EQUAL"));
+    bytes32 public constant GREATER_THAN_HASH =
+        keccak256(bytes("GREATER_THAN"));
+    bytes32 public constant LESS_THAN_HASH = keccak256(bytes("LESS_THAN"));
+    bytes32 public constant GREATER_THAN_OR_EQUAL_HASH =
+        keccak256(bytes("GREATER_THAN_OR_EQUAL"));
+    bytes32 public constant LESS_THAN_OR_EQUAL_HASH =
+        keccak256(bytes("LESS_THAN_OR_EQUAL"));
+    bytes32 public constant NOT_EQUAL_HASH = keccak256(bytes("NOT_EQUAL"));
+    bytes32 public constant ANY_HASH = keccak256(bytes("ANY"));
+
     event Initialized(
         address indexed sender,
         address indexed newOwner,
@@ -44,10 +55,8 @@ contract SmartAccount is EIP712, Receiver, ISmartAccount {
 
     constructor() EIP712(SIGNING_DOMAIN, SIGNATURE_VERSION) {}
 
-    function useSignature(
-        bytes calldata signature
-    ) internal returns (uint256 count) {
-        count = useSignatureCounts[signature]++;
+    function owner() public view returns (address) {
+        return _owner;
     }
 
     function isValidSignature(
@@ -85,65 +94,6 @@ contract SmartAccount is EIP712, Receiver, ISmartAccount {
         return _ERC1271_FAIL_VALUE;
     }
 
-    function hashParamRue(ParamRule memory rule) public pure returns (bytes32) {
-        return
-            keccak256(
-                abi.encode(
-                    Param_RULE_TYPEHASH,
-                    keccak256(bytes(rule.paramName)),
-                    keccak256(bytes(rule.condition)),
-                    rule.paramValue,
-                    rule.offset
-                )
-            );
-    }
-
-    function hashCallPolicy(
-        CallPolicy memory policy
-    ) public pure returns (bytes32) {
-        bytes32[] memory paramRulesHashes = new bytes32[](
-            policy.paramRules.length
-        );
-        for (uint i = 0; i < policy.paramRules.length; i++) {
-            paramRulesHashes[i] = hashParamRue(policy.paramRules[i]);
-        }
-
-        bytes32 paramRulesHash = keccak256(abi.encodePacked(paramRulesHashes));
-        return
-            keccak256(
-                abi.encode(
-                    CALL_POLICY_TYPEHASH,
-                    policy.to,
-                    keccak256(bytes(policy.functionSelector)),
-                    keccak256(bytes(policy.operation)),
-                    policy.valueLimit,
-                    paramRulesHash
-                )
-            );
-    }
-
-    function hashMessage(
-        MessageType memory message
-    ) public pure returns (bytes32) {
-        bytes32[] memory policyHashes = new bytes32[](message.policies.length);
-        for (uint i = 0; i < message.policies.length; i++) {
-            policyHashes[i] = hashCallPolicy(message.policies[i]);
-        }
-
-        bytes32 policiesHash = keccak256(abi.encodePacked(policyHashes));
-        return
-            keccak256(
-                abi.encode(
-                    MESSAGE_TYPE_TYPEHASH,
-                    keccak256(bytes(message.description)),
-                    message.signatureUseLimit,
-                    message.signatureExpiry,
-                    policiesHash,
-                    keccak256(bytes(message.tips))
-                )
-            );
-    }
-
     function hashTypedData(
         MessageType memory message
     ) public view returns (bytes32) {
@@ -160,90 +110,23 @@ contract SmartAccount is EIP712, Receiver, ISmartAccount {
             bytes4(isValidSignature(digest, signature)) == _ERC1271_MAGIC_VALUE;
     }
 
-    function checkPolicies(
-        Call[] calldata calls,
-        CallPolicy[] memory policies
-    ) public pure returns (bool) {
-        for (uint256 i = 0; i < policies.length; i++) {
-            CallPolicy memory policy = policies[i];
-            // bytes4 functionSelector = bytes4(calls[i].data);
+    function init(address newOwner) public payable {
+        require(owner() == address(0), "Already initialized");
 
-            if (calls[i].value > policy.valueLimit) {
-                return false;
-            }
-            if (policy.to != calls[i].to) {
-                return false;
-            }
+        _owner = newOwner;
 
-            if (
-                keccak256(bytes(policy.operation)) !=
-                keccak256(bytes(calls[i].operation))
-            ) {
-                return false;
-            }
+        emit Initialized(msg.sender, newOwner, address(this));
+    }
 
-            bytes4 functionSelector = 0x00000000;
-            bytes4 functionSelectorP = 0x00000000;
+    function init(address newOwner, Call[] calldata calls) public payable {
+        require(owner() == address(0), "Already initialized");
 
-            if (calls[i].data.length >= 4) {
-                functionSelector = bytes4(calls[i].data);
-                functionSelectorP = bytes4(
-                    keccak256(bytes(policy.functionSelector))
-                );
-            }
-
-            if (
-                functionSelector == 0x00000000 ||
-                functionSelector == functionSelectorP
-            ) {
-                if (policy.paramRules.length > 0) {
-                    bytes memory _data = calls[i].data;
-                    for (uint256 j = 0; j < policy.paramRules.length; j++) {
-                        ParamRule memory rule = policy.paramRules[j];
-                        bytes32 param = extractParam(_data, 4 + rule.offset);
-                        if (
-                            keccak256(bytes(rule.condition)) ==
-                            keccak256(bytes("EQUAL")) &&
-                            param != rule.paramValue
-                        ) {
-                            return false;
-                        } else if (
-                            keccak256(bytes(rule.condition)) ==
-                            keccak256(bytes("GREATER_THAN")) &&
-                            param <= rule.paramValue
-                        ) {
-                            return false;
-                        } else if (
-                            keccak256(bytes(rule.condition)) ==
-                            keccak256(bytes("LESS_THAN")) &&
-                            param >= rule.paramValue
-                        ) {
-                            return false;
-                        } else if (
-                            keccak256(bytes(rule.condition)) ==
-                            keccak256(bytes("GREATER_THAN_OR_EQUAL")) &&
-                            param < rule.paramValue
-                        ) {
-                            return false;
-                        } else if (
-                            keccak256(bytes(rule.condition)) ==
-                            keccak256(bytes("LESS_THAN_OR_EQUAL")) &&
-                            param > rule.paramValue
-                        ) {
-                            return false;
-                        } else if (
-                            keccak256(bytes(rule.condition)) ==
-                            keccak256(bytes("NOT_EQUAL")) &&
-                            param == rule.paramValue
-                        ) {
-                            return false;
-                        }
-                    }
-                }
-            }
+        if (calls.length > 0) {
+            _multicall(_encodeCalls(calls));
         }
+        _owner = newOwner;
 
-        return true;
+        emit Initialized(msg.sender, newOwner, address(this));
     }
 
     function execute(
@@ -272,27 +155,10 @@ contract SmartAccount is EIP712, Receiver, ISmartAccount {
         // _sendEther(payable(tx.origin), gasFee);
     }
 
-    function owner() public view returns (address) {
-        return _owner;
-    }
-
-    function init(address newOwner) public payable {
-        require(owner() == address(0), "Already initialized");
-
-        _owner = newOwner;
-
-        emit Initialized(msg.sender, newOwner, address(this));
-    }
-
-    function init(address newOwner, Call[] calldata calls) public payable {
-        require(owner() == address(0), "Already initialized");
-
-        if (calls.length > 0) {
-            _multicall(_encodeCalls(calls));
-        }
-        _owner = newOwner;
-
-        emit Initialized(msg.sender, newOwner, address(this));
+    function useSignature(
+        bytes calldata signature
+    ) internal returns (uint256 count) {
+        count = useSignatureCounts[signature]++;
     }
 
     /**
@@ -375,12 +241,6 @@ contract SmartAccount is EIP712, Receiver, ISmartAccount {
         return txs;
     }
 
-    /**
-     * @dev   Extract parameter value
-     * @param _data  Transaction data
-     * @param _offset   Parameter offset
-     * @return   Parameter value
-     */
     function extractParam(
         bytes memory _data,
         uint256 _offset
@@ -396,13 +256,6 @@ contract SmartAccount is EIP712, Receiver, ISmartAccount {
         return value;
     }
 
-    /**
-     * @dev   Slice byte array
-     * @param _data   Data
-     * @param _start Start position
-     * @param _length Length
-     * @return  Sliced result
-     */
     function slice(
         bytes memory _data,
         uint256 _start,
@@ -413,5 +266,150 @@ contract SmartAccount is EIP712, Receiver, ISmartAccount {
             result[i] = _data[_start + i];
         }
         return result;
+    }
+
+    function hashParamRue(ParamRule memory rule) public pure returns (bytes32) {
+        return
+            keccak256(
+                abi.encode(
+                    Param_RULE_TYPEHASH,
+                    keccak256(bytes(rule.paramName)),
+                    keccak256(bytes(rule.condition)),
+                    rule.paramValue,
+                    rule.offset
+                )
+            );
+    }
+
+    function hashCallPolicy(
+        CallPolicy memory policy
+    ) public pure returns (bytes32) {
+        bytes32[] memory paramRulesHashes = new bytes32[](
+            policy.paramRules.length
+        );
+        for (uint i = 0; i < policy.paramRules.length; i++) {
+            paramRulesHashes[i] = hashParamRue(policy.paramRules[i]);
+        }
+
+        bytes32 paramRulesHash = keccak256(abi.encodePacked(paramRulesHashes));
+        return
+            keccak256(
+                abi.encode(
+                    CALL_POLICY_TYPEHASH,
+                    policy.to,
+                    keccak256(bytes(policy.functionSelector)),
+                    keccak256(bytes(policy.operation)),
+                    policy.valueLimit,
+                    paramRulesHash
+                )
+            );
+    }
+
+    function hashMessage(
+        MessageType memory message
+    ) public pure returns (bytes32) {
+        bytes32[] memory policyHashes = new bytes32[](message.policies.length);
+        for (uint i = 0; i < message.policies.length; i++) {
+            policyHashes[i] = hashCallPolicy(message.policies[i]);
+        }
+
+        bytes32 policiesHash = keccak256(abi.encodePacked(policyHashes));
+        return
+            keccak256(
+                abi.encode(
+                    MESSAGE_TYPE_TYPEHASH,
+                    keccak256(bytes(message.description)),
+                    message.signatureUseLimit,
+                    message.signatureExpiry,
+                    policiesHash,
+                    keccak256(bytes(message.tips))
+                )
+            );
+    }
+
+    function checkPolicies(
+        Call[] calldata calls,
+        CallPolicy[] memory policies
+    ) public pure returns (bool) {
+        for (uint256 i = 0; i < policies.length; i++) {
+            CallPolicy memory policy = policies[i];
+            // bytes4 functionSelector = bytes4(calls[i].data);
+
+            if (calls[i].value > policy.valueLimit) {
+                return false;
+            }
+            if (policy.to != calls[i].to) {
+                return false;
+            }
+
+            if (
+                keccak256(bytes(policy.operation)) !=
+                keccak256(bytes(calls[i].operation))
+            ) {
+                return false;
+            }
+
+            bytes4 functionSelector = 0x00000000;
+            bytes4 functionSelectorP = 0x00000000;
+
+            if (calls[i].data.length >= 4) {
+                functionSelector = bytes4(calls[i].data);
+                functionSelectorP = bytes4(
+                    keccak256(bytes(policy.functionSelector))
+                );
+            }
+
+            if (functionSelector == 0x00000000) {
+                continue;
+            }
+
+            if (functionSelector != functionSelectorP) {
+                return false;
+            }
+
+            if (policy.paramRules.length == 0) {
+                continue;
+            }
+
+            bytes memory _data = calls[i].data;
+            for (uint256 j = 0; j < policy.paramRules.length; j++) {
+                ParamRule memory rule = policy.paramRules[j];
+                bytes32 param = extractParam(_data, 4 + rule.offset);
+                bytes32 CONDITION_HASH = keccak256(bytes(rule.condition));
+
+                if (CONDITION_HASH == ANY_HASH) {
+                    continue;
+                }
+
+                if (CONDITION_HASH == EQUAL_HASH && param != rule.paramValue) {
+                    return false;
+                } else if (
+                    CONDITION_HASH == GREATER_THAN_HASH &&
+                    param <= rule.paramValue
+                ) {
+                    return false;
+                } else if (
+                    CONDITION_HASH == LESS_THAN_HASH && param >= rule.paramValue
+                ) {
+                    return false;
+                } else if (
+                    CONDITION_HASH == GREATER_THAN_OR_EQUAL_HASH &&
+                    param < rule.paramValue
+                ) {
+                    return false;
+                } else if (
+                    CONDITION_HASH == LESS_THAN_OR_EQUAL_HASH &&
+                    param > rule.paramValue
+                ) {
+                    return false;
+                } else if (
+                    CONDITION_HASH == NOT_EQUAL_HASH && param == rule.paramValue
+                ) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }
