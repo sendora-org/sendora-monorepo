@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.23;
-import "@openzeppelin/contracts/proxy/Clones.sol";
+import {Clones} from "openzeppelin-contracts/contracts/proxy/Clones.sol";
 import "./ISmartAccount.sol";
 
 contract SmartAccountFactory {
