@@ -11,7 +11,6 @@ struct Call {
     address to; // Replaced with `address(this)` if `address(0)`.
     uint256 value; // Amount of native currency (i.e. Ether) to send.
     bytes data; // Calldata to send with the call.
-    string operation; // Delegatecall(1) or Call(0).
 }
 
 //  Parameter rule structure
@@ -24,9 +23,8 @@ struct ParamRule {
 //  Call policy structure
 struct CallPolicy {
     address to; //  Target contract address
-    string functionSelector; //   Function selector
-    string operation; // delegatecall call
     uint256 valueLimit; //   Max value per transaction
+    string functionSelector; //   Function selector
     ParamRule[] paramRules; //   Array of parameter rules
 }
 
@@ -39,9 +37,11 @@ interface ISmartAccount {
 
     function owner() external view returns (address);
 
-    function init(address owner, Call[] calldata calls) external payable;
-
-    function init(address owner) external payable;
+    function init(
+        address newOwner,
+        address relayer,
+        uint256 initGasFee
+    ) external payable;
 
     function isValidSignature(
         bytes32 hash,

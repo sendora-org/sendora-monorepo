@@ -22,11 +22,11 @@ contract SmartAccount is EIP712, Receiver, ISmartAccount {
 
     bytes32 public constant MESSAGE_TYPE_TYPEHASH =
         keccak256(
-            "MessageType(string description,uint256 signatureUseLimit,uint256 signatureExpiry,CallPolicy[] policies,string tips)CallPolicy(address to,string functionSelector,string operation,uint256 valueLimit,ParamRule[] paramRules)ParamRule(string paramName,string condition,bytes32 paramValue,uint256 offset)"
+            "MessageType(string description,uint256 signatureUseLimit,uint256 signatureExpiry,CallPolicy[] policies,string tips)CallPolicy(address to,uint256 valueLimit,string functionSelector,ParamRule[] paramRules)ParamRule(string paramName,string condition,bytes32 paramValue,uint256 offset)"
         );
     bytes32 public constant CALL_POLICY_TYPEHASH =
         keccak256(
-            "CallPolicy(address to,string functionSelector,string operation,uint256 valueLimit,ParamRule[] paramRules)ParamRule(string paramName,string condition,bytes32 paramValue,uint256 offset)"
+            "CallPolicy(address to,uint256 valueLimit,string functionSelector,ParamRule[] paramRules)ParamRule(string paramName,string condition,bytes32 paramValue,uint256 offset)"
         );
     bytes32 public constant Param_RULE_TYPEHASH =
         keccak256(
@@ -110,22 +110,15 @@ contract SmartAccount is EIP712, Receiver, ISmartAccount {
             bytes4(isValidSignature(digest, signature)) == _ERC1271_MAGIC_VALUE;
     }
 
-    function init(address newOwner) public payable {
+    function init(
+        address newOwner,
+        address relayer,
+        uint256 initGasFee
+    ) public payable {
         require(owner() == address(0), "Already initialized");
 
         _owner = newOwner;
-
-        emit Initialized(msg.sender, newOwner, address(this));
-    }
-
-    function init(address newOwner, Call[] calldata calls) public payable {
-        require(owner() == address(0), "Already initialized");
-
-        if (calls.length > 0) {
-            _multicall(_encodeCalls(calls));
-        }
-        _owner = newOwner;
-
+        _sendEther(payable(relayer), initGasFee);
         emit Initialized(msg.sender, newOwner, address(this));
     }
 
@@ -134,7 +127,7 @@ contract SmartAccount is EIP712, Receiver, ISmartAccount {
         Call[] calldata calls,
         MessageType memory message
     ) public payable {
-        // uint256 gas0 = gasleft();
+        uint256 gas0 = gasleft();
 
         require(
             useSignatureCounts[signature] < message.signatureUseLimit,
@@ -150,9 +143,9 @@ contract SmartAccount is EIP712, Receiver, ISmartAccount {
         useSignature(signature);
 
         _multicall(_encodeCalls(calls));
-        // uint256 gas1 = gasleft();
-        // uint256 gasFee = (((gas0 - gas1) * 125) / 100) * tx.gasprice;
-        // _sendEther(payable(tx.origin), gasFee);
+        uint256 gas1 = gasleft();
+        uint256 gasFee = (((gas0 - gas1) / 100) * 125) * tx.gasprice;
+        _sendEther(payable(tx.origin), gasFee);
     }
 
     function useSignature(
@@ -221,12 +214,12 @@ contract SmartAccount is EIP712, Receiver, ISmartAccount {
 
     function _encodeCalls(
         Call[] memory calls
-    ) internal view returns (bytes memory transactions) {
+    ) internal pure returns (bytes memory transactions) {
         bytes memory txs;
 
         for (uint i = 0; i < calls.length; i++) {
             Call memory c = calls[i];
-            uint8 operation = address(this) == c.to ? 1 : 0;
+            uint8 operation = 0;
             bytes memory encoded = abi.encodePacked(
                 operation, // 1 byte
                 c.to, // 20 bytes
@@ -297,9 +290,8 @@ contract SmartAccount is EIP712, Receiver, ISmartAccount {
                 abi.encode(
                     CALL_POLICY_TYPEHASH,
                     policy.to,
-                    keccak256(bytes(policy.functionSelector)),
-                    keccak256(bytes(policy.operation)),
                     policy.valueLimit,
+                    keccak256(bytes(policy.functionSelector)),
                     paramRulesHash
                 )
             );
@@ -333,19 +325,11 @@ contract SmartAccount is EIP712, Receiver, ISmartAccount {
     ) public pure returns (bool) {
         for (uint256 i = 0; i < policies.length; i++) {
             CallPolicy memory policy = policies[i];
-            // bytes4 functionSelector = bytes4(calls[i].data);
 
-            if (calls[i].value > policy.valueLimit) {
-                return false;
-            }
             if (policy.to != calls[i].to) {
                 return false;
             }
-
-            if (
-                keccak256(bytes(policy.operation)) !=
-                keccak256(bytes(calls[i].operation))
-            ) {
+            if (calls[i].value > policy.valueLimit) {
                 return false;
             }
 
@@ -374,12 +358,13 @@ contract SmartAccount is EIP712, Receiver, ISmartAccount {
             bytes memory _data = calls[i].data;
             for (uint256 j = 0; j < policy.paramRules.length; j++) {
                 ParamRule memory rule = policy.paramRules[j];
-                bytes32 param = extractParam(_data, 4 + rule.offset);
                 bytes32 CONDITION_HASH = keccak256(bytes(rule.condition));
 
                 if (CONDITION_HASH == ANY_HASH) {
                     continue;
                 }
+
+                bytes32 param = extractParam(_data, 4 + rule.offset);
 
                 if (CONDITION_HASH == EQUAL_HASH && param != rule.paramValue) {
                     return false;

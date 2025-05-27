@@ -8,18 +8,18 @@ contract SmartAccountFactory {
 
     function createClone(
         address implementation,
-        Call[] calldata calls
+        address relayer,
+        uint256 initGasFee
     ) external payable returns (address clone) {
         clone = Clones.cloneDeterministic(
             implementation,
             keccak256(abi.encodePacked(msg.sender))
         );
-
-        if (calls.length > 0) {
-            ISmartAccount(clone).init{value: msg.value}(msg.sender, calls);
-        } else {
-            ISmartAccount(clone).init{value: msg.value}(msg.sender);
-        }
+        ISmartAccount(clone).init{value: msg.value}(
+            msg.sender,
+            relayer,
+            initGasFee
+        );
 
         emit CloneDeployed(clone);
     }
