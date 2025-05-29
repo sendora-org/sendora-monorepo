@@ -140,11 +140,16 @@ export const CheckReceipt = ({
     let reduction = totalFee;
 
     if (tokenType === 'native') {
-      reduction = totalFee + (data?.totalAmount ?? 0n);
+      if (isToggle) {
+        reduction =
+          totalFee + ((data?.totalAmount ?? 0n) * BigInt(10 ** 18)) / rate;
+      } else {
+        reduction = totalFee + (data?.totalAmount ?? 0n);
+      }
     }
 
     return reduction;
-  }, [totalFee, tokenType, data]);
+  }, [totalFee, tokenType, rate, data]);
 
   const estimatedMilliseconds = useMemo(() => {
     if (gasLimit > 0n) {
