@@ -3,12 +3,11 @@ import {
   createMultisendTask,
   deleteMultisendTask,
   dequeueTaskItem,
-  mockData,
 } from '@/services/multisend-task';
-export const DemoOps = () => {
+export const DemoOps = ({ task }: any) => {
   return (
     <>
-      <button
+      {/* <button
         onClick={async () => {
           const taskId = await createMultisendTask(
             mockData.task,
@@ -18,11 +17,11 @@ export const DemoOps = () => {
         }}
       >
         create multisend task
-      </button>
+      </button> */}
 
       <button
         onClick={async () => {
-          const result = await cancelMultisendTask(mockData.task.id);
+          const result = await cancelMultisendTask(task.id);
           console.log({ result });
         }}
       >
@@ -31,7 +30,7 @@ export const DemoOps = () => {
 
       <button
         onClick={async () => {
-          const result = await deleteMultisendTask(mockData.task.id);
+          const result = await deleteMultisendTask(task.id);
 
           console.log({ result });
         }}
@@ -41,7 +40,7 @@ export const DemoOps = () => {
 
       <button
         onClick={async () => {
-          const result = await dequeueTaskItem(mockData.task.id);
+          const result = await dequeueTaskItem(task.id);
           console.log({ result });
         }}
       >

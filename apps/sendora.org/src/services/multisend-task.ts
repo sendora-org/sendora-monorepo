@@ -1,3 +1,4 @@
+import { MerkleMultiSendVars } from '@/constants/common';
 import {
   MultisendTaskItemStatus,
   MultisendTaskStatus,
@@ -6,101 +7,198 @@ import {
   multisendTaskDb as db,
 } from '@/db/databases';
 import type { Hex, IMultisendTask, IMultisendTaskItem } from '@/db/databases';
-import { getErrorMessage } from '@/libs/common';
-import { Subject, firstValueFrom, map, race, take, timer } from 'rxjs';
-import { keccak256 } from 'viem';
+import { computeSmartAccount, getErrorMessage } from '@/libs/common';
+// @ts-ignore
+import chunk from 'lodash.chunk';
+import { MerkleTree } from 'merkletreejs';
+import { nanoid } from 'nanoid';
+import { keccak256, stringToHex } from 'viem';
+import { bytesToHex } from 'viem';
+import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
-// mock
-const mockTaskId: Hex = `0x${'a'.repeat(64)}`;
-const mockLeaf: Hex = `0x${'b'.repeat(64)}`;
-const merkle_root: Hex = `0x${'e'.repeat(64)}`;
-const mockProof: Hex[] = [`0x${'c'.repeat(64)}`, `0x${'d'.repeat(64)}`];
+import { ZERO_ADDRESS } from '@/constants/common';
+import { encodeAbiParameters } from 'viem';
 
-const mockTask: IMultisendTask = {
-  id: mockTaskId,
-  merkle_root: merkle_root,
-  chain_id: 1,
-  contract_to: '0x1111111111111111111111111111111111111111',
-  contract_method: 'distributeTokens(bytes32,bytes32[],uint256[])',
-  token_address: '0x2222222222222222222222222222222222222222',
-  token_decimal: 18,
-  token_symbol: 'USDC',
-  referrer_address: '0x3333333333333333333333333333333333333333',
-  referrer_eligible: true,
-  tool_fee: '5000000000000000', // 0.005 ETH
-  gas_limit: '21000',
-  gas_price: '1000000000', // 1 gwei
-  pricing_currency: 'USD',
-  rate: '1500000000000000000', // 1.5 USD/Token
-  total_recipients: 2,
-  total_transactions: 2,
-  total_pricing_amount: '3000000000000000000',
-  total_token_amount: '2000000',
-  signature_strategy: SigningMode.Manual,
- 
-  signer_address: '0x4444444444444444444444444444444444444444',
-  funding_wallet_address: '0x5555555555555555555555555555555555555555',
-  connected_wallet_address: '0x6666666666666666666666666666666666666666',
-  status: MultisendTaskStatus.PENDING,
-  created_at: Date.now(),
+type Receipt = {
+  address: Hex;
+  addressType: string;
+  name: string;
+  amount: bigint; // tokenToBeSend
+  amountRaw: bigint; // User input value scaled by 1e18.
+  id: number;
 };
 
-const mockTaskItem1: IMultisendTaskItem = {
-  batch_id: mockTaskId,
-  position: 0,
-  recipients: ['0x7777777777777777777777777777777777777777'],
-  amounts: ['1000000'], // 1 token
-  proof: mockProof,
-  leaf: mockLeaf,
-  value: '25000000000000000', // 0.025 ETH
-  total_recipients: 1,
-  total_pricing_amount: '1500000000000000000', // $1.5
-  total_token_amount: '1000000',
-  tx_gas_limit: null,
-  tx_gas_price: null,
-  tx_hash: null,
-  tx_gas_used: null,
-  tx_gas_fee_cost: null,
-  tx_status: null,
-  tx_confirmed_at: null,
-  tx_sent_at: null,
-  status: MultisendTaskItemStatus.PENDING,
-  created_at: Date.now(),
+export const generateMultisendTask = async (
+  chainId: number,
+  rate: bigint,
+  enablePricingCurrency: boolean,
+  currency: string,
+  total_recipients: number,
+  total_transactions: number,
+  total_input_amount: bigint,
+  total_token_amount: bigint,
+  tool_fee: bigint,
+  signatureStrategy: string,
+  connected_wallet_address: Hex,
+  receipts: Receipt[],
+  tokenAddress: Hex,
+  decimals: number,
+  symbol: string,
+  gas_limit: bigint,
+  gas_price: bigint,
+) => {
+  const taskId = stringToHex(nanoid(), { size: 32 });
 
-  updated_at: Date.now(),
-  tx_error_reason: null,
-  tx_nonce: null,
-};
+  const token = [tokenAddress, BigInt(decimals), symbol];
+  let chunks = chunk(receipts, 100, false);
 
-const mockTaskItem2: IMultisendTaskItem = {
-  batch_id: mockTaskId,
-  position: 1,
-  recipients: ['0x9999999999999999999999999999999999999999'],
-  amounts: ['1000000'],
-  proof: mockProof,
-  leaf: `0x${'f'.repeat(64)}`,
-  value: '25000000000000000',
-  total_recipients: 1,
-  total_pricing_amount: '1500000000000000000',
-  total_token_amount: '1000000',
-  tx_gas_limit: null,
-  tx_gas_price: null,
-  tx_hash: null,
-  tx_gas_used: null,
-  tx_gas_fee_cost: null,
-  tx_status: null,
-  tx_confirmed_at: null,
-  tx_sent_at: null,
-  status: MultisendTaskItemStatus.PENDING,
-  created_at: Date.now(),
-  updated_at: Date.now(),
-  tx_error_reason: null,
-  tx_nonce: null,
-};
+  chunks = chunks.map((chunk) => {
+    return {
+      taskId: taskId,
+      token,
+      recipients: chunk.map((item) => item.address),
 
-export const mockData = {
-  task: mockTask,
-  taskItems: [mockTaskItem1, mockTaskItem2],
+      // 计算金额问题
+      amounts: chunk.map((item) => item.amount),
+      amountRaws: chunk.map((item) => item.amountRaw),
+    };
+  });
+  const leafs = chunks.map((chunk) => {
+    return keccak256(
+      encodeAbiParameters(
+        [
+          {
+            name: 'batchID',
+            type: 'bytes32',
+            internalType: 'bytes32',
+          },
+          {
+            name: 'token',
+            type: 'tuple',
+            internalType: 'struct MerkleMultiSend.Token',
+            components: [
+              {
+                name: 'tokenAddress',
+                type: 'address',
+                internalType: 'address',
+              },
+              {
+                name: 'decimals',
+                type: 'uint256',
+                internalType: 'uint256',
+              },
+              {
+                name: 'symbol',
+                type: 'string',
+                internalType: 'string',
+              },
+            ],
+          },
+
+          {
+            name: 'recipients',
+            type: 'address[]',
+            internalType: 'address[]',
+          },
+          {
+            name: 'amounts',
+            type: 'uint256[]',
+            internalType: 'uint256[]',
+          },
+        ],
+        [chunk.taskId, chunk.token, chunk.recipients, chunk.amounts],
+      ),
+    );
+  });
+
+  const tree = new MerkleTree(leafs, keccak256, {
+    sortLeaves: true,
+    sortPairs: true,
+  });
+
+  const merkle_root = tree.getRoot().toString('hex') as Hex;
+
+  const taskItems = chunks.map((chunk, index) => {
+    const leaf = leafs[index];
+    const proofBytes = tree.getProof(leaf);
+    console.log(55555, chunk);
+    return {
+      batch_id: chunk.taskId,
+      position: index,
+      recipients: chunk.recipients,
+      amounts: chunk.amounts,
+      proof: proofBytes.map((item) => {
+        return bytesToHex(item.data);
+      }),
+      leaf: leaf,
+      total_recipients: chunk.recipients.length,
+
+      // token == 0x0    value = total_token_amount + fee
+      // token != 0x0    value = fee
+      value:
+        tokenAddress == ZERO_ADDRESS ? tool_fee + total_token_amount : tool_fee,
+      total_input_amount: chunk.amountRaws.reduce(
+        (sum: bigint, val: bigint) => sum + val,
+        0n,
+      ),
+      total_token_amount: chunk.amounts.reduce(
+        (sum: bigint, val: bigint) => sum + val,
+        0n,
+      ),
+
+      status: MultisendTaskItemStatus.PENDING,
+      created_at: Date.now(),
+      updated_at: Date.now(),
+
+      tx_gas_limit: null,
+      tx_gas_price: null,
+      tx_hash: null,
+      tx_gas_used: null,
+      tx_gas_fee_cost: null,
+      tx_status: null,
+      tx_confirmed_at: null,
+      tx_sent_at: null,
+      tx_error_reason: null,
+      tx_nonce: null,
+    };
+  });
+
+  const task: IMultisendTask = {
+    id: taskId,
+    merkle_root: merkle_root,
+    chain_id: chainId,
+
+    contract_to: MerkleMultiSendVars.contract_to,
+    contract_method: MerkleMultiSendVars.contract_method,
+
+    token_address: tokenAddress,
+    token_decimal: decimals,
+    token_symbol: symbol,
+
+    total_recipients: total_recipients,
+    total_transactions: total_transactions,
+
+    tool_fee: tool_fee,
+    total_input_amount: total_input_amount,
+    total_token_amount: total_token_amount,
+    pricing_currency: currency,
+    rate: rate,
+    enable_pricing_currency: enablePricingCurrency,
+
+    gas_limit: gas_limit,
+    gas_price: gas_price,
+    signature_strategy: signatureStrategy,
+    relayerKey: signatureStrategy === 'auto' ? generatePrivateKey() : '0x',
+    funding_wallet_address:
+      signatureStrategy === 'auto'
+        ? computeSmartAccount(connected_wallet_address)
+        : connected_wallet_address,
+    connected_wallet_address: connected_wallet_address,
+    status: MultisendTaskStatus.PENDING,
+    created_at: Date.now(),
+  };
+
+  await createMultisendTask(task, taskItems);
 };
 
 export const createMultisendTask = async (

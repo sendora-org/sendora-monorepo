@@ -9,11 +9,6 @@ import { nanoid } from 'nanoid';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Chain } from 'viem';
 
-import { native_coin_input_example } from '@/constants/common';
-import { EditorRefContext } from '@/constants/contexts';
-import { useLocale } from '@/hooks/useLocale';
-import { useScopedStep } from '@/providers/step-provider';
-
 import AddAmount from '@/components/add-amount';
 import { CheckReceipt } from '@/components/check-receipt';
 import { CheckShowTable } from '@/components/check-show-table';
@@ -22,10 +17,19 @@ import SNDRACodemirror from '@/components/codemirror-sndra';
 import ConnectButton from '@/components/connect-button';
 import DecimalSeparatorSwitch from '@/components/decimal-separator-switch';
 import H3Title from '@/components/h3-title';
+import MyTimer from '@/components/my-timer';
 import ShowSample from '@/components/show-sample';
 import UploadSpreadsheet from '@/components/upload-spreadsheet';
+import { native_coin_input_example } from '@/constants/common';
 import { signatureStrategies } from '@/constants/common';
+import { ZERO_ADDRESS } from '@/constants/common';
+import { EditorRefContext } from '@/constants/contexts';
+import useAuthStore from '@/hooks/useAuth';
+import { useLocale } from '@/hooks/useLocale';
 import { WorkerService } from '@/libs/worker-service';
+import { useScopedStep } from '@/providers/step-provider';
+import { generateMultisendTask } from '@/services/multisend-task';
+import { firstValueFrom } from 'rxjs';
 
 type IProps<T> = {
   network: Chain;
@@ -45,10 +49,12 @@ export const Prepare = ({ network }: IProps<IStepData>) => {
   // use hooks
   const editorRef = useRef<SNDRACodemirrorRef | null>(null);
 
+  const [isLoading, setLoading] = useState(false);
   const { locale } = useLocale();
   const { toggle, fullscreen } = useFullscreen();
   const [docChangeEvents, setDocChangeEvent] = useState([]);
 
+  const { loginAddress, logout } = useAuthStore();
   const currentStep = useScopedStep((s) => s.currentStep);
   const steps = useScopedStep((s) => s.steps);
   const nextStep = useScopedStep((s) => s.nextStep);
@@ -281,10 +287,69 @@ export const Prepare = ({ network }: IProps<IStepData>) => {
               <Button
                 key={latestDocChangeEventId + 'PrepareContinue'}
                 className="my-2"
-                // isLoading={isLoading}
+                isLoading={isLoading}
                 fullWidth
                 color="secondary"
                 onPress={async () => {
+                  setLoading(true);
+                  if (workerService.current) {
+                    const results: any = await firstValueFrom(
+                      // biome-ignore lint/style/noNonNullAssertion: reason
+                      workerService.current?.request('getData', {
+                        rate: data.rate,
+                        enablePricingCurrency: data.isToggle,
+                        decimals: network?.nativeCurrency?.decimals,
+                      })!,
+                    );
+
+                    console.log({ results });
+
+                    // chainId: number,
+                    // rate: bigint,
+                    // enablePricingCurrency: boolean,
+                    // currency: string,
+                    // total_recipients: number,
+                    // total_transactions: number,
+                    // total_input_amount: bigint,
+                    // total_token_amount: bigint,
+                    // tool_fee: bigint,
+                    // signatureStrategy: string,
+                    // connected_wallet_address: Hex,
+                    // receipts: Receipt[],
+                    // tokenAddress: Hex,
+                    // decimal: number,
+                    // symbol: string,
+                    // gas_limit: bigint,
+                    // gas_price: bigint,
+                    await generateMultisendTask(
+                      network.id,
+                      data.rate,
+                      data.isToggle,
+                      data.currency,
+                      results.total_recipients,
+                      results.total_transactions,
+                      results.total_input_amount,
+                      results.total_token_amount,
+                      0n,
+                      data.signatureStrategy,
+                      loginAddress,
+                      results.receipts,
+                      ZERO_ADDRESS,
+                      network?.nativeCurrency?.decimals,
+                      network?.nativeCurrency?.symbol,
+                      1000000n,
+                      100000000n,
+                    );
+
+                    //   await generateMultisendTask(network.id, data.rate, network?.nativeCurrency?.symbol, data.isToggle, data.decimals, data.tokenAddress, data.total_recipients, data.total_transactions, data.total_input_amount, data.total_token_amount, data.tool_fee, data.signatureStrategy, data.connected_wallet_address, data.receipts, data.rate, network?.nativeCurrency?.decimals);
+                  }
+
+                  setLoading(false);
+
+                  // export const generateMultisendTask = async (
+
+                  // ) => {
+
                   // try {
                   //   console.log('continue');
                   //   setLoading(true);
@@ -302,14 +367,13 @@ export const Prepare = ({ network }: IProps<IStepData>) => {
                   // setLoading(false);
                 }}
               >
-                {/* {isLoading && (
-                      <p className="flex gap-2">
-                        <MyTimer />
-                        Validating receipient & amount (~60s)...
-                      </p>
-                    )}
-                    {!isLoading && 'Continue'} */}
-                Continue
+                {isLoading && (
+                  <p className="flex gap-2">
+                    <MyTimer />
+                    (~ 60 s) Generating...
+                  </p>
+                )}
+                {!isLoading && 'Continue'}
               </Button>
             )}
           </>

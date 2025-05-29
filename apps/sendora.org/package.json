@@ -52,6 +52,7 @@
     "lodash.orderby": "^4.6.0",
     "lodash.sortby": "^4.7.0",
     "lodash.union": "^4.6.0",
+    "merkletreejs": "^0.5.2",
     "nanoid": "^5.1.5",
     "next": "15.2.3",
     "next-themes": "^0.4.6",

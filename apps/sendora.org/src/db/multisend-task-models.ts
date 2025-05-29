@@ -48,33 +48,32 @@ export interface IMultisendTask {
   token_decimal: number;
   token_symbol: string;
 
-  referrer_address: Hex;
-  referrer_eligible: boolean;
+  tool_fee: bigint; // The amount of Ethereum priced in wei.
 
-  tool_fee: string; // The amount of Ethereum priced in wei.
+  gas_limit: bigint;
+  gas_price: bigint;
 
-  gas_limit: string;
-  gas_price: string;
-
+  enable_pricing_currency: boolean;
   pricing_currency: string;
 
   // This is the exchange rate scaled by 1e18.
   // For example, a real rate of 1.5 would be stored as '1500000000000000000'.
-  rate: string;
+  rate: bigint;
 
   total_recipients: number;
   total_transactions: number;
 
   // Total amount in pricing currency (e.g. USD, EUR), expressed as a stringified integer.
   // This value is scaled by 1e18 for precision.
-  total_pricing_amount: string;
+  total_input_amount: bigint;
 
   // Total amount in token units (e.g. ETH, DAI), expressed as a stringified integer.
   // Represents the amounts of tokens to be sent, specified in the smallest unit of the token.
-  total_token_amount: string;
+  total_token_amount: bigint;
 
-  signature_strategy: SigningMode;
-  signer_address: Hex;
+  signature_strategy: string;
+
+  relayerKey: Hex;
   funding_wallet_address: Hex;
   connected_wallet_address: Hex;
 

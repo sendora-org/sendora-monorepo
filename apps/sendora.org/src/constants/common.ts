@@ -1,3 +1,5 @@
+import type { Hex } from 'viem';
+
 export type Locale = 'en-US' | 'de-DE' | 'fr-FR' | 'de-CH';
 export type HDLng = 'en' | 'de' | 'fr';
 export type LocaleInfo = {
@@ -112,4 +114,9 @@ export const signatureStrategies = {
     name: 'auto',
     description: 'Sign once and auto-submit later',
   },
+};
+
+export const MerkleMultiSendVars = {
+  contract_to: '0x00000000000000000000000000000000' as Hex,
+  contract_method: '',
 };

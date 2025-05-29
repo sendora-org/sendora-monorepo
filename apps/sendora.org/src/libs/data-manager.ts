@@ -1,3 +1,4 @@
+import type { Hex } from 'viem';
 interface Item {
   id: number;
   raw: string;
@@ -5,6 +6,14 @@ interface Item {
   // biome-ignore  lint/suspicious/noExplicitAny: reason
   [key: string]: any;
 }
+type Receipt = {
+  address: Hex;
+  addressType: string;
+  name: string;
+  amount: bigint; // tokenToBeSend
+  amountRaw: bigint; // User input value scaled by 1e18.
+  id: number;
+};
 
 export class DataManager<T extends Item> {
   private dataMap: Map<number, T>;
@@ -110,6 +119,7 @@ export class DataManager<T extends Item> {
       this.idIndex.push(item.id);
     }
   }
+
   count() {
     let ids = [...this.idIndex];
 
@@ -134,6 +144,63 @@ export class DataManager<T extends Item> {
       recipients,
     };
   }
+
+  getData(options: {
+    rate: bigint;
+    enablePricingCurrency: boolean;
+    decimals: number;
+    currency: string;
+  }) {
+    const { rate, decimals, enablePricingCurrency } = options;
+
+    let ids = [...this.idIndex];
+
+    ids = ids.filter((id) => {
+      // biome-ignore lint/style/noNonNullAssertion: reason
+      const item = this.dataMap.get(id)!;
+
+      return item.status === 'valid' || item.status === 'duplicateAddress';
+    });
+
+    let total_token_amount = 0n;
+    let total_input_amount = 0n;
+    const receipts: Receipt[] = [];
+
+    for (const id of ids) {
+      // biome-ignore lint/style/noNonNullAssertion: reason
+      const item = this.dataMap.get(id)!;
+      let token_amount = 0n;
+      if (enablePricingCurrency) {
+        token_amount = (item.amount * BigInt(10 ** decimals)) / rate;
+      } else {
+        token_amount =
+          (item.amount * BigInt(10 ** decimals)) / BigInt(10 ** 18);
+      }
+
+      total_input_amount = item.amount + total_input_amount;
+      total_token_amount = token_amount + total_token_amount;
+      receipts.push({
+        address: item.address,
+        addressType: item.addressType,
+        name: item.name,
+        amount: token_amount,
+        amountRaw: item.amount,
+        id,
+      });
+    }
+
+    const total_recipients = ids.length;
+    const total_transactions = Math.ceil(total_recipients / 100);
+
+    return {
+      total_token_amount,
+      total_recipients,
+      total_transactions,
+      total_input_amount,
+      receipts,
+    };
+  }
+
   query(
     options: {
       sortField?: keyof T;

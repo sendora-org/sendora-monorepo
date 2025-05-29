@@ -1186,3 +1186,7 @@ export function isIntegerString(value: string): boolean {
   const regex = /^[+-]?\d+$/;
   return regex.test(value.trim());
 }
+
+export function computeSmartAccount(from: Hex): Hex {
+  return '0x0000';
+}

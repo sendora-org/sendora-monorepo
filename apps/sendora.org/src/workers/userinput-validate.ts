@@ -317,6 +317,11 @@ self.onmessage = async ({
       break;
     }
 
+    case 'getData': {
+      result = store.getData(payload) || null;
+      break;
+    }
+
     case 'query': {
       result = store.query(payload) || null;
       break;
