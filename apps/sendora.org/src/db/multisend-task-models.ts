@@ -23,17 +23,15 @@ export enum TransactionStatus {
  */
 export enum SigningMode {
   /**
-   * Signature was produced automatically via a session key (delegated signer).
    * Typically does not require user interaction.
    */
-  SessionKey = 'session_key',
+  Auto = 'auto',
 
   /**
    * Signature was produced via an externally controlled wallet.
-   * This could be a true EOA (externally owned account), or a smart contract
-   * wallet (e.g., Safe, Biconomy, Argent) that uses EIP-1271 or Account Abstraction.
    */
-  Wallet = 'wallet',
+
+  Manual = 'manual',
 }
 
 export type Hex = `0x${string}`;
@@ -75,8 +73,7 @@ export interface IMultisendTask {
   // Represents the amounts of tokens to be sent, specified in the smallest unit of the token.
   total_token_amount: string;
 
-  signing_mode: SigningMode;
-  session_key: Hex | null;
+  signature_strategy: SigningMode;
   signer_address: Hex;
   funding_wallet_address: Hex;
   connected_wallet_address: Hex;

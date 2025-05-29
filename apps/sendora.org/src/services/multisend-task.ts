@@ -36,8 +36,8 @@ const mockTask: IMultisendTask = {
   total_transactions: 2,
   total_pricing_amount: '3000000000000000000',
   total_token_amount: '2000000',
-  signing_mode: SigningMode.Wallet,
-  session_key: null,
+  signature_strategy: SigningMode.Manual,
+ 
   signer_address: '0x4444444444444444444444444444444444444444',
   funding_wallet_address: '0x5555555555555555555555555555555555555555',
   connected_wallet_address: '0x6666666666666666666666666666666666666666',
