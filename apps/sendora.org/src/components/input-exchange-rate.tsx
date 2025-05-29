@@ -63,7 +63,8 @@ export default ({
         )}
       </div>
 
-      {isToggle && (
+      {/* isToggle */}
+      {true && (
         <NumberInput
           hideStepper
           formatOptions={{

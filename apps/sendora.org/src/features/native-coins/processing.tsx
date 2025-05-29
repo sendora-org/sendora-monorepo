@@ -8,42 +8,27 @@ type IProps<T> = {
   resetSteps: () => void;
   setStepData: (stepIndex: number, newData: Record<string, T>) => void;
 };
-
+import { useScopedStep } from '@/providers/step-provider';
 export const Processing = ({
   data,
-  currentStep,
+  // currentStep,
   totalSteps,
-  nextStep,
-  prevStep,
-  resetSteps,
-  setStepData,
+  // nextStep,
+  // prevStep,
+  // resetSteps,
+  // setStepData,
 }: IProps<string>) => {
   useEffect(() => {
     // @ts-ignore
     window?.stonks?.event('native-coins-processing-loaded');
   }, []);
-  return (
-    <>
-      Processing
-      <div className="mt-[500px]">------------</div>
-      <button
-        type="button"
-        onClick={() => {
-          prevStep();
-        }}
-        disabled={currentStep === 0}
-      >
-        ⬅ Prev
-      </button>
-      <button
-        type="button"
-        onClick={() => {
-          nextStep();
-        }}
-        disabled={currentStep === totalSteps - 1}
-      >
-        ➡ Next
-      </button>
-    </>
-  );
+
+  const currentStep = useScopedStep((s) => s.currentStep);
+  const steps = useScopedStep((s) => s.steps);
+  const nextStep = useScopedStep((s) => s.nextStep);
+  const prevStep = useScopedStep((s) => s.prevStep);
+  const setStepData = useScopedStep((s) => s.setStepData);
+  const resetSteps = useScopedStep((s) => s.resetSteps);
+
+  return <>Processing</>;
 };

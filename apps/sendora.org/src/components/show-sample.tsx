@@ -25,13 +25,13 @@ export default function App({ example = '' }: { example: string }) {
   useEffect(() => {
     if (isOpen) {
       // @ts-ignore
-      window?.stonks?.event('show-sample');
+      window?.stonks?.event('show-example');
     }
   }, [isOpen]);
   return (
     <>
       <Button size="sm" onPress={onOpen}>
-        Show Sample
+        Example
       </Button>
       <Modal
         isOpen={isOpen}

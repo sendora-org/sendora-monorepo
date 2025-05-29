@@ -4,7 +4,13 @@ import { vscodeDark } from '@/libs/vscodeDark';
 import { vscodeLight } from '@/libs/vscodeLight';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { search, searchKeymap } from '@codemirror/search';
-import { highlightActiveLine, keymap, lineNumbers } from '@codemirror/view';
+import { EditorSelection } from '@codemirror/state';
+import {
+  type ViewUpdate,
+  highlightActiveLine,
+  keymap,
+  lineNumbers,
+} from '@codemirror/view';
 import { useFullscreen } from '@mantine/hooks';
 import { EditorView } from 'codemirror';
 import { useTheme } from 'next-themes';
@@ -21,7 +27,7 @@ export interface SNDRACodemirrorRef {
 
 interface SNDRACodemirrorProps {
   defaultValue?: string;
-  onDocChange?: () => void;
+  onDocChange?: (update: ViewUpdate) => void;
 }
 
 const SNDRACodemirror = forwardRef(
@@ -41,6 +47,7 @@ const SNDRACodemirror = forwardRef(
       if (!editorRef.current) return;
       const view = new EditorView({
         doc: defaultValue,
+
         extensions: [
           lineNumbers(),
           highlightActiveLine(),
@@ -50,7 +57,8 @@ const SNDRACodemirror = forwardRef(
           theme === 'dark' ? vscodeDark : vscodeLight,
           EditorView.updateListener.of((update) => {
             if (update.docChanged) {
-              onDocChange?.();
+              console.log('onDocChangeonDocChange in codemirror');
+              onDocChange?.(update);
             }
           }),
         ],
@@ -62,9 +70,15 @@ const SNDRACodemirror = forwardRef(
       return () => {
         view.destroy();
       };
-    }, [onDocChange, defaultValue, theme]);
+    }, [onDocChange, theme]);
 
     useImperativeHandle(ref, () => ({
+      // getCursor: () => {
+      //   if (editorViewRef.current) {
+      //     return editorViewRef.current.state.selection.main.head
+      //   }
+      //   return 0
+      // },
       getValue: () => {
         if (editorViewRef.current) {
           return editorViewRef.current.state.doc.toString();

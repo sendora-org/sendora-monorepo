@@ -76,7 +76,7 @@ export default function AddAmount() {
       </Button>
       <Modal
         disableAnimation
-        isDismissable={false}
+        // isDismissable={false}
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         placement="center"

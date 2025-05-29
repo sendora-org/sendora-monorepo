@@ -1,5 +1,6 @@
 import { produce } from 'immer';
 import { create } from 'zustand';
+import { createStore } from 'zustand';
 
 //  Define Step Type
 export type Step<T = unknown> = {
@@ -10,7 +11,8 @@ export type Step<T = unknown> = {
 };
 
 // Define `useStep` States
-type StepState = {
+export type StepState = {
+  initialSteps: Step[];
   steps: Step[];
   currentStep: number;
   initialized: boolean;
@@ -22,15 +24,18 @@ type StepActions<T = unknown> = {
   nextStep: () => void;
   prevStep: () => void;
   goToStep: (index: number) => void;
-  setStepData: (stepIndex: number, newData: Record<string, T> | string) => void;
+  setStepData: (stepIndex: number, newData: T | string) => void;
   resetSteps: () => void;
 };
 
-const createStepStore = () =>
-  create<StepState & StepActions>((set) => ({
-    steps: [],
-    currentStep: 0,
-    initialized: false,
+export type IStep = StepState & StepActions;
+
+export const createStepStore = (initialStepState: StepState) => {
+  return createStore<StepState & StepActions>((set) => ({
+    initialSteps: initialStepState.steps,
+    steps: initialStepState.steps,
+    currentStep: initialStepState.currentStep,
+    initialized: initialStepState.initialized,
 
     initializeSteps: (initialSteps) =>
       set(
@@ -79,6 +84,7 @@ const createStepStore = () =>
           if (stepIndex >= 0 && stepIndex < state.steps.length) {
             if (newData instanceof Object) {
               state.steps[stepIndex].data = {
+                ...state.steps[stepIndex].data,
                 ...newData,
               };
             } else {
@@ -91,26 +97,9 @@ const createStepStore = () =>
     resetSteps: () =>
       set(
         produce((state: StepState) => {
-          for (const step of state.steps) {
-            step.data = {};
-          }
+          state.steps = state.initialSteps;
           state.currentStep = 0;
         }),
       ),
   }));
-
-const stepStores: Record<string, ReturnType<typeof createStepStore>> = {};
-
-export const useStep = (name: string, steps: Step[]) => {
-  if (!stepStores[name]) {
-    stepStores[name] = createStepStore();
-  }
-
-  const store = stepStores[name]();
-
-  if (!store.initialized) {
-    store.initializeSteps(steps);
-  }
-
-  return store;
 };

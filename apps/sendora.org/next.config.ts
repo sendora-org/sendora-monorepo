@@ -6,44 +6,42 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        "source": "/(.*)",
-        "headers": [
+        source: '/(.*)',
+        headers: [
           {
-            "key": "Cross-Origin-Opener-Policy",
-            "value": "same-origin-allow-popups"
-          }
-        ]
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin-allow-popups',
+          },
+        ],
       },
       {
-        "source": '/_next/:path*',
-        "headers": [
+        source: '/_next/:path*',
+        headers: [
           {
-            "key": 'Cross-Origin-Opener-Policy',
-            "value": 'same-origin'
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin',
           },
           {
-            "key": 'Cross-Origin-Embedder-Policy',
-            "value": 'require-corp'
-          }
-        ]
+            key: 'Cross-Origin-Embedder-Policy',
+            value: 'require-corp',
+          },
+        ],
       },
       {
-        "source": '/_next/:path*',
-        "headers": [
+        source: '/_next/:path*',
+        headers: [
           {
-            "key": "Cross-Origin-Embedder-Policy",
-            "value": "require-corp"
+            key: 'Cross-Origin-Embedder-Policy',
+            value: 'require-corp',
           },
           {
-            "key": "Cross-Origin-Opener-Policy",
-            "value": "same-origin"
-          }
-        ]
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin',
+          },
+        ],
       },
-
-  
-    ]
-  }
+    ];
+  },
 };
 
 export default nextConfig;

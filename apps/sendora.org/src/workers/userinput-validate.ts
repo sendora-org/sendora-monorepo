@@ -32,23 +32,39 @@ self.onmessage = async ({
   let result: any;
   switch (type) {
     case 'reset': {
-      if (payload === '') {
-        store.reset([]);
-      } else {
-        store.reset(
-          payload
-            .split('\n')
-            // biome-ignore  lint/suspicious/noExplicitAny: reason
-            .map((item: any, index: number) => ({ id: index, raw: item })),
-        );
-      }
+      store.reset([]);
+      // if (payload === '') {
+      //   store.reset([]);
+      // } else {
+      //   store.reset(
+      //     payload
+      //       .split('\n')
+      //       // biome-ignore  lint/suspicious/noExplicitAny: reason
+      //       .map((item: any, index: number) => ({ id: index, raw: item })),
+      //   );
+      // }
       result = 'ok';
       break;
     }
 
+    case 'estimate': {
+      const { value } = payload;
+      result = value.split('\n').length;
+      break;
+    }
+
     case 'validate': {
-      const { thousandSeparator, decimalSeparator } = payload;
+      const { thousandSeparator, decimalSeparator, value } = payload;
+      store.reset(
+        value
+          .split('\n')
+          // biome-ignore  lint/suspicious/noExplicitAny: reason
+          .map((item: any, index: number) => ({ id: index + 1, raw: item })),
+      );
+
       const chunks = chunk(store.getIdIndex(), 20000);
+
+      console.log({ chunks });
 
       const { results } = await PromisePool.withConcurrency(1)
         .for(chunks)

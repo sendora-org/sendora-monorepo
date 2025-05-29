@@ -5,10 +5,12 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 export default ({
   showAddr,
   register,
+  children,
 }: {
   showAddr?: boolean;
   // biome-ignore  lint/suspicious/noExplicitAny: reason
   register?: (name: string) => any;
+  children?: React.ReactNode;
 }) => {
   const { loginAddress, logout } = useAuthStore();
   return (
@@ -83,7 +85,7 @@ export default ({
                   />
                 );
               }
-              return <></>;
+              return <>{children}</>;
             })()}
           </div>
         );

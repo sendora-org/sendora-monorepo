@@ -3,19 +3,22 @@ import { Button, Input, Switch } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import type { ethers } from 'ethers';
 import type React from 'react';
-import {useEffect} from "react"
+import { useEffect } from 'react';
 
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 
 type FormRendererProps = {
   param: ethers.ParamType;
   name: string;
-  defaultValue?:any;
+  defaultValue?: any;
 };
 
-export const FormField: React.FC<FormRendererProps> = ({ param, name, defaultValue }) => {
-  const { control, register, setValue,getValues } = useFormContext();
-
+export const FormField: React.FC<FormRendererProps> = ({
+  param,
+  name,
+  defaultValue,
+}) => {
+  const { control, register, setValue, getValues } = useFormContext();
 
   useEffect(() => {
     const currentValue = getValues(name);

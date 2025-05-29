@@ -14,8 +14,8 @@ export enum MultisendTaskItemStatus {
 }
 
 export enum TransactionStatus {
-  SUCCESS = "success",
-  REVERTED = "reverted",
+  SUCCESS = 'success',
+  REVERTED = 'reverted',
 }
 
 /**
@@ -33,10 +33,10 @@ export enum SigningMode {
    * This could be a true EOA (externally owned account), or a smart contract
    * wallet (e.g., Safe, Biconomy, Argent) that uses EIP-1271 or Account Abstraction.
    */
-  Wallet = 'wallet'
+  Wallet = 'wallet',
 }
 
-export type Hex = `0x${string}`
+export type Hex = `0x${string}`;
 
 // The update occurs only for the status field
 export interface IMultisendTask {
@@ -95,7 +95,7 @@ export interface IMultisendTaskItem {
   proof: Hex[];
   leaf: Hex;
 
-  value: string;// The amount of Ethereum priced in wei.
+  value: string; // The amount of Ethereum priced in wei.
 
   total_recipients: number;
 
@@ -121,5 +121,4 @@ export interface IMultisendTaskItem {
   status: MultisendTaskItemStatus; // task item status： pending|processing|committed|failed|completed
   created_at: number;
   updated_at: number;
-
 }

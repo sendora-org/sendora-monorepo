@@ -24,7 +24,6 @@ export default () => {
   }, []);
   return (
     <div className="flex gap-1">
-
       <Button
         onPress={() => {
           const worker = new Worker(
@@ -35,7 +34,7 @@ export default () => {
           if (Number.isNaN(num)) return;
           worker.postMessage(num);
           worker.onmessage = (event: MessageEvent<number>) => {
-            console.log(` result=> ${event.data}`,event.data);
+            console.log(` result=> ${event.data}`, event.data);
 
             alert(event.data);
           };
@@ -43,7 +42,6 @@ export default () => {
       >
         Create DB
       </Button>
-
 
       <Button
         onPress={() => {

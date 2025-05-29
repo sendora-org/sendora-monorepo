@@ -24,6 +24,8 @@ export class DataManager<T extends Item> {
       this.dataMap.set(item.id, item);
       this.idIndex.push(item.id);
     }
+
+    console.log('reset ids', this.idIndex, data);
   }
 
   delete(id: number): boolean {
@@ -149,6 +151,7 @@ export class DataManager<T extends Item> {
     items: T[];
     total: number;
     totalPages: number;
+    all: number;
   } {
     const {
       sortField,
@@ -163,6 +166,7 @@ export class DataManager<T extends Item> {
 
     //
     let ids = [...this.idIndex];
+    console.log('query', { ids });
 
     // Fiter
     if (filterField && filterKey) {
@@ -219,7 +223,7 @@ export class DataManager<T extends Item> {
     const items = paginatedIds.map((id) => this.dataMap.get(id)!);
 
     const totalPages = Math.ceil(total / pageSize);
-    return { items, total, totalPages };
+    return { items, total, totalPages, all: this.idIndex.length };
   }
 
   get(id: number): T | undefined {

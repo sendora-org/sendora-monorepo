@@ -1,30 +1,52 @@
-import { cancelMultisendTask, createMultisendTask, mockData, deleteMultisendTask, dequeueTaskItem } from '@/services/multisend-task';
+import {
+  cancelMultisendTask,
+  createMultisendTask,
+  deleteMultisendTask,
+  dequeueTaskItem,
+  mockData,
+} from '@/services/multisend-task';
 export const DemoOps = () => {
+  return (
+    <>
+      <button
+        onClick={async () => {
+          const taskId = await createMultisendTask(
+            mockData.task,
+            mockData.taskItems,
+          );
+          console.log({ taskId });
+        }}
+      >
+        create multisend task
+      </button>
 
-    return <>
-        <button onClick={async () => {
-            const taskId = await createMultisendTask(mockData.task, mockData.taskItems)
-            console.log({ taskId })
-        }}>create multisend task</button>
+      <button
+        onClick={async () => {
+          const result = await cancelMultisendTask(mockData.task.id);
+          console.log({ result });
+        }}
+      >
+        cancel a task{' '}
+      </button>
 
+      <button
+        onClick={async () => {
+          const result = await deleteMultisendTask(mockData.task.id);
 
-        <button onClick={async () => {
-            const result = await cancelMultisendTask(mockData.task.id)
-            console.log({ result })
-        }}>cancel a task </button>
+          console.log({ result });
+        }}
+      >
+        delete a task{' '}
+      </button>
 
-        <button onClick={async () => {
-            const result = await deleteMultisendTask(mockData.task.id)
-
-            console.log({ result })
-        }}>delete a task </button>
-
-
-        <button onClick={async () => {
-            const result = await dequeueTaskItem(mockData.task.id)
-            console.log({ result })
-        }}>dequeue a task</button>
-
-
+      <button
+        onClick={async () => {
+          const result = await dequeueTaskItem(mockData.task.id);
+          console.log({ result });
+        }}
+      >
+        dequeue a task
+      </button>
     </>
-}
+  );
+};

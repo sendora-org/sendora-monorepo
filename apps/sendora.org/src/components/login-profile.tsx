@@ -70,7 +70,6 @@ export default function LoginProfile({
   const { logout } = useAuthStore.getState();
   const { theme, setTheme } = useTheme();
 
-  console.log({ ensName, theme });
   const chain = findNetwork('chainId', (chainId ?? 1).toString());
   return (
     <Dropdown
