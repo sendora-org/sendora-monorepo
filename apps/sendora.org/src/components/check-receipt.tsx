@@ -93,14 +93,10 @@ export const CheckReceipt = ({
       }
     }
   };
-  const { activeRpc } = useRpcStore();
 
-  console.log({ activeRpc }, 999);
   const transactions = useMemo(() => {
     return Math.ceil((data?.recipients ?? 0) / 100);
   }, [data]);
-
-  console.log({ data }, 'ids');
 
   const { gasPrice } = useGasPrice({
     chainId: chainId!,
@@ -151,7 +147,6 @@ export const CheckReceipt = ({
   }, [totalFee, tokenType, data]);
 
   const estimatedMilliseconds = useMemo(() => {
-    console.log({ gasLimit });
     if (gasLimit > 0n) {
       // biome-ignore lint/style/noNonNullAssertion: reason
       const network = findNetwork('chainId', chainId?.toString(10) ?? '1')!;
@@ -162,20 +157,9 @@ export const CheckReceipt = ({
         myBlockGasLimit = gasLimit;
       }
 
-      console.log({ myBlockGasLimit }, network?.blockGasLimit, gasLimit);
       const txnsPerBlock = myBlockGasLimit / gasLimit;
       const estimatedBlocks = BigInt(transactions) / txnsPerBlock + 3n;
 
-      console.log(
-        'gasLimit',
-        {
-          estimatedBlocks,
-          transactions,
-          txnsPerBlock,
-          myBlockGasLimit,
-        },
-        estimatedBlocks * blockTime,
-      );
       return (
         estimatedBlocks * blockTime +
         BigInt(Math.ceil(transactions / MAX_RPC_REQUESTS_PER_SECOND) * 1000)

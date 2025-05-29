@@ -142,9 +142,7 @@ export const CheckShowTable = ({
       placeholderData: keepPreviousData,
     });
 
-  console.log({ data }, 999);
   const deleteLines = async (ids: number[]) => {
-    console.log('before', ids);
     if (ids.length >= 1) {
       const results = await firstValueFrom(
         // biome-ignore lint/style/noNonNullAssertion: reason

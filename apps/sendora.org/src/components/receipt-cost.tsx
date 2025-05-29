@@ -46,7 +46,7 @@ export const ReceiptCost = ({
   transactions,
   recipients,
 }: IProps) => {
-  console.log({ gasPrice: formatWei(gasPrice.toString()) }, gasPrice);
+  // console.log({ gasPrice: formatWei(gasPrice.toString()) }, gasPrice);
   const { locale } = useLocale();
   const { decimalSeparator, thousandSeparator, hdLng } = numberFormats[locale];
 
