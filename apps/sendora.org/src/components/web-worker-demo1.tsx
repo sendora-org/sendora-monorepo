@@ -27,25 +27,6 @@ export default () => {
       <Button
         onPress={() => {
           const worker = new Worker(
-            new URL('@/workers/demo5.ts', import.meta.url),
-            { type: 'module' },
-          );
-          const num = 12;
-          if (Number.isNaN(num)) return;
-          worker.postMessage(num);
-          worker.onmessage = (event: MessageEvent<number>) => {
-            console.log(` result=> ${event.data}`, event.data);
-
-            alert(event.data);
-          };
-        }}
-      >
-        Create DB
-      </Button>
-
-      <Button
-        onPress={() => {
-          const worker = new Worker(
             new URL('@/workers/demo1.ts', import.meta.url),
             { type: 'module' },
           );

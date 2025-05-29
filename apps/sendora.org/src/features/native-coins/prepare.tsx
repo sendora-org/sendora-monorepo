@@ -1,4 +1,5 @@
 import type { ViewUpdate } from '@codemirror/view';
+import { Radio, RadioGroup } from '@heroui/react';
 import { Button, ButtonGroup, Input, NumberInput, Switch } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { useFullscreen } from '@mantine/hooks';
@@ -16,7 +17,6 @@ import { useScopedStep } from '@/providers/step-provider';
 import AddAmount from '@/components/add-amount';
 import { CheckReceipt } from '@/components/check-receipt';
 import { CheckShowTable } from '@/components/check-show-table';
-import { CheckWriteDB } from '@/components/check-write-db';
 import type { SNDRACodemirrorRef } from '@/components/codemirror-sndra';
 import SNDRACodemirror from '@/components/codemirror-sndra';
 import ConnectButton from '@/components/connect-button';
@@ -26,7 +26,7 @@ import ShowSample from '@/components/show-sample';
 import UploadSpreadsheet from '@/components/upload-spreadsheet';
 import { signatureStrategies } from '@/constants/common';
 import { WorkerService } from '@/libs/worker-service';
-import { Radio, RadioGroup } from '@heroui/react';
+
 type IProps<T> = {
   network: Chain;
 };
@@ -251,8 +251,6 @@ export const Prepare = ({ network }: IProps<IStepData>) => {
                   </Radio>
                 );
               })}
-
-              {/* <Radio value="auto">Sign once and auto-submit later</Radio> */}
             </RadioGroup>
             <CheckShowTable
               key={latestDocChangeEventId + 'CheckInputTable'}
