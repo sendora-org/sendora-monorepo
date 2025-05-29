@@ -102,3 +102,14 @@ export const discountedPriceTips = [
 
 export const MAX_RPC_REQUESTS_PER_SECOND = 3;
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+
+export const signatureStrategies = {
+  manual: {
+    name: 'manual',
+    description: 'Sign every transaction',
+  },
+  auto: {
+    name: 'auto',
+    description: 'Sign once and auto-submit later',
+  },
+};

@@ -12,6 +12,7 @@ import { useRpcStore } from '@/hooks/useRpcStore';
 import { delay, getGasPrice } from '@/libs/common';
 import type { WorkerService } from '@/libs/worker-service';
 import { Button, Divider, Image } from '@heroui/react';
+import { Radio, RadioGroup } from '@heroui/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -40,6 +41,7 @@ type IProps = {
   gasTokenSymbol: string;
   chainId: number;
   tokenType: string;
+  signatureStrategy: string;
 };
 
 export const CheckReceipt = ({
@@ -52,6 +54,7 @@ export const CheckReceipt = ({
   gasTokenSymbol,
   chainId,
   tokenType,
+  signatureStrategy,
 }: IProps) => {
   const [isLoading, setLoading] = useState(false);
   const queryClient = useQueryClient();
@@ -191,6 +194,7 @@ export const CheckReceipt = ({
               totalAmount={data?.totalAmount}
               recipients={data?.recipients}
               transactions={transactions}
+              signatureStrategy={signatureStrategy}
             />
             <ReceiptCost
               // biome-ignore lint/style/noNonNullAssertion: reason
@@ -207,7 +211,6 @@ export const CheckReceipt = ({
             />
           </div>
 
-          <div>Select send mode</div>
           <Button
             className="my-2"
             // isLoading={isLoading}

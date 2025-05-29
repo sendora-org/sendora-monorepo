@@ -1,5 +1,6 @@
 import H4Title from '@/components/h4-title';
 import { numberFormats } from '@/constants/common';
+import { signatureStrategies } from '@/constants/common';
 import { useLocale } from '@/hooks/useLocale';
 import { formatBigIntNumber } from '@/libs/number';
 import { Divider } from '@heroui/react';
@@ -15,6 +16,7 @@ type IProps = {
   transactions: number;
   gasTokenSymbol: string;
   isTogglePricingCurrency: boolean;
+  signatureStrategy: string;
 };
 
 export const ReceiptOverview = ({
@@ -27,6 +29,7 @@ export const ReceiptOverview = ({
   transactions = 1,
   gasTokenSymbol = 'ETH',
   isTogglePricingCurrency,
+  signatureStrategy,
 }: IProps) => {
   const { locale } = useLocale();
   const { decimalSeparator, thousandSeparator } = numberFormats[locale];
@@ -161,6 +164,13 @@ export const ReceiptOverview = ({
       </div>
 
       <Divider />
+
+      <div className="flex justify-between items-center min-h-[28px]">
+        <dt className="text-small text-default-400">Signature strategy</dt>
+        <dd className="text-small font-semibold text-default-500">
+          {signatureStrategies[signatureStrategy]?.description}
+        </dd>
+      </div>
     </dl>
   );
 };

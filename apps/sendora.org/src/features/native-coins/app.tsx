@@ -25,6 +25,10 @@ const stepsData: IStep[] = [
       isToggle: false,
       rate: BigInt(10 ** 18),
       editorData: '',
+      currency: 'USD',
+      counting: false,
+      validating: false,
+      signatureStrategy: 'manual',
     },
   },
   {

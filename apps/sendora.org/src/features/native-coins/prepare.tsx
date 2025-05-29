@@ -24,7 +24,9 @@ import DecimalSeparatorSwitch from '@/components/decimal-separator-switch';
 import H3Title from '@/components/h3-title';
 import ShowSample from '@/components/show-sample';
 import UploadSpreadsheet from '@/components/upload-spreadsheet';
+import { signatureStrategies } from '@/constants/common';
 import { WorkerService } from '@/libs/worker-service';
+import { Radio, RadioGroup } from '@heroui/react';
 type IProps<T> = {
   network: Chain;
 };
@@ -36,6 +38,7 @@ type IStepData = {
   currency: string;
   counting: boolean;
   validating: boolean;
+  signatureStrategy: string;
 };
 
 export const Prepare = ({ network }: IProps<IStepData>) => {
@@ -232,6 +235,25 @@ export const Prepare = ({ network }: IProps<IStepData>) => {
         <ConnectButton>
           {/* connected */}
           <>
+            <RadioGroup
+              label="Please choose a signature strategy"
+              value={data.signatureStrategy}
+              onValueChange={(v) => {
+                setStepData(currentStep, {
+                  signatureStrategy: v,
+                });
+              }}
+            >
+              {Object.keys(signatureStrategies).map((key) => {
+                return (
+                  <Radio value={key}>
+                    {signatureStrategies[key].description}
+                  </Radio>
+                );
+              })}
+
+              {/* <Radio value="auto">Sign once and auto-submit later</Radio> */}
+            </RadioGroup>
             <CheckShowTable
               key={latestDocChangeEventId + 'CheckInputTable'}
               workerService={workerService.current}
@@ -249,6 +271,7 @@ export const Prepare = ({ network }: IProps<IStepData>) => {
                 isToggle={data.isToggle}
                 rate={data.rate}
                 currency={data.currency}
+                signatureStrategy={data.signatureStrategy}
                 tokenSymbol={network?.nativeCurrency?.symbol}
                 network={network?.name}
                 gasTokenSymbol={network?.nativeCurrency?.symbol}
