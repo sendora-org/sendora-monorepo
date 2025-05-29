@@ -53,7 +53,7 @@ export default function AnyTable({
                 className="px-4  py-1  min-w-[100px] text-pretty   text-default-400"
                 key={k}
               >
-                {(Number(row[k]) - 1) as React.ReactNode}
+                {Number(row[k]) as React.ReactNode}
               </td>
             );
           })}

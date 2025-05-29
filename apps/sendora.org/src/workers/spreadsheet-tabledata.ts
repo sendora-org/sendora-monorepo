@@ -48,19 +48,19 @@ function parseTableData(ab: ArrayBuffer, sheetIndex: number) {
         for (let j = 0; j < columnCount; j++) {
           columns.push({
             key: numberToLetters(j + 1),
-            label:
-              rawData[0].length === columnCount
-                ? rawData[0][j]
-                : numberToLetters(j + 1),
+            label: numberToLetters(j + 1),
+            // label:
+            //   rawData[0].length === columnCount
+            //     ? rawData[0][j]
+            //     : numberToLetters(j + 1),
           });
         }
-      } else {
-        const rowItem: Row = { key: String(i + 1) };
-        rawData[i].forEach((cell: unknown, cellIndex: number) => {
-          rowItem[numberToLetters(cellIndex + 1)] = String(cell);
-        });
-        rows.push(rowItem);
       }
+      const rowItem: Row = { key: String(i + 1) };
+      rawData[i].forEach((cell: unknown, cellIndex: number) => {
+        rowItem[numberToLetters(cellIndex + 1)] = String(cell);
+      });
+      rows.push(rowItem);
     }
 
     return {
