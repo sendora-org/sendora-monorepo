@@ -278,6 +278,42 @@ export const Prepare = ({ network }: IProps<IStepData>) => {
                 chainId={network?.id}
               />
             )}
+
+            {data?.validating && data?.counting && (
+              <Button
+                key={latestDocChangeEventId + 'PrepareContinue'}
+                className="my-2"
+                // isLoading={isLoading}
+                fullWidth
+                color="secondary"
+                onPress={async () => {
+                  // try {
+                  //   console.log('continue');
+                  //   setLoading(true);
+                  //   await delay(1000);
+                  //   await testCRUD();
+                  //   setLoading(false);
+                  //   setDataReady(true);
+                  //   // @ts-ignore
+                  //   window?.stonks?.event('Prepare-Continue-Success');
+                  // } catch (e) {
+                  //   console.log(e);
+                  //   // @ts-ignore
+                  //   window?.stonks?.event('Prepare-Continue-failed', { e });
+                  // }
+                  // setLoading(false);
+                }}
+              >
+                {/* {isLoading && (
+                      <p className="flex gap-2">
+                        <MyTimer />
+                        Validating receipient & amount (~60s)...
+                      </p>
+                    )}
+                    {!isLoading && 'Continue'} */}
+                Continue
+              </Button>
+            )}
           </>
         </ConnectButton>
       </EditorRefContext.Provider>

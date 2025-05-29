@@ -193,6 +193,10 @@ export const CheckShowTable = ({
       setStepData(currentStep, {
         validating: true,
       });
+    } else {
+      setStepData(currentStep, {
+        validating: false,
+      });
     }
   }, [data, currentStep, setStepData]);
 

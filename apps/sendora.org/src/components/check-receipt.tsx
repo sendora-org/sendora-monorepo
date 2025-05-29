@@ -11,6 +11,7 @@ import { useLocale } from '@/hooks/useLocale';
 import { useRpcStore } from '@/hooks/useRpcStore';
 import { delay, getGasPrice } from '@/libs/common';
 import type { WorkerService } from '@/libs/worker-service';
+import { useScopedStep } from '@/providers/step-provider';
 import { Button, Divider, Image } from '@heroui/react';
 import { Radio, RadioGroup } from '@heroui/react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -176,6 +177,21 @@ export const CheckReceipt = ({
 
     return 0n;
   }, [transactions, chainId, gasLimit]);
+
+  const setStepData = useScopedStep((s) => s.setStepData);
+  const currentStep = useScopedStep((s) => s.currentStep);
+  useEffect(() => {
+    if (data && (data as any)?.recipients > 0) {
+      setStepData(currentStep, {
+        counting: true,
+      });
+    } else {
+      setStepData(currentStep, {
+        counting: false,
+      });
+    }
+  }, [data, currentStep, setStepData]);
+
   return (
     <>
       {data && (data as any)?.recipients > 0 && (
@@ -210,39 +226,6 @@ export const CheckReceipt = ({
               ETHBalanceREduction={ETHBalanceREduction}
             />
           </div>
-
-          <Button
-            className="my-2"
-            // isLoading={isLoading}
-            fullWidth
-            color="secondary"
-            onPress={async () => {
-              // try {
-              //   console.log('continue');
-              //   setLoading(true);
-              //   await delay(1000);
-              //   await testCRUD();
-              //   setLoading(false);
-              //   setDataReady(true);
-              //   // @ts-ignore
-              //   window?.stonks?.event('Prepare-Continue-Success');
-              // } catch (e) {
-              //   console.log(e);
-              //   // @ts-ignore
-              //   window?.stonks?.event('Prepare-Continue-failed', { e });
-              // }
-              // setLoading(false);
-            }}
-          >
-            {/* {isLoading && (
-                      <p className="flex gap-2">
-                        <MyTimer />
-                        Validating receipient & amount (~60s)...
-                      </p>
-                    )}
-                    {!isLoading && 'Continue'} */}
-            Continue
-          </Button>
         </>
       )}
     </>
