@@ -9,7 +9,7 @@ export const NetworkInfoType = Type.Object({
   rpcURL: Type.String(),
   rpcs: Type.Array(Type.String()),
   explorerURL: Type.String(),
-  toolFeePerUse: Type.Number(),
+
   blockGasLimit: Type.BigInt(),
   blockTime: Type.BigInt(),
   gasUsedForEthTransfer: Type.BigInt(),
@@ -20,7 +20,7 @@ export const NetworkInfoType = Type.Object({
 });
 
 export type NetworkInfo = Static<typeof NetworkInfoType>;
-
+export const toolFeePerUse = 0.01;
 export const networks: NetworkInfo[] = [
   {
     name: 'Ethereum',
@@ -33,7 +33,7 @@ export const networks: NetworkInfo[] = [
     rpcURL: 'https://1rpc.io/eth',
     rpcs: ['https://1rpc.io/eth'],
     explorerURL: 'https://etherscan.io',
-    toolFeePerUse: 0.02,
+
     blockTime: 12_000n,
     blockGasLimit: 30_000_000n,
     gasUsedForEthTransfer: 21_000n,
@@ -50,7 +50,7 @@ export const networks: NetworkInfo[] = [
     rpcURL: 'https://mainnet.base.org',
     rpcs: ['https://mainnet.base.org'],
     explorerURL: 'https://basescan.org',
-    toolFeePerUse: 0.02,
+
     blockTime: 2_000n,
     blockGasLimit: 120_000_000n,
     gasUsedForEthTransfer: 21_000n,
@@ -67,7 +67,7 @@ export const networks: NetworkInfo[] = [
     rpcURL: 'https://arb1.arbitrum.io/rpc',
     rpcs: ['https://arb1.arbitrum.io/rpc'],
     explorerURL: 'https://arbiscan.io',
-    toolFeePerUse: 0.02,
+
     blockTime: 250n,
     blockGasLimit: 1_125_899_906_842_624n,
     gasUsedForEthTransfer: 21_000n,
@@ -97,7 +97,7 @@ export const networks: NetworkInfo[] = [
     rpcURL: 'https://optimism.llamarpc.com',
     rpcs: ['https://optimism.llamarpc.com'],
     explorerURL: 'https://optimistic.etherscan.io',
-    toolFeePerUse: 0.02,
+
     blockTime: 2_000n,
     blockGasLimit: 60_000_000n,
     gasUsedForEthTransfer: 21_000n,
@@ -114,7 +114,7 @@ export const networks: NetworkInfo[] = [
     rpcURL: 'https://bsc-dataseed4.bnbchain.org',
     rpcs: ['https://bsc-dataseed4.bnbchain.org'],
     explorerURL: 'https://bscscan.com',
-    toolFeePerUse: 0.05,
+
     blockTime: 3_000n,
     blockGasLimit: 140_000_000n,
     gasUsedForEthTransfer: 21_000n,
@@ -131,7 +131,7 @@ export const networks: NetworkInfo[] = [
     rpcURL: 'https://polygon-rpc.com',
     rpcs: ['https://polygon-rpc.com'],
     explorerURL: 'https://polygonscan.com',
-    toolFeePerUse: 150,
+
     blockTime: 2_200n,
     blockGasLimit: 30_000_000n,
     gasUsedForEthTransfer: 21_000n,
@@ -148,7 +148,7 @@ export const networks: NetworkInfo[] = [
     rpcURL: 'https://rpc.berachain.com',
     rpcs: ['https://rpc.berachain.com'],
     explorerURL: 'https://berascan.com',
-    toolFeePerUse: 5,
+
     blockTime: 2_000n,
     blockGasLimit: 2_700_000_000n,
     gasUsedForEthTransfer: 21_000n,
@@ -165,7 +165,7 @@ export const networks: NetworkInfo[] = [
     rpcURL: 'https://public-en.node.kaia.io',
     rpcs: ['https://public-en.node.kaia.io'],
     explorerURL: 'https://kaiascan.io',
-    toolFeePerUse: 300,
+
     blockTime: 1_000n,
     blockGasLimit: 60_000_000n,
     gasUsedForEthTransfer: 21_000n,
@@ -183,7 +183,7 @@ export const networks: NetworkInfo[] = [
     rpcURL: 'https://avalanche.drpc.org',
     rpcs: ['https://avalanche.drpc.org'],
     explorerURL: 'https://43114.snowtrace.io',
-    toolFeePerUse: 2,
+
     blockTime: 1_000n,
     blockGasLimit: 30_000_000n,
     gasUsedForEthTransfer: 21_000n,
@@ -201,7 +201,7 @@ export const networks: NetworkInfo[] = [
     rpcURL: 'https://sepolia.drpc.org',
     rpcs: ['https://sepolia.drpc.org'],
     explorerURL: 'https://sepolia.etherscan.io',
-    toolFeePerUse: 0.02,
+
     blockTime: 12_000n,
     blockGasLimit: 30_000_000n,
     gasUsedForEthTransfer: 21_000n,
@@ -219,7 +219,7 @@ export const networks: NetworkInfo[] = [
     rpcURL: 'https://sepolia.base.org',
     rpcs: ['https://sepolia.base.org'],
     explorerURL: 'https://sepolia.basescan.org',
-    toolFeePerUse: 0.02,
+
     blockTime: 2_000n,
     blockGasLimit: 60_000_000n,
     gasUsedForEthTransfer: 21_000n,
@@ -237,7 +237,7 @@ export const networks: NetworkInfo[] = [
     rpcURL: 'https://yourdevnetrpc.com',
     rpcs: ['https://yourdevnetrpc.com'],
     explorerURL: 'http://192.168.50.52',
-    toolFeePerUse: 0.02,
+
     blockTime: 12_000n,
     blockGasLimit: 60_000_000n,
     gasUsedForEthTransfer: 21_000n,

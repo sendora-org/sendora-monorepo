@@ -244,6 +244,7 @@ export const Prepare = ({ network }: IProps<IStepData>) => {
             {data?.validating && (
               <CheckReceipt
                 key={latestDocChangeEventId + 'CheckReceipt'}
+                tokenType="native"
                 workerService={workerService.current}
                 isToggle={data.isToggle}
                 rate={data.rate}

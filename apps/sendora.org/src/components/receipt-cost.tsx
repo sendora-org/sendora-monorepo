@@ -2,6 +2,7 @@ import H4Title from '@/components/h4-title';
 import { numberFormats } from '@/constants/common';
 import { discountedPriceTips } from '@/constants/common';
 import { findNetwork } from '@/constants/config';
+import { toolFeePerUse } from '@/constants/config';
 import { useLocale } from '@/hooks/useLocale';
 import { formatWei } from '@/libs/common';
 import { formatBigIntNumber } from '@/libs/number';
@@ -70,6 +71,25 @@ export const ReceiptCost = ({
         </dd>
       </div>
 
+      {/* <div className="flex justify-between items-center min-h-[28px] items-center">
+        <dt className="text-small text-default-400 flex items-center ">
+          Transactions{' '}
+          <TooltipQuestion iconClassName="h-[16px] w-[16px]">
+            <p className=" w-max-[250px]">
+              Up to 100 recipients per transaction
+            </p>
+          </TooltipQuestion>
+        </dt>
+        <dd className="text-small font-semibold text-default-500">
+          {formatBigIntNumber(
+            BigInt(transactions) * BigInt(10 ** 18),
+            thousandSeparator,
+            decimalSeparator,
+            0,
+          )}
+        </dd>
+      </div> */}
+
       <div className="flex justify-between min-h-[28px] items-center">
         <dt className="text-small text-default-400">Gas Limit/Tx</dt>
         <dd className="text-small font-semibold text-default-500">
@@ -111,7 +131,7 @@ export const ReceiptCost = ({
         {(isValidSubscription || isPromoOrEvent) && (
           <div className="flex items-center">
             <dd className="text-small font-semibold text-default-500 line-through">
-              {network?.toolFeePerUse} {gasTokenSymbol}
+              {toolFeePerUse} {gasTokenSymbol}
             </dd>
 
             <TooltipNotice>{discountedPriceTip}</TooltipNotice>
@@ -124,7 +144,7 @@ export const ReceiptCost = ({
 
         {!isValidSubscription && !isPromoOrEvent && (
           <dd className="text-small font-semibold text-default-500">
-            {network?.toolFeePerUse} {gasTokenSymbol}
+            {toolFeePerUse} {gasTokenSymbol}
           </dd>
         )}
       </div>
@@ -173,7 +193,7 @@ export const ReceiptCost = ({
           </dd>
         </dd>
       </div>
-      <Divider />
+      {/* <Divider /> */}
     </dl>
   );
 };

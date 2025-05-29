@@ -3,8 +3,10 @@ import H4Title from '@/components/h4-title';
 import { numberFormats } from '@/constants/common';
 import { MAX_RPC_REQUESTS_PER_SECOND } from '@/constants/common';
 import { findNetwork, networks } from '@/constants/config';
+import { toolFeePerUse } from '@/constants/config';
 import { EditorRefContext } from '@/constants/contexts';
 import useAuthStore from '@/hooks/useAuth';
+import { useGasPrice } from '@/hooks/useGasPriec';
 import { useLocale } from '@/hooks/useLocale';
 import { useRpcStore } from '@/hooks/useRpcStore';
 import { delay, getGasPrice } from '@/libs/common';
@@ -28,178 +30,229 @@ import ShowTable from './show-table';
 import TypewriterTips from './typewriteer-tips';
 
 type IProps = {
-    //   deleteLine: (line: number[]) => void;
-    workerService: WorkerService | null;
-    tokenSymbol: string;
-    isToggle: boolean;
-    currency: string;
-    rate: bigint;
-    network: string;
-    gasTokenSymbol: string;
-    chainId: number;
+  //   deleteLine: (line: number[]) => void;
+  workerService: WorkerService | null;
+  tokenSymbol: string;
+  isToggle: boolean;
+  currency: string;
+  rate: bigint;
+  network: string;
+  gasTokenSymbol: string;
+  chainId: number;
+  tokenType: string;
 };
 
 export const CheckReceipt = ({
-    workerService,
-    tokenSymbol,
-    isToggle,
-    currency,
-    rate,
-    network,
-    gasTokenSymbol,
-    chainId,
+  workerService,
+  tokenSymbol,
+  isToggle,
+  currency,
+  rate,
+  network,
+  gasTokenSymbol,
+  chainId,
+  tokenType,
 }: IProps) => {
-    const [isLoading, setLoading] = useState(false);
-    const queryClient = useQueryClient();
-    useEffect(() => {
-        console.log('CheckReceipt onmount');
+  const [isLoading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    console.log('CheckReceipt onmount');
 
-        return () => {
-            console.log('CheckReceipt clean up');
-            if (workerService) {
-                clearCache();
-            }
-        };
-    }, []);
-
-    const { status, data, error, isFetching, isPlaceholderData, refetch } =
-        useQuery({
-            queryKey: ['user-input-map', 'count'],
-            // cacheTime: 0,
-            staleTime: 0,
-            queryFn: () =>
-                firstValueFrom(
-                    // biome-ignore lint/style/noNonNullAssertion: reason
-                    workerService?.request('count')!,
-                ),
-
-            placeholderData: keepPreviousData,
-            refetchInterval: 2000,
-        });
-
-    const clearCache = () => {
-        const prefix = 'user-input-map';
-
-        const allQueries = queryClient.getQueryCache().findAll();
-
-        for (const query of allQueries) {
-            const queryKey = query.queryKey;
-            if (Array.isArray(queryKey) && queryKey[0]?.startsWith(prefix)) {
-                queryClient.removeQueries({ queryKey });
-            }
-        }
+    return () => {
+      console.log('CheckReceipt clean up');
+      if (workerService) {
+        clearCache();
+      }
     };
+  }, []);
 
-    const transactions = useMemo(() => {
-        return Math.ceil(data?.recipients / 100);
-    }, [data]);
+  const { status, data, error, isFetching, isPlaceholderData, refetch } =
+    useQuery({
+      queryKey: ['user-input-map', 'count'],
+      // cacheTime: 0,
+      staleTime: 0,
+      queryFn: () =>
+        firstValueFrom(
+          // biome-ignore lint/style/noNonNullAssertion: reason
+          workerService?.request('count')!,
+        ),
 
-    console.log({ data }, 'ids');
-    return (
+      placeholderData: keepPreviousData,
+      refetchInterval: 2000,
+    });
+
+  const clearCache = () => {
+    const prefix = 'user-input-map';
+
+    const allQueries = queryClient.getQueryCache().findAll();
+
+    for (const query of allQueries) {
+      const queryKey = query.queryKey;
+      if (Array.isArray(queryKey) && queryKey[0]?.startsWith(prefix)) {
+        queryClient.removeQueries({ queryKey });
+      }
+    }
+  };
+  const { activeRpc } = useRpcStore();
+
+  console.log({ activeRpc }, 999);
+  const transactions = useMemo(() => {
+    return Math.ceil((data?.recipients ?? 0) / 100);
+  }, [data]);
+
+  console.log({ data }, 'ids');
+
+  const { gasPrice } = useGasPrice({
+    chainId: chainId!,
+  });
+
+  const gasLimit = useMemo(() => {
+    const network = findNetwork('chainId', chainId?.toString(10) ?? '1');
+    let gas = 100_000n;
+    if (tokenType === 'native') {
+      gas = network?.gasUsedForEthTransfer ?? 100_000n;
+    }
+
+    if (tokenType === 'erc20') {
+      gas = network?.gasUsedForERC20Transfer ?? 100_000n;
+    }
+
+    if (transactions > 1) {
+      gas = gas * 100n;
+    } else {
+      gas = gas * BigInt(data?.recipients ?? 0n);
+    }
+
+    return gas + (gas * 3n) / 10n;
+  }, [chainId, transactions, tokenType, data]);
+
+  const networkCost = useMemo(() => {
+    return gasPrice * gasLimit;
+  }, [gasLimit, gasPrice]);
+
+  const totalFee = useMemo(() => {
+    const network = findNetwork('chainId', chainId?.toString(10) ?? '1');
+
+    // todos
+    // isValidSubscription
+    // isPromoOrEvent
+    const toolFee = parseEther(String(toolFeePerUse) ?? '0');
+    return (networkCost + toolFee) * BigInt(transactions);
+  }, [networkCost, transactions, chainId]);
+
+  const ETHBalanceREduction = useMemo(() => {
+    let reduction = totalFee;
+
+    if (tokenType === 'native') {
+      reduction = totalFee + (data?.totalAmount ?? 0n);
+    }
+
+    return reduction;
+  }, [totalFee, tokenType, data]);
+
+  const estimatedMilliseconds = useMemo(() => {
+    console.log({ gasLimit });
+    if (gasLimit > 0n) {
+      // biome-ignore lint/style/noNonNullAssertion: reason
+      const network = findNetwork('chainId', chainId?.toString(10) ?? '1')!;
+      const blockTime = network?.blockTime;
+      let myBlockGasLimit = (network?.blockGasLimit * 40n) / 100n;
+
+      if (myBlockGasLimit < gasLimit) {
+        myBlockGasLimit = gasLimit;
+      }
+
+      console.log({ myBlockGasLimit }, network?.blockGasLimit, gasLimit);
+      const txnsPerBlock = myBlockGasLimit / gasLimit;
+      const estimatedBlocks = BigInt(transactions) / txnsPerBlock + 3n;
+
+      console.log(
+        'gasLimit',
+        {
+          estimatedBlocks,
+          transactions,
+          txnsPerBlock,
+          myBlockGasLimit,
+        },
+        estimatedBlocks * blockTime,
+      );
+      return (
+        estimatedBlocks * blockTime +
+        BigInt(Math.ceil(transactions / MAX_RPC_REQUESTS_PER_SECOND) * 1000)
+      );
+    }
+
+    return 0n;
+  }, [transactions, chainId, gasLimit]);
+  return (
+    <>
+      {data && (data as any)?.recipients > 0 && (
         <>
-            {/* Use input button*/}
+          <div className="mt-2">
+            <H3Title>Receipt</H3Title>
+          </div>
+          <div className="flex md:flex-row flex-col items-start w-full justify-between">
+            <ReceiptOverview
+              isTogglePricingCurrency={isToggle}
+              tokenSymbol={tokenSymbol}
+              pricingCurrency={currency}
+              rate={rate}
+              network={network}
+              gasTokenSymbol={gasTokenSymbol}
+              totalAmount={data?.totalAmount}
+              recipients={data?.recipients}
+              transactions={transactions}
+            />
+            <ReceiptCost
+              // biome-ignore lint/style/noNonNullAssertion: reason
+              chainId={chainId!}
+              gasTokenSymbol={gasTokenSymbol}
+              recipients={data?.recipients}
+              transactions={transactions}
+              gasLimit={gasLimit}
+              estimatedMilliseconds={estimatedMilliseconds}
+              gasPrice={gasPrice}
+              networkCost={networkCost}
+              totalFee={totalFee}
+              ETHBalanceREduction={ETHBalanceREduction}
+            />
+          </div>
 
-            {/* {(typeof data == 'undefined' || data?.recipients == 0) && (
-                <Button
-                    className="my-2"
-                    // isLoading={isLoading}
-                    fullWidth
-                    color="secondary"
-                    onPress={async () => {
-                        try {
-                            setLoading(true);
-
-                            await delay(2000);
-
-                            setLoading(false);
-                            // @ts-ignore
-                        } catch (e) {
-                            setLoading(false);
-                            console.log(e);
-                        }
-                        clearCache();
-                    }}
-                >
-                    {isLoading && (
-                        <p className="flex gap-2">
-                            <MyTimer />
-                            (~3s) Counting...
-                        </p>
-                    )}
-                    {!isLoading && 'Continue'}
-                </Button>
-            )} */}
-
-            {/* Show receipt  view */}
-            {data && (data as any)?.recipients > 0 && (
-                <>
-                    <div className="mt-2">
-                        <H3Title>Receipt</H3Title>
-                    </div>
-                    <div className="flex md:flex-row flex-col items-start w-full justify-between">
-                        <ReceiptOverview
-                            isTogglePricingCurrency={isToggle}
-                            tokenSymbol={tokenSymbol}
-                            pricingCurrency={currency}
-                            rate={rate}
-                            network={network}
-                            gasTokenSymbol={gasTokenSymbol}
-                            totalAmount={data?.totalAmount}
-                            recipients={data?.recipients}
-                            transactions={transactions}
-                        />
-                        <ReceiptCost
-                            // biome-ignore lint/style/noNonNullAssertion: reason
-                            chainId={chainId!}
-                            gasTokenSymbol={gasTokenSymbol}
-                            recipients={data?.recipients}
-                            transactions={transactions}
-
-                        // gasPrice={gasPrice}
-                        // gasLimit={gasLimit}
-
-                        // networkCost={networkCost}
-                        // totalFee={totalFee}
-                        // ETHBalanceREduction={ETHBalanceREduction}
-                        // estimatedMilliseconds={estimatedMilliseconds}
-                        />
-                    </div>
-
-                    <div>Select send mode</div>
-                    <Button
-                        className="my-2"
-                        // isLoading={isLoading}
-                        fullWidth
-                        color="secondary"
-                        onPress={async () => {
-                            // try {
-                            //   console.log('continue');
-                            //   setLoading(true);
-                            //   await delay(1000);
-                            //   await testCRUD();
-                            //   setLoading(false);
-                            //   setDataReady(true);
-                            //   // @ts-ignore
-                            //   window?.stonks?.event('Prepare-Continue-Success');
-                            // } catch (e) {
-                            //   console.log(e);
-                            //   // @ts-ignore
-                            //   window?.stonks?.event('Prepare-Continue-failed', { e });
-                            // }
-                            // setLoading(false);
-                        }}
-                    >
-                        {/* {isLoading && (
+          <div>Select send mode</div>
+          <Button
+            className="my-2"
+            // isLoading={isLoading}
+            fullWidth
+            color="secondary"
+            onPress={async () => {
+              // try {
+              //   console.log('continue');
+              //   setLoading(true);
+              //   await delay(1000);
+              //   await testCRUD();
+              //   setLoading(false);
+              //   setDataReady(true);
+              //   // @ts-ignore
+              //   window?.stonks?.event('Prepare-Continue-Success');
+              // } catch (e) {
+              //   console.log(e);
+              //   // @ts-ignore
+              //   window?.stonks?.event('Prepare-Continue-failed', { e });
+              // }
+              // setLoading(false);
+            }}
+          >
+            {/* {isLoading && (
                       <p className="flex gap-2">
                         <MyTimer />
                         Validating receipient & amount (~60s)...
                       </p>
                     )}
                     {!isLoading && 'Continue'} */}
-                        Continue
-                    </Button>
-                </>
-            )}
+            Continue
+          </Button>
         </>
-    );
+      )}
+    </>
+  );
 };

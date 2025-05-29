@@ -1,4 +1,3 @@
-
 import H3Title from '@/components/h3-title';
 import H4Title from '@/components/h4-title';
 import { numberFormats } from '@/constants/common';
@@ -36,7 +35,6 @@ type IProps = {
   // rate: bigint;
 };
 
-
 export const CheckWriteDB = ({
   workerService,
   // tokenSymbol,
@@ -51,7 +49,6 @@ export const CheckWriteDB = ({
       console.log('CheckWriteDB clean up');
     };
   }, []);
-
 
   const [isLoading, setLoading] = useState(false);
   const queryClient = useQueryClient();
@@ -98,7 +95,6 @@ export const CheckWriteDB = ({
       {/* Write to db button */}
 
       {/* Select send mode view */}
-
     </>
   );
 };
