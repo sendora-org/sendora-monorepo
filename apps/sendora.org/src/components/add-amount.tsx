@@ -97,6 +97,7 @@ export default function AddAmount() {
 
                 {!isRandom && (
                   <NumberInput
+                    isWheelDisabled
                     hideStepper
                     inputMode="decimal"
                     formatOptions={{
@@ -123,6 +124,7 @@ export default function AddAmount() {
                 {isRandom && (
                   <div className="flex flex-col gap-2">
                     <NumberInput
+                      isWheelDisabled
                       hideStepper
                       formatOptions={{
                         useGrouping: true,
@@ -142,6 +144,7 @@ export default function AddAmount() {
                       placeholder="Enter the min amount"
                     />
                     <NumberInput
+                      isWheelDisabled
                       hideStepper
                       inputMode="decimal"
                       formatOptions={{
@@ -161,6 +164,7 @@ export default function AddAmount() {
                       placeholder="Enter the max amount"
                     />
                     <NumberInput
+                      isWheelDisabled
                       hideStepper
                       inputMode="numeric"
                       pattern="[0-9]*"

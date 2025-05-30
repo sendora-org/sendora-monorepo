@@ -386,6 +386,7 @@ export const CallStep: React.FC<CallStepProps> = ({
                     fieldState: { error },
                   }) => (
                     <NumberInput
+                      isWheelDisabled
                       hideStepper
                       formatOptions={{
                         useGrouping: true,

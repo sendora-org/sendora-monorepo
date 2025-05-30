@@ -116,6 +116,7 @@ export const Standard = ({ network }: Iprops) => {
           <>
             <H3Title>Value</H3Title>
             <NumberInput
+              isWheelDisabled
               hideStepper
               formatOptions={{
                 useGrouping: true,

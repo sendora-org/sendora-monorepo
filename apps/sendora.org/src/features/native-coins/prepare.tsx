@@ -129,17 +129,6 @@ export const Prepare = ({ network }: IProps<IStepData>) => {
                 example={native_coin_input_example[locale].content ?? ''}
               />
               <DecimalSeparatorSwitch />
-              <Button isIconOnly size="sm" onPress={toggle}>
-                <Icon
-                  icon={
-                    fullscreen
-                      ? 'qlementine-icons:fullscreen-exit-16'
-                      : 'qlementine-icons:fullscreen-16'
-                  }
-                  width="16"
-                  height="16"
-                />
-              </Button>
             </ButtonGroup>
           </div>
 
@@ -154,6 +143,17 @@ export const Prepare = ({ network }: IProps<IStepData>) => {
             <ButtonGroup className="gap-1">
               <AddAmount />
               <UploadSpreadsheet />
+              <Button isIconOnly size="sm" onPress={toggle}>
+                <Icon
+                  icon={
+                    fullscreen
+                      ? 'qlementine-icons:fullscreen-exit-16'
+                      : 'qlementine-icons:fullscreen-16'
+                  }
+                  width="16"
+                  height="16"
+                />
+              </Button>
             </ButtonGroup>
           </div>
         </div>
@@ -184,6 +184,7 @@ export const Prepare = ({ network }: IProps<IStepData>) => {
 
         {data.isToggle && (
           <NumberInput
+            isWheelDisabled
             hideStepper
             formatOptions={{
               useGrouping: true,

@@ -66,6 +66,7 @@ export default ({
       {/* isToggle */}
       {true && (
         <NumberInput
+          isWheelDisabled
           hideStepper
           formatOptions={{
             useGrouping: true,
